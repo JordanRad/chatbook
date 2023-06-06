@@ -77,18 +77,31 @@ func (t Tool) buildMigrationSource() *migrate.MemoryMigrationSource {
 	return &migrate.MemoryMigrationSource{
 		Migrations: []*migrate.Migration{
 			{
-				Id: "20230606193800_create_users_table",
+				Id: "20230606202600_create_users_table",
 				Up: []string{`
+						CREATE EXTENSION IF NOT EXISTS "uuid-ossp";		
+				
 						CREATE TABLE IF NOT EXISTS users (
-						id BIGSERIAL PRIMARY KEY,
-						firstName VARCHAR,
-						lastName VARCHAR,
-						username VARCHAR,
-						email VARCHAR NOT NULL UNIQUE,
-						password VARCHAR NOT NULL
+							id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+							first_name VARCHAR,
+							last_name VARCHAR,
+							username VARCHAR,
+							email VARCHAR NOT NULL UNIQUE,
+							password VARCHAR NOT NULL
 						);
+
+						CREATE TABLE IF NOT EXISTS friendships (
+							id BIGSERIAL PRIMARY KEY,
+							user_id UUID REFERENCES users (id) ON DELETE CASCADE,
+							friend_id UUID REFERENCES users (id) ON DELETE CASCADE
+						);
+
+						CREATE INDEX IF NOT EXISTS friendships_user_id_idx ON friendships (user_id);
 					`},
-				Down: []string{`DROP TABLE IF EXISTS users;`},
+				Down: []string{
+					`DROP TABLE IF EXISTS users;`,
+					`DROP TABLE IF EXISTS friendships;`,
+				},
 			},
 		},
 	}
@@ -102,10 +115,10 @@ func (t Tool) buildTestDataMigrationSource() *migrate.MemoryMigrationSource {
 			&migrate.Migration{
 				Id: "20241224224300_insert_test_data",
 				Up: []string{`
-							INSERT INTO public.users (id,firstname,lastname,email,"password") VALUES
-								(1,'Christian','Doe','cd@example.com','$2a$10$MWZ99cecvC.WQ6w/l8s6JuOFWPKYh6xAq6sBavXT5kdFQbBvnt0b.'),
-								(2,'Bro','Beaver','batbobura@example.com','$2a$10$MWZ99cecvC.WQ6w/l8s6JuOFWPKYh6xAq6sBavXT5kdFQbBvnt0b.'),
-								(3,'Yasen','Litovski','yl@example.com','$2a$10$MWZ99cecvC.WQ6w/l8s6JuOFWPKYh6xAq6sBavXT5kdFQbBvnt0b.');
+							INSERT INTO public.users (id,first_name,last_name,email,"password") VALUES
+								('7ffb8e45-ba8c-4766-b44c-713abd9b10e3','Christian','Doe','cd@example.com','$2a$10$MWZ99cecvC.WQ6w/l8s6JuOFWPKYh6xAq6sBavXT5kdFQbBvnt0b.'),
+								('7ffb8e45-ba8c-4766-b44c-713abd9b10e4','Bro','Beaver','batbobura@example.com','$2a$10$MWZ99cecvC.WQ6w/l8s6JuOFWPKYh6xAq6sBavXT5kdFQbBvnt0b.'),
+								('7ffb8e45-ba8c-4766-b44c-713abd9b10e5','Yasen','Litovski','yl@example.com','$2a$10$MWZ99cecvC.WQ6w/l8s6JuOFWPKYh6xAq6sBavXT5kdFQbBvnt0b.');
 							`,
 				},
 			},
