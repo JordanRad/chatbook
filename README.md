@@ -16,10 +16,11 @@ Allow users to customize notification preferences.
 - [ ] **Search and Filtering** - enable users to search for specific chat rooms or messages.Implement filters to sort and display chat rooms based on criteria such as popularity or user activity.
 
 - [ ] **Caching of Chat History** - implement a caching mechanism to store the chat history of the last hour. When a user requests chat history, check the cache first and retrieve the relevant messages if available. If the requested chat history is not present in the cache, fetch it from the database and update the cache for future requests. Set an expiration time for the cached chat history, ensuring it is automatically refreshed as per the configured duration (e.g., every minute).
-Ensure the application is responsive across different devices and screen sizes.
 
 
 ## Non-Functional Requirements:
+
+- Responsiveness - ensure the application is responsive across different devices and screen sizes.
 
 - Scalability - estimate the expected number of users per hour and ensure the system can handle the load. For example, expect 1,000 users per hour initially, with room for growth. Design the system to scale horizontally by adding more servers or using load balancers to distribute the load effectively.
 
@@ -34,4 +35,7 @@ Enforce secure communication protocols to protect message content and user priva
 Usability:
 
 Design an intuitive user interface with features like chat bubbles, typing indicators, and online/offline indicators for a seamless user experience.
+
+
+## System Design
 
