@@ -17,24 +17,30 @@ import (
 // Endpoints wraps the "user" service endpoints.
 type Endpoints struct {
 	Register           goa.Endpoint
-	GetUserProfile     goa.Endpoint
+	GetProfile         goa.Endpoint
 	UpdateProfileNames goa.Endpoint
+	AddFriend          goa.Endpoint
+	RemoveFriend       goa.Endpoint
 }
 
 // NewEndpoints wraps the methods of the "user" service with endpoints.
 func NewEndpoints(s Service) *Endpoints {
 	return &Endpoints{
 		Register:           NewRegisterEndpoint(s),
-		GetUserProfile:     NewGetUserProfileEndpoint(s),
+		GetProfile:         NewGetProfileEndpoint(s),
 		UpdateProfileNames: NewUpdateProfileNamesEndpoint(s),
+		AddFriend:          NewAddFriendEndpoint(s),
+		RemoveFriend:       NewRemoveFriendEndpoint(s),
 	}
 }
 
 // Use applies the given middleware to all the "user" service endpoints.
 func (e *Endpoints) Use(m func(goa.Endpoint) goa.Endpoint) {
 	e.Register = m(e.Register)
-	e.GetUserProfile = m(e.GetUserProfile)
+	e.GetProfile = m(e.GetProfile)
 	e.UpdateProfileNames = m(e.UpdateProfileNames)
+	e.AddFriend = m(e.AddFriend)
+	e.RemoveFriend = m(e.RemoveFriend)
 }
 
 // NewRegisterEndpoint returns an endpoint function that calls the method
@@ -46,11 +52,11 @@ func NewRegisterEndpoint(s Service) goa.Endpoint {
 	}
 }
 
-// NewGetUserProfileEndpoint returns an endpoint function that calls the method
-// "getUserProfile" of service "user".
-func NewGetUserProfileEndpoint(s Service) goa.Endpoint {
+// NewGetProfileEndpoint returns an endpoint function that calls the method
+// "getProfile" of service "user".
+func NewGetProfileEndpoint(s Service) goa.Endpoint {
 	return func(ctx context.Context, req any) (any, error) {
-		return s.GetUserProfile(ctx)
+		return s.GetProfile(ctx)
 	}
 }
 
@@ -60,5 +66,23 @@ func NewUpdateProfileNamesEndpoint(s Service) goa.Endpoint {
 	return func(ctx context.Context, req any) (any, error) {
 		p := req.(*UpdateProfileNamesPayload)
 		return s.UpdateProfileNames(ctx, p)
+	}
+}
+
+// NewAddFriendEndpoint returns an endpoint function that calls the method
+// "addFriend" of service "user".
+func NewAddFriendEndpoint(s Service) goa.Endpoint {
+	return func(ctx context.Context, req any) (any, error) {
+		p := req.(*AddFriendPayload)
+		return s.AddFriend(ctx, p)
+	}
+}
+
+// NewRemoveFriendEndpoint returns an endpoint function that calls the method
+// "removeFriend" of service "user".
+func NewRemoveFriendEndpoint(s Service) goa.Endpoint {
+	return func(ctx context.Context, req any) (any, error) {
+		p := req.(*RemoveFriendPayload)
+		return s.RemoveFriend(ctx, p)
 	}
 }

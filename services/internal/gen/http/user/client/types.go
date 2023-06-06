@@ -37,6 +37,13 @@ type UpdateProfileNamesRequestBody struct {
 	LastName string `form:"lastName" json:"lastName" xml:"lastName"`
 }
 
+// AddFriendRequestBody is the type of the "user" service "addFriend" endpoint
+// HTTP request body.
+type AddFriendRequestBody struct {
+	// User ID
+	ID string `form:"id" json:"id" xml:"id"`
+}
+
 // RegisterResponseBody is the type of the "user" service "register" endpoint
 // HTTP response body.
 type RegisterResponseBody struct {
@@ -44,11 +51,11 @@ type RegisterResponseBody struct {
 	Message *string `form:"message,omitempty" json:"message,omitempty" xml:"message,omitempty"`
 }
 
-// GetUserProfileResponseBody is the type of the "user" service
-// "getUserProfile" endpoint HTTP response body.
-type GetUserProfileResponseBody struct {
+// GetProfileResponseBody is the type of the "user" service "getProfile"
+// endpoint HTTP response body.
+type GetProfileResponseBody struct {
 	// User ID
-	ID *int `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
+	ID *string `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
 	// Email
 	Email *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
 	// First name
@@ -62,6 +69,20 @@ type GetUserProfileResponseBody struct {
 // UpdateProfileNamesResponseBody is the type of the "user" service
 // "updateProfileNames" endpoint HTTP response body.
 type UpdateProfileNamesResponseBody struct {
+	// Operation status
+	Message *string `form:"message,omitempty" json:"message,omitempty" xml:"message,omitempty"`
+}
+
+// AddFriendResponseBody is the type of the "user" service "addFriend" endpoint
+// HTTP response body.
+type AddFriendResponseBody struct {
+	// Operation status
+	Message *string `form:"message,omitempty" json:"message,omitempty" xml:"message,omitempty"`
+}
+
+// RemoveFriendResponseBody is the type of the "user" service "removeFriend"
+// endpoint HTTP response body.
+type RemoveFriendResponseBody struct {
 	// Operation status
 	Message *string `form:"message,omitempty" json:"message,omitempty" xml:"message,omitempty"`
 }
@@ -137,6 +158,15 @@ func NewUpdateProfileNamesRequestBody(p *user.UpdateProfileNamesPayload) *Update
 	return body
 }
 
+// NewAddFriendRequestBody builds the HTTP request body from the payload of the
+// "addFriend" endpoint of the "user" service.
+func NewAddFriendRequestBody(p *user.AddFriendPayload) *AddFriendRequestBody {
+	body := &AddFriendRequestBody{
+		ID: p.ID,
+	}
+	return body
+}
+
 // NewRegisterResponseOK builds a "user" service "register" endpoint result
 // from a HTTP "OK" response.
 func NewRegisterResponseOK(body *RegisterResponseBody) *user.RegisterResponse {
@@ -177,9 +207,9 @@ func NewRegisterUnmatchingPassowrds(body *RegisterUnmatchingPassowrdsResponseBod
 	return v
 }
 
-// NewGetUserProfileUserProfileResponseOK builds a "user" service
-// "getUserProfile" endpoint result from a HTTP "OK" response.
-func NewGetUserProfileUserProfileResponseOK(body *GetUserProfileResponseBody) *user.UserProfileResponse {
+// NewGetProfileUserProfileResponseOK builds a "user" service "getProfile"
+// endpoint result from a HTTP "OK" response.
+func NewGetProfileUserProfileResponseOK(body *GetProfileResponseBody) *user.UserProfileResponse {
 	v := &user.UserProfileResponse{
 		ID:        *body.ID,
 		Email:     *body.Email,
@@ -204,6 +234,26 @@ func NewUpdateProfileNamesOperationStatusResponseOK(body *UpdateProfileNamesResp
 	return v
 }
 
+// NewAddFriendOperationStatusResponseOK builds a "user" service "addFriend"
+// endpoint result from a HTTP "OK" response.
+func NewAddFriendOperationStatusResponseOK(body *AddFriendResponseBody) *user.OperationStatusResponse {
+	v := &user.OperationStatusResponse{
+		Message: *body.Message,
+	}
+
+	return v
+}
+
+// NewRemoveFriendOperationStatusResponseOK builds a "user" service
+// "removeFriend" endpoint result from a HTTP "OK" response.
+func NewRemoveFriendOperationStatusResponseOK(body *RemoveFriendResponseBody) *user.OperationStatusResponse {
+	v := &user.OperationStatusResponse{
+		Message: *body.Message,
+	}
+
+	return v
+}
+
 // ValidateRegisterResponseBody runs the validations defined on
 // RegisterResponseBody
 func ValidateRegisterResponseBody(body *RegisterResponseBody) (err error) {
@@ -213,9 +263,9 @@ func ValidateRegisterResponseBody(body *RegisterResponseBody) (err error) {
 	return
 }
 
-// ValidateGetUserProfileResponseBody runs the validations defined on
-// GetUserProfileResponseBody
-func ValidateGetUserProfileResponseBody(body *GetUserProfileResponseBody) (err error) {
+// ValidateGetProfileResponseBody runs the validations defined on
+// GetProfileResponseBody
+func ValidateGetProfileResponseBody(body *GetProfileResponseBody) (err error) {
 	if body.ID == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
 	}
@@ -244,6 +294,24 @@ func ValidateGetUserProfileResponseBody(body *GetUserProfileResponseBody) (err e
 // ValidateUpdateProfileNamesResponseBody runs the validations defined on
 // UpdateProfileNamesResponseBody
 func ValidateUpdateProfileNamesResponseBody(body *UpdateProfileNamesResponseBody) (err error) {
+	if body.Message == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("message", "body"))
+	}
+	return
+}
+
+// ValidateAddFriendResponseBody runs the validations defined on
+// AddFriendResponseBody
+func ValidateAddFriendResponseBody(body *AddFriendResponseBody) (err error) {
+	if body.Message == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("message", "body"))
+	}
+	return
+}
+
+// ValidateRemoveFriendResponseBody runs the validations defined on
+// RemoveFriendResponseBody
+func ValidateRemoveFriendResponseBody(body *RemoveFriendResponseBody) (err error) {
 	if body.Message == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("message", "body"))
 	}

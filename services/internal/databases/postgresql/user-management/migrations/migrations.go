@@ -102,10 +102,10 @@ func (t Tool) buildTestDataMigrationSource() *migrate.MemoryMigrationSource {
 			&migrate.Migration{
 				Id: "20241224224300_insert_test_data",
 				Up: []string{`
-							INSERT INTO public.users (id,firstname,lastname,email,"password","role",settings,picture_url) VALUES
-								(1,'Christian','Doe','cd@example.com','$2a$10$MWZ99cecvC.WQ6w/l8s6JuOFWPKYh6xAq6sBavXT5kdFQbBvnt0b.','sfit_user','{"length": "cm", "weight": "kg", "distance": "km"}',NULL),
-								(2,'Bro','Beaver','batbobura@example.com','$2a$10$MWZ99cecvC.WQ6w/l8s6JuOFWPKYh6xAq6sBavXT5kdFQbBvnt0b.','sfit_user','{"length": "cm", "weight": "kg", "distance": "km"}',NULL),
-								(3,'Yasen','Litovski','yl@example.com','$2a$10$MWZ99cecvC.WQ6w/l8s6JuOFWPKYh6xAq6sBavXT5kdFQbBvnt0b.','sfit_user','{"length": "cm", "weight": "kg", "distance": "km"}',NULL);
+							INSERT INTO public.users (id,firstname,lastname,email,"password") VALUES
+								(1,'Christian','Doe','cd@example.com','$2a$10$MWZ99cecvC.WQ6w/l8s6JuOFWPKYh6xAq6sBavXT5kdFQbBvnt0b.'),
+								(2,'Bro','Beaver','batbobura@example.com','$2a$10$MWZ99cecvC.WQ6w/l8s6JuOFWPKYh6xAq6sBavXT5kdFQbBvnt0b.'),
+								(3,'Yasen','Litovski','yl@example.com','$2a$10$MWZ99cecvC.WQ6w/l8s6JuOFWPKYh6xAq6sBavXT5kdFQbBvnt0b.');
 							`,
 				},
 			},

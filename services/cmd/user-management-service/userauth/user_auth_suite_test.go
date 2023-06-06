@@ -1,4 +1,4 @@
-package user_auth_test
+package userauth_test
 
 import (
 	"testing"

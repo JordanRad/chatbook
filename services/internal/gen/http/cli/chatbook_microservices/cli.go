@@ -27,23 +27,23 @@ import (
 func UsageCommands() string {
 	return `auth (refresh-token|login)
 info get-info
-user (register|get-user-profile|update-profile-names)
+user (register|get-profile|update-profile-names|add-friend|remove-friend)
 `
 }
 
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
 	return os.Args[0] + ` auth refresh-token --body '{
-      "email": "Assumenda autem quo aut.",
-      "refreshToken": "Reprehenderit totam."
+      "email": "Totam dolor quibusdam voluptatum voluptatum vitae.",
+      "refreshToken": "Qui rerum quidem eum id eveniet."
    }'` + "\n" +
 		os.Args[0] + ` info get-info` + "\n" +
 		os.Args[0] + ` user register --body '{
-      "confirmedPassword": "Magnam facilis incidunt occaecati consequatur ullam.",
-      "email": "Ducimus asperiores sunt.",
-      "firstName": "Qui impedit tempore sunt optio.",
-      "lastName": "Quisquam eos vitae velit quis.",
-      "password": "Adipisci qui suscipit ut."
+      "confirmedPassword": "Veritatis natus quisquam.",
+      "email": "Magnam facilis incidunt occaecati consequatur ullam.",
+      "firstName": "Ducimus asperiores sunt.",
+      "lastName": "Adipisci qui suscipit ut.",
+      "password": "Quo et."
    }'` + "\n" +
 		""
 }
@@ -75,10 +75,16 @@ func ParseEndpoint(
 		userRegisterFlags    = flag.NewFlagSet("register", flag.ExitOnError)
 		userRegisterBodyFlag = userRegisterFlags.String("body", "REQUIRED", "")
 
-		userGetUserProfileFlags = flag.NewFlagSet("get-user-profile", flag.ExitOnError)
+		userGetProfileFlags = flag.NewFlagSet("get-profile", flag.ExitOnError)
 
 		userUpdateProfileNamesFlags    = flag.NewFlagSet("update-profile-names", flag.ExitOnError)
 		userUpdateProfileNamesBodyFlag = userUpdateProfileNamesFlags.String("body", "REQUIRED", "")
+
+		userAddFriendFlags    = flag.NewFlagSet("add-friend", flag.ExitOnError)
+		userAddFriendBodyFlag = userAddFriendFlags.String("body", "REQUIRED", "")
+
+		userRemoveFriendFlags  = flag.NewFlagSet("remove-friend", flag.ExitOnError)
+		userRemoveFriendIDFlag = userRemoveFriendFlags.String("id", "REQUIRED", "User ID")
 	)
 	authFlags.Usage = authUsage
 	authRefreshTokenFlags.Usage = authRefreshTokenUsage
@@ -89,8 +95,10 @@ func ParseEndpoint(
 
 	userFlags.Usage = userUsage
 	userRegisterFlags.Usage = userRegisterUsage
-	userGetUserProfileFlags.Usage = userGetUserProfileUsage
+	userGetProfileFlags.Usage = userGetProfileUsage
 	userUpdateProfileNamesFlags.Usage = userUpdateProfileNamesUsage
+	userAddFriendFlags.Usage = userAddFriendUsage
+	userRemoveFriendFlags.Usage = userRemoveFriendUsage
 
 	if err := flag.CommandLine.Parse(os.Args[1:]); err != nil {
 		return nil, nil, err
@@ -150,11 +158,17 @@ func ParseEndpoint(
 			case "register":
 				epf = userRegisterFlags
 
-			case "get-user-profile":
-				epf = userGetUserProfileFlags
+			case "get-profile":
+				epf = userGetProfileFlags
 
 			case "update-profile-names":
 				epf = userUpdateProfileNamesFlags
+
+			case "add-friend":
+				epf = userAddFriendFlags
+
+			case "remove-friend":
+				epf = userRemoveFriendFlags
 
 			}
 
@@ -201,12 +215,18 @@ func ParseEndpoint(
 			case "register":
 				endpoint = c.Register()
 				data, err = userc.BuildRegisterPayload(*userRegisterBodyFlag)
-			case "get-user-profile":
-				endpoint = c.GetUserProfile()
+			case "get-profile":
+				endpoint = c.GetProfile()
 				data = nil
 			case "update-profile-names":
 				endpoint = c.UpdateProfileNames()
 				data, err = userc.BuildUpdateProfileNamesPayload(*userUpdateProfileNamesBodyFlag)
+			case "add-friend":
+				endpoint = c.AddFriend()
+				data, err = userc.BuildAddFriendPayload(*userAddFriendBodyFlag)
+			case "remove-friend":
+				endpoint = c.RemoveFriend()
+				data, err = userc.BuildRemoveFriendPayload(*userRemoveFriendIDFlag)
 			}
 		}
 	}
@@ -239,8 +259,8 @@ RefreshToken implements refreshToken.
 
 Example:
     %[1]s auth refresh-token --body '{
-      "email": "Assumenda autem quo aut.",
-      "refreshToken": "Reprehenderit totam."
+      "email": "Totam dolor quibusdam voluptatum voluptatum vitae.",
+      "refreshToken": "Qui rerum quidem eum id eveniet."
    }'
 `, os.Args[0])
 }
@@ -253,8 +273,8 @@ Login implements login.
 
 Example:
     %[1]s auth login --body '{
-      "email": "Provident harum similique saepe fuga assumenda.",
-      "password": "Sequi libero et qui soluta error."
+      "email": "Et delectus qui.",
+      "password": "Veniam tempore voluptate sunt."
    }'
 `, os.Args[0])
 }
@@ -290,8 +310,10 @@ Usage:
 
 COMMAND:
     register: Register implements register.
-    get-user-profile: GetUserProfile implements getUserProfile.
+    get-profile: GetProfile implements getProfile.
     update-profile-names: UpdateProfileNames implements updateProfileNames.
+    add-friend: AddFriend implements addFriend.
+    remove-friend: RemoveFriend implements removeFriend.
 
 Additional help:
     %[1]s user COMMAND --help
@@ -305,22 +327,22 @@ Register implements register.
 
 Example:
     %[1]s user register --body '{
-      "confirmedPassword": "Magnam facilis incidunt occaecati consequatur ullam.",
-      "email": "Ducimus asperiores sunt.",
-      "firstName": "Qui impedit tempore sunt optio.",
-      "lastName": "Quisquam eos vitae velit quis.",
-      "password": "Adipisci qui suscipit ut."
+      "confirmedPassword": "Veritatis natus quisquam.",
+      "email": "Magnam facilis incidunt occaecati consequatur ullam.",
+      "firstName": "Ducimus asperiores sunt.",
+      "lastName": "Adipisci qui suscipit ut.",
+      "password": "Quo et."
    }'
 `, os.Args[0])
 }
 
-func userGetUserProfileUsage() {
-	fmt.Fprintf(os.Stderr, `%[1]s [flags] user get-user-profile
+func userGetProfileUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] user get-profile
 
-GetUserProfile implements getUserProfile.
+GetProfile implements getProfile.
 
 Example:
-    %[1]s user get-user-profile
+    %[1]s user get-profile
 `, os.Args[0])
 }
 
@@ -332,8 +354,32 @@ UpdateProfileNames implements updateProfileNames.
 
 Example:
     %[1]s user update-profile-names --body '{
-      "firstName": "Quibusdam qui.",
-      "lastName": "Tempora perspiciatis ut ut."
+      "firstName": "Libero omnis commodi qui quis et.",
+      "lastName": "Modi officia ipsum consequatur quas velit et."
    }'
+`, os.Args[0])
+}
+
+func userAddFriendUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] user add-friend -body JSON
+
+AddFriend implements addFriend.
+    -body JSON: 
+
+Example:
+    %[1]s user add-friend --body '{
+      "id": "Laboriosam tempore atque mollitia ut."
+   }'
+`, os.Args[0])
+}
+
+func userRemoveFriendUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] user remove-friend -id STRING
+
+RemoveFriend implements removeFriend.
+    -id STRING: User ID
+
+Example:
+    %[1]s user remove-friend --id "Similique molestiae necessitatibus sint."
 `, os.Args[0])
 }

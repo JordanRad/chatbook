@@ -37,6 +37,13 @@ type UpdateProfileNamesRequestBody struct {
 	LastName *string `form:"lastName,omitempty" json:"lastName,omitempty" xml:"lastName,omitempty"`
 }
 
+// AddFriendRequestBody is the type of the "user" service "addFriend" endpoint
+// HTTP request body.
+type AddFriendRequestBody struct {
+	// User ID
+	ID *string `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
+}
+
 // RegisterResponseBody is the type of the "user" service "register" endpoint
 // HTTP response body.
 type RegisterResponseBody struct {
@@ -44,11 +51,11 @@ type RegisterResponseBody struct {
 	Message string `form:"message" json:"message" xml:"message"`
 }
 
-// GetUserProfileResponseBody is the type of the "user" service
-// "getUserProfile" endpoint HTTP response body.
-type GetUserProfileResponseBody struct {
+// GetProfileResponseBody is the type of the "user" service "getProfile"
+// endpoint HTTP response body.
+type GetProfileResponseBody struct {
 	// User ID
-	ID int `form:"id" json:"id" xml:"id"`
+	ID string `form:"id" json:"id" xml:"id"`
 	// Email
 	Email string `form:"email" json:"email" xml:"email"`
 	// First name
@@ -62,6 +69,20 @@ type GetUserProfileResponseBody struct {
 // UpdateProfileNamesResponseBody is the type of the "user" service
 // "updateProfileNames" endpoint HTTP response body.
 type UpdateProfileNamesResponseBody struct {
+	// Operation status
+	Message string `form:"message" json:"message" xml:"message"`
+}
+
+// AddFriendResponseBody is the type of the "user" service "addFriend" endpoint
+// HTTP response body.
+type AddFriendResponseBody struct {
+	// Operation status
+	Message string `form:"message" json:"message" xml:"message"`
+}
+
+// RemoveFriendResponseBody is the type of the "user" service "removeFriend"
+// endpoint HTTP response body.
+type RemoveFriendResponseBody struct {
 	// Operation status
 	Message string `form:"message" json:"message" xml:"message"`
 }
@@ -123,10 +144,10 @@ func NewRegisterResponseBody(res *user.RegisterResponse) *RegisterResponseBody {
 	return body
 }
 
-// NewGetUserProfileResponseBody builds the HTTP response body from the result
-// of the "getUserProfile" endpoint of the "user" service.
-func NewGetUserProfileResponseBody(res *user.UserProfileResponse) *GetUserProfileResponseBody {
-	body := &GetUserProfileResponseBody{
+// NewGetProfileResponseBody builds the HTTP response body from the result of
+// the "getProfile" endpoint of the "user" service.
+func NewGetProfileResponseBody(res *user.UserProfileResponse) *GetProfileResponseBody {
+	body := &GetProfileResponseBody{
 		ID:        res.ID,
 		Email:     res.Email,
 		FirstName: res.FirstName,
@@ -145,6 +166,24 @@ func NewGetUserProfileResponseBody(res *user.UserProfileResponse) *GetUserProfil
 // result of the "updateProfileNames" endpoint of the "user" service.
 func NewUpdateProfileNamesResponseBody(res *user.OperationStatusResponse) *UpdateProfileNamesResponseBody {
 	body := &UpdateProfileNamesResponseBody{
+		Message: res.Message,
+	}
+	return body
+}
+
+// NewAddFriendResponseBody builds the HTTP response body from the result of
+// the "addFriend" endpoint of the "user" service.
+func NewAddFriendResponseBody(res *user.OperationStatusResponse) *AddFriendResponseBody {
+	body := &AddFriendResponseBody{
+		Message: res.Message,
+	}
+	return body
+}
+
+// NewRemoveFriendResponseBody builds the HTTP response body from the result of
+// the "removeFriend" endpoint of the "user" service.
+func NewRemoveFriendResponseBody(res *user.OperationStatusResponse) *RemoveFriendResponseBody {
+	body := &RemoveFriendResponseBody{
 		Message: res.Message,
 	}
 	return body
@@ -202,6 +241,23 @@ func NewUpdateProfileNamesPayload(body *UpdateProfileNamesRequestBody) *user.Upd
 	return v
 }
 
+// NewAddFriendPayload builds a user service addFriend endpoint payload.
+func NewAddFriendPayload(body *AddFriendRequestBody) *user.AddFriendPayload {
+	v := &user.AddFriendPayload{
+		ID: *body.ID,
+	}
+
+	return v
+}
+
+// NewRemoveFriendPayload builds a user service removeFriend endpoint payload.
+func NewRemoveFriendPayload(id string) *user.RemoveFriendPayload {
+	v := &user.RemoveFriendPayload{}
+	v.ID = id
+
+	return v
+}
+
 // ValidateRegisterRequestBody runs the validations defined on
 // RegisterRequestBody
 func ValidateRegisterRequestBody(body *RegisterRequestBody) (err error) {
@@ -231,6 +287,15 @@ func ValidateUpdateProfileNamesRequestBody(body *UpdateProfileNamesRequestBody) 
 	}
 	if body.LastName == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("lastName", "body"))
+	}
+	return
+}
+
+// ValidateAddFriendRequestBody runs the validations defined on
+// AddFriendRequestBody
+func ValidateAddFriendRequestBody(body *AddFriendRequestBody) (err error) {
+	if body.ID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
 	}
 	return
 }

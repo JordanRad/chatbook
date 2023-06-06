@@ -6,7 +6,12 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/JordanRad/chatbook/services/cmd/user-management-service/info"
+	"github.com/JordanRad/chatbook/services/cmd/user-management-service/user"
+	"github.com/JordanRad/chatbook/services/cmd/user-management-service/userauth"
+
 	"github.com/JordanRad/chatbook/services/internal/auth"
+
 	"github.com/JordanRad/chatbook/services/internal/auth/encryption"
 	"github.com/JordanRad/chatbook/services/internal/auth/jwt"
 	"github.com/JordanRad/chatbook/services/internal/databases/postgresql"
@@ -67,10 +72,10 @@ func main() {
 	jwtService := &jwt.JWTService{}
 	encryptionTool := &encryption.Encrypter{}
 
-	userService := user_profile.NewService(userStore, pictureStorage, encryptionTool, mailService, logger)
+	userService := user.NewService(userStore, encryptionTool, logger)
 	var userEndpoints *usersvc.Endpoints = usersvc.NewEndpoints(userService)
 
-	authService := user_auth.NewService(userStore, googleOAuth, encryptionTool, jwtService, mailService, logger)
+	authService := userauth.NewService(userStore, encryptionTool, jwtService, logger)
 	var authEndpoints *authsvc.Endpoints = authgen.NewEndpoints(authService)
 
 	// Provide the transport specific request decoder and response encoder.
@@ -91,17 +96,17 @@ func main() {
 	infosrv.Mount(mux, infoServer)
 
 	// Initialize User Profile Server
-	var userProfileServer *usersrv.Server = usersrv.New(userProfileEndpoints, mux, dec, enc, nil, nil, user_profile.FileUploadDecoderFunc)
-	userProfileServer.Use(middleware.AuthenticateRequest(userStore, jwtService))
-	usersrv.Mount(mux, userProfileServer)
+	var userServer *usersrv.Server = usersrv.New(userEndpoints, mux, dec, enc, nil, nil)
+	userServer.Use(middleware.AuthenticateRequest(userStore, jwtService))
+	usersrv.Mount(mux, userServer)
 
 	// Initialize User Server
-	var authServer *authsrv.Server = authsrv.New(userAuthEndpoints, mux, dec, enc, nil, nil)
+	var authServer *authsrv.Server = authsrv.New(authEndpoints, mux, dec, enc, nil, nil)
 	authServer.Use(middleware.AuthenticateRequest(userStore, jwtService))
 	authsrv.Mount(mux, authServer)
 
 	// Start the HTTP server
 	address := fmt.Sprintf("%s:%d", config.HTTP.Host, config.HTTP.Port)
-	log.Printf("Fit Smart server has just started on %s ...\n", address)
+	log.Printf("User Management service has just started on %s ...\n", address)
 	http.ListenAndServe(address, mux)
 }

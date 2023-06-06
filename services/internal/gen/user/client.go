@@ -17,16 +17,20 @@ import (
 // Client is the "user" service client.
 type Client struct {
 	RegisterEndpoint           goa.Endpoint
-	GetUserProfileEndpoint     goa.Endpoint
+	GetProfileEndpoint         goa.Endpoint
 	UpdateProfileNamesEndpoint goa.Endpoint
+	AddFriendEndpoint          goa.Endpoint
+	RemoveFriendEndpoint       goa.Endpoint
 }
 
 // NewClient initializes a "user" service client given the endpoints.
-func NewClient(register, getUserProfile, updateProfileNames goa.Endpoint) *Client {
+func NewClient(register, getProfile, updateProfileNames, addFriend, removeFriend goa.Endpoint) *Client {
 	return &Client{
 		RegisterEndpoint:           register,
-		GetUserProfileEndpoint:     getUserProfile,
+		GetProfileEndpoint:         getProfile,
 		UpdateProfileNamesEndpoint: updateProfileNames,
+		AddFriendEndpoint:          addFriend,
+		RemoveFriendEndpoint:       removeFriend,
 	}
 }
 
@@ -44,10 +48,10 @@ func (c *Client) Register(ctx context.Context, p *RegisterPayload) (res *Registe
 	return ires.(*RegisterResponse), nil
 }
 
-// GetUserProfile calls the "getUserProfile" endpoint of the "user" service.
-func (c *Client) GetUserProfile(ctx context.Context) (res *UserProfileResponse, err error) {
+// GetProfile calls the "getProfile" endpoint of the "user" service.
+func (c *Client) GetProfile(ctx context.Context) (res *UserProfileResponse, err error) {
 	var ires any
-	ires, err = c.GetUserProfileEndpoint(ctx, nil)
+	ires, err = c.GetProfileEndpoint(ctx, nil)
 	if err != nil {
 		return
 	}
@@ -59,6 +63,26 @@ func (c *Client) GetUserProfile(ctx context.Context) (res *UserProfileResponse, 
 func (c *Client) UpdateProfileNames(ctx context.Context, p *UpdateProfileNamesPayload) (res *OperationStatusResponse, err error) {
 	var ires any
 	ires, err = c.UpdateProfileNamesEndpoint(ctx, p)
+	if err != nil {
+		return
+	}
+	return ires.(*OperationStatusResponse), nil
+}
+
+// AddFriend calls the "addFriend" endpoint of the "user" service.
+func (c *Client) AddFriend(ctx context.Context, p *AddFriendPayload) (res *OperationStatusResponse, err error) {
+	var ires any
+	ires, err = c.AddFriendEndpoint(ctx, p)
+	if err != nil {
+		return
+	}
+	return ires.(*OperationStatusResponse), nil
+}
+
+// RemoveFriend calls the "removeFriend" endpoint of the "user" service.
+func (c *Client) RemoveFriend(ctx context.Context, p *RemoveFriendPayload) (res *OperationStatusResponse, err error) {
+	var ires any
+	ires, err = c.RemoveFriendEndpoint(ctx, p)
 	if err != nil {
 		return
 	}

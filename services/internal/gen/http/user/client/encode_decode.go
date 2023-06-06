@@ -129,13 +129,13 @@ func DecodeRegisterResponse(decoder func(*http.Response) goahttp.Decoder, restor
 	}
 }
 
-// BuildGetUserProfileRequest instantiates a HTTP request object with method
-// and path set to call the "user" service "getUserProfile" endpoint
-func (c *Client) BuildGetUserProfileRequest(ctx context.Context, v any) (*http.Request, error) {
-	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: GetUserProfileUserPath()}
+// BuildGetProfileRequest instantiates a HTTP request object with method and
+// path set to call the "user" service "getProfile" endpoint
+func (c *Client) BuildGetProfileRequest(ctx context.Context, v any) (*http.Request, error) {
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: GetProfileUserPath()}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return nil, goahttp.ErrInvalidURL("user", "getUserProfile", u.String(), err)
+		return nil, goahttp.ErrInvalidURL("user", "getProfile", u.String(), err)
 	}
 	if ctx != nil {
 		req = req.WithContext(ctx)
@@ -144,10 +144,10 @@ func (c *Client) BuildGetUserProfileRequest(ctx context.Context, v any) (*http.R
 	return req, nil
 }
 
-// DecodeGetUserProfileResponse returns a decoder for responses returned by the
-// user getUserProfile endpoint. restoreBody controls whether the response body
+// DecodeGetProfileResponse returns a decoder for responses returned by the
+// user getProfile endpoint. restoreBody controls whether the response body
 // should be restored after having been read.
-func DecodeGetUserProfileResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
+func DecodeGetProfileResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
 	return func(resp *http.Response) (any, error) {
 		if restoreBody {
 			b, err := io.ReadAll(resp.Body)
@@ -164,22 +164,22 @@ func DecodeGetUserProfileResponse(decoder func(*http.Response) goahttp.Decoder, 
 		switch resp.StatusCode {
 		case http.StatusOK:
 			var (
-				body GetUserProfileResponseBody
+				body GetProfileResponseBody
 				err  error
 			)
 			err = decoder(resp).Decode(&body)
 			if err != nil {
-				return nil, goahttp.ErrDecodingError("user", "getUserProfile", err)
+				return nil, goahttp.ErrDecodingError("user", "getProfile", err)
 			}
-			err = ValidateGetUserProfileResponseBody(&body)
+			err = ValidateGetProfileResponseBody(&body)
 			if err != nil {
-				return nil, goahttp.ErrValidationError("user", "getUserProfile", err)
+				return nil, goahttp.ErrValidationError("user", "getProfile", err)
 			}
-			res := NewGetUserProfileUserProfileResponseOK(&body)
+			res := NewGetProfileUserProfileResponseOK(&body)
 			return res, nil
 		default:
 			body, _ := io.ReadAll(resp.Body)
-			return nil, goahttp.ErrInvalidResponse("user", "getUserProfile", resp.StatusCode, string(body))
+			return nil, goahttp.ErrInvalidResponse("user", "getProfile", resp.StatusCode, string(body))
 		}
 	}
 }
@@ -251,6 +251,142 @@ func DecodeUpdateProfileNamesResponse(decoder func(*http.Response) goahttp.Decod
 		default:
 			body, _ := io.ReadAll(resp.Body)
 			return nil, goahttp.ErrInvalidResponse("user", "updateProfileNames", resp.StatusCode, string(body))
+		}
+	}
+}
+
+// BuildAddFriendRequest instantiates a HTTP request object with method and
+// path set to call the "user" service "addFriend" endpoint
+func (c *Client) BuildAddFriendRequest(ctx context.Context, v any) (*http.Request, error) {
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: AddFriendUserPath()}
+	req, err := http.NewRequest("POST", u.String(), nil)
+	if err != nil {
+		return nil, goahttp.ErrInvalidURL("user", "addFriend", u.String(), err)
+	}
+	if ctx != nil {
+		req = req.WithContext(ctx)
+	}
+
+	return req, nil
+}
+
+// EncodeAddFriendRequest returns an encoder for requests sent to the user
+// addFriend server.
+func EncodeAddFriendRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, any) error {
+	return func(req *http.Request, v any) error {
+		p, ok := v.(*user.AddFriendPayload)
+		if !ok {
+			return goahttp.ErrInvalidType("user", "addFriend", "*user.AddFriendPayload", v)
+		}
+		body := NewAddFriendRequestBody(p)
+		if err := encoder(req).Encode(&body); err != nil {
+			return goahttp.ErrEncodingError("user", "addFriend", err)
+		}
+		return nil
+	}
+}
+
+// DecodeAddFriendResponse returns a decoder for responses returned by the user
+// addFriend endpoint. restoreBody controls whether the response body should be
+// restored after having been read.
+func DecodeAddFriendResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
+	return func(resp *http.Response) (any, error) {
+		if restoreBody {
+			b, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			resp.Body = io.NopCloser(bytes.NewBuffer(b))
+			defer func() {
+				resp.Body = io.NopCloser(bytes.NewBuffer(b))
+			}()
+		} else {
+			defer resp.Body.Close()
+		}
+		switch resp.StatusCode {
+		case http.StatusOK:
+			var (
+				body AddFriendResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("user", "addFriend", err)
+			}
+			err = ValidateAddFriendResponseBody(&body)
+			if err != nil {
+				return nil, goahttp.ErrValidationError("user", "addFriend", err)
+			}
+			res := NewAddFriendOperationStatusResponseOK(&body)
+			return res, nil
+		default:
+			body, _ := io.ReadAll(resp.Body)
+			return nil, goahttp.ErrInvalidResponse("user", "addFriend", resp.StatusCode, string(body))
+		}
+	}
+}
+
+// BuildRemoveFriendRequest instantiates a HTTP request object with method and
+// path set to call the "user" service "removeFriend" endpoint
+func (c *Client) BuildRemoveFriendRequest(ctx context.Context, v any) (*http.Request, error) {
+	var (
+		id string
+	)
+	{
+		p, ok := v.(*user.RemoveFriendPayload)
+		if !ok {
+			return nil, goahttp.ErrInvalidType("user", "removeFriend", "*user.RemoveFriendPayload", v)
+		}
+		id = p.ID
+	}
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: RemoveFriendUserPath(id)}
+	req, err := http.NewRequest("DELETE", u.String(), nil)
+	if err != nil {
+		return nil, goahttp.ErrInvalidURL("user", "removeFriend", u.String(), err)
+	}
+	if ctx != nil {
+		req = req.WithContext(ctx)
+	}
+
+	return req, nil
+}
+
+// DecodeRemoveFriendResponse returns a decoder for responses returned by the
+// user removeFriend endpoint. restoreBody controls whether the response body
+// should be restored after having been read.
+func DecodeRemoveFriendResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
+	return func(resp *http.Response) (any, error) {
+		if restoreBody {
+			b, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			resp.Body = io.NopCloser(bytes.NewBuffer(b))
+			defer func() {
+				resp.Body = io.NopCloser(bytes.NewBuffer(b))
+			}()
+		} else {
+			defer resp.Body.Close()
+		}
+		switch resp.StatusCode {
+		case http.StatusOK:
+			var (
+				body RemoveFriendResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("user", "removeFriend", err)
+			}
+			err = ValidateRemoveFriendResponseBody(&body)
+			if err != nil {
+				return nil, goahttp.ErrValidationError("user", "removeFriend", err)
+			}
+			res := NewRemoveFriendOperationStatusResponseOK(&body)
+			return res, nil
+		default:
+			body, _ := io.ReadAll(resp.Body)
+			return nil, goahttp.ErrInvalidResponse("user", "removeFriend", resp.StatusCode, string(body))
 		}
 	}
 }

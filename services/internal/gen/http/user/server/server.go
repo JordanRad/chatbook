@@ -23,8 +23,10 @@ import (
 type Server struct {
 	Mounts             []*MountPoint
 	Register           http.Handler
-	GetUserProfile     http.Handler
+	GetProfile         http.Handler
 	UpdateProfileNames http.Handler
+	AddFriend          http.Handler
+	RemoveFriend       http.Handler
 	CORS               http.Handler
 }
 
@@ -56,15 +58,20 @@ func New(
 	return &Server{
 		Mounts: []*MountPoint{
 			{"Register", "POST", "/api/v1/users/register"},
-			{"GetUserProfile", "GET", "/api/v1/users"},
+			{"GetProfile", "GET", "/api/v1/users/profile"},
 			{"UpdateProfileNames", "PUT", "/api/v1/users/profile"},
+			{"AddFriend", "POST", "/api/v1/users/friend"},
+			{"RemoveFriend", "DELETE", "/api/v1/users/friends/{id}"},
 			{"CORS", "OPTIONS", "/api/v1/users/register"},
-			{"CORS", "OPTIONS", "/api/v1/users"},
 			{"CORS", "OPTIONS", "/api/v1/users/profile"},
+			{"CORS", "OPTIONS", "/api/v1/users/friend"},
+			{"CORS", "OPTIONS", "/api/v1/users/friends/{id}"},
 		},
 		Register:           NewRegisterHandler(e.Register, mux, decoder, encoder, errhandler, formatter),
-		GetUserProfile:     NewGetUserProfileHandler(e.GetUserProfile, mux, decoder, encoder, errhandler, formatter),
+		GetProfile:         NewGetProfileHandler(e.GetProfile, mux, decoder, encoder, errhandler, formatter),
 		UpdateProfileNames: NewUpdateProfileNamesHandler(e.UpdateProfileNames, mux, decoder, encoder, errhandler, formatter),
+		AddFriend:          NewAddFriendHandler(e.AddFriend, mux, decoder, encoder, errhandler, formatter),
+		RemoveFriend:       NewRemoveFriendHandler(e.RemoveFriend, mux, decoder, encoder, errhandler, formatter),
 		CORS:               NewCORSHandler(),
 	}
 }
@@ -75,8 +82,10 @@ func (s *Server) Service() string { return "user" }
 // Use wraps the server handlers with the given middleware.
 func (s *Server) Use(m func(http.Handler) http.Handler) {
 	s.Register = m(s.Register)
-	s.GetUserProfile = m(s.GetUserProfile)
+	s.GetProfile = m(s.GetProfile)
 	s.UpdateProfileNames = m(s.UpdateProfileNames)
+	s.AddFriend = m(s.AddFriend)
+	s.RemoveFriend = m(s.RemoveFriend)
 	s.CORS = m(s.CORS)
 }
 
@@ -86,8 +95,10 @@ func (s *Server) MethodNames() []string { return user.MethodNames[:] }
 // Mount configures the mux to serve the user endpoints.
 func Mount(mux goahttp.Muxer, h *Server) {
 	MountRegisterHandler(mux, h.Register)
-	MountGetUserProfileHandler(mux, h.GetUserProfile)
+	MountGetProfileHandler(mux, h.GetProfile)
 	MountUpdateProfileNamesHandler(mux, h.UpdateProfileNames)
+	MountAddFriendHandler(mux, h.AddFriend)
+	MountRemoveFriendHandler(mux, h.RemoveFriend)
 	MountCORSHandler(mux, h.CORS)
 }
 
@@ -147,21 +158,21 @@ func NewRegisterHandler(
 	})
 }
 
-// MountGetUserProfileHandler configures the mux to serve the "user" service
-// "getUserProfile" endpoint.
-func MountGetUserProfileHandler(mux goahttp.Muxer, h http.Handler) {
+// MountGetProfileHandler configures the mux to serve the "user" service
+// "getProfile" endpoint.
+func MountGetProfileHandler(mux goahttp.Muxer, h http.Handler) {
 	f, ok := HandleUserOrigin(h).(http.HandlerFunc)
 	if !ok {
 		f = func(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("GET", "/api/v1/users", f)
+	mux.Handle("GET", "/api/v1/users/profile", f)
 }
 
-// NewGetUserProfileHandler creates a HTTP handler which loads the HTTP request
-// and calls the "user" service "getUserProfile" endpoint.
-func NewGetUserProfileHandler(
+// NewGetProfileHandler creates a HTTP handler which loads the HTTP request and
+// calls the "user" service "getProfile" endpoint.
+func NewGetProfileHandler(
 	endpoint goa.Endpoint,
 	mux goahttp.Muxer,
 	decoder func(*http.Request) goahttp.Decoder,
@@ -170,12 +181,12 @@ func NewGetUserProfileHandler(
 	formatter func(ctx context.Context, err error) goahttp.Statuser,
 ) http.Handler {
 	var (
-		encodeResponse = EncodeGetUserProfileResponse(encoder)
+		encodeResponse = EncodeGetProfileResponse(encoder)
 		encodeError    = goahttp.ErrorEncoder(encoder, formatter)
 	)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
-		ctx = context.WithValue(ctx, goa.MethodKey, "getUserProfile")
+		ctx = context.WithValue(ctx, goa.MethodKey, "getProfile")
 		ctx = context.WithValue(ctx, goa.ServiceKey, "user")
 		var err error
 		res, err := endpoint(ctx, nil)
@@ -242,13 +253,116 @@ func NewUpdateProfileNamesHandler(
 	})
 }
 
+// MountAddFriendHandler configures the mux to serve the "user" service
+// "addFriend" endpoint.
+func MountAddFriendHandler(mux goahttp.Muxer, h http.Handler) {
+	f, ok := HandleUserOrigin(h).(http.HandlerFunc)
+	if !ok {
+		f = func(w http.ResponseWriter, r *http.Request) {
+			h.ServeHTTP(w, r)
+		}
+	}
+	mux.Handle("POST", "/api/v1/users/friend", f)
+}
+
+// NewAddFriendHandler creates a HTTP handler which loads the HTTP request and
+// calls the "user" service "addFriend" endpoint.
+func NewAddFriendHandler(
+	endpoint goa.Endpoint,
+	mux goahttp.Muxer,
+	decoder func(*http.Request) goahttp.Decoder,
+	encoder func(context.Context, http.ResponseWriter) goahttp.Encoder,
+	errhandler func(context.Context, http.ResponseWriter, error),
+	formatter func(ctx context.Context, err error) goahttp.Statuser,
+) http.Handler {
+	var (
+		decodeRequest  = DecodeAddFriendRequest(mux, decoder)
+		encodeResponse = EncodeAddFriendResponse(encoder)
+		encodeError    = goahttp.ErrorEncoder(encoder, formatter)
+	)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
+		ctx = context.WithValue(ctx, goa.MethodKey, "addFriend")
+		ctx = context.WithValue(ctx, goa.ServiceKey, "user")
+		payload, err := decodeRequest(r)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		res, err := endpoint(ctx, payload)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		if err := encodeResponse(ctx, w, res); err != nil {
+			errhandler(ctx, w, err)
+		}
+	})
+}
+
+// MountRemoveFriendHandler configures the mux to serve the "user" service
+// "removeFriend" endpoint.
+func MountRemoveFriendHandler(mux goahttp.Muxer, h http.Handler) {
+	f, ok := HandleUserOrigin(h).(http.HandlerFunc)
+	if !ok {
+		f = func(w http.ResponseWriter, r *http.Request) {
+			h.ServeHTTP(w, r)
+		}
+	}
+	mux.Handle("DELETE", "/api/v1/users/friends/{id}", f)
+}
+
+// NewRemoveFriendHandler creates a HTTP handler which loads the HTTP request
+// and calls the "user" service "removeFriend" endpoint.
+func NewRemoveFriendHandler(
+	endpoint goa.Endpoint,
+	mux goahttp.Muxer,
+	decoder func(*http.Request) goahttp.Decoder,
+	encoder func(context.Context, http.ResponseWriter) goahttp.Encoder,
+	errhandler func(context.Context, http.ResponseWriter, error),
+	formatter func(ctx context.Context, err error) goahttp.Statuser,
+) http.Handler {
+	var (
+		decodeRequest  = DecodeRemoveFriendRequest(mux, decoder)
+		encodeResponse = EncodeRemoveFriendResponse(encoder)
+		encodeError    = goahttp.ErrorEncoder(encoder, formatter)
+	)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
+		ctx = context.WithValue(ctx, goa.MethodKey, "removeFriend")
+		ctx = context.WithValue(ctx, goa.ServiceKey, "user")
+		payload, err := decodeRequest(r)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		res, err := endpoint(ctx, payload)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		if err := encodeResponse(ctx, w, res); err != nil {
+			errhandler(ctx, w, err)
+		}
+	})
+}
+
 // MountCORSHandler configures the mux to serve the CORS endpoints for the
 // service user.
 func MountCORSHandler(mux goahttp.Muxer, h http.Handler) {
 	h = HandleUserOrigin(h)
 	mux.Handle("OPTIONS", "/api/v1/users/register", h.ServeHTTP)
-	mux.Handle("OPTIONS", "/api/v1/users", h.ServeHTTP)
 	mux.Handle("OPTIONS", "/api/v1/users/profile", h.ServeHTTP)
+	mux.Handle("OPTIONS", "/api/v1/users/friend", h.ServeHTTP)
+	mux.Handle("OPTIONS", "/api/v1/users/friends/{id}", h.ServeHTTP)
 }
 
 // NewCORSHandler creates a HTTP handler which returns a simple 200 response.

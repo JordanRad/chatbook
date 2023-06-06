@@ -18,10 +18,14 @@ import (
 type Service interface {
 	// Register implements register.
 	Register(context.Context, *RegisterPayload) (res *RegisterResponse, err error)
-	// GetUserProfile implements getUserProfile.
-	GetUserProfile(context.Context) (res *UserProfileResponse, err error)
+	// GetProfile implements getProfile.
+	GetProfile(context.Context) (res *UserProfileResponse, err error)
 	// UpdateProfileNames implements updateProfileNames.
 	UpdateProfileNames(context.Context, *UpdateProfileNamesPayload) (res *OperationStatusResponse, err error)
+	// AddFriend implements addFriend.
+	AddFriend(context.Context, *AddFriendPayload) (res *OperationStatusResponse, err error)
+	// RemoveFriend implements removeFriend.
+	RemoveFriend(context.Context, *RemoveFriendPayload) (res *OperationStatusResponse, err error)
 }
 
 // ServiceName is the name of the service as defined in the design. This is the
@@ -32,7 +36,13 @@ const ServiceName = "user"
 // MethodNames lists the service method names as defined in the design. These
 // are the same values that are set in the endpoint request contexts under the
 // MethodKey key.
-var MethodNames = [3]string{"register", "getUserProfile", "updateProfileNames"}
+var MethodNames = [5]string{"register", "getProfile", "updateProfileNames", "addFriend", "removeFriend"}
+
+// AddFriendPayload is the payload type of the user service addFriend method.
+type AddFriendPayload struct {
+	// User ID
+	ID string
+}
 
 type Friend struct {
 	// User ID
@@ -72,6 +82,13 @@ type RegisterResponse struct {
 	Message string
 }
 
+// RemoveFriendPayload is the payload type of the user service removeFriend
+// method.
+type RemoveFriendPayload struct {
+	// User ID
+	ID string
+}
+
 // UpdateProfileNamesPayload is the payload type of the user service
 // updateProfileNames method.
 type UpdateProfileNamesPayload struct {
@@ -81,11 +98,10 @@ type UpdateProfileNamesPayload struct {
 	LastName string
 }
 
-// UserProfileResponse is the result type of the user service getUserProfile
-// method.
+// UserProfileResponse is the result type of the user service getProfile method.
 type UserProfileResponse struct {
 	// User ID
-	ID int
+	ID string
 	// Email
 	Email string
 	// First name

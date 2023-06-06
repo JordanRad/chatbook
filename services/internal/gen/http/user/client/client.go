@@ -22,13 +22,21 @@ type Client struct {
 	// endpoint.
 	RegisterDoer goahttp.Doer
 
-	// GetUserProfile Doer is the HTTP client used to make requests to the
-	// getUserProfile endpoint.
-	GetUserProfileDoer goahttp.Doer
+	// GetProfile Doer is the HTTP client used to make requests to the getProfile
+	// endpoint.
+	GetProfileDoer goahttp.Doer
 
 	// UpdateProfileNames Doer is the HTTP client used to make requests to the
 	// updateProfileNames endpoint.
 	UpdateProfileNamesDoer goahttp.Doer
+
+	// AddFriend Doer is the HTTP client used to make requests to the addFriend
+	// endpoint.
+	AddFriendDoer goahttp.Doer
+
+	// RemoveFriend Doer is the HTTP client used to make requests to the
+	// removeFriend endpoint.
+	RemoveFriendDoer goahttp.Doer
 
 	// CORS Doer is the HTTP client used to make requests to the  endpoint.
 	CORSDoer goahttp.Doer
@@ -54,8 +62,10 @@ func NewClient(
 ) *Client {
 	return &Client{
 		RegisterDoer:           doer,
-		GetUserProfileDoer:     doer,
+		GetProfileDoer:         doer,
 		UpdateProfileNamesDoer: doer,
+		AddFriendDoer:          doer,
+		RemoveFriendDoer:       doer,
 		CORSDoer:               doer,
 		RestoreResponseBody:    restoreBody,
 		scheme:                 scheme,
@@ -89,20 +99,20 @@ func (c *Client) Register() goa.Endpoint {
 	}
 }
 
-// GetUserProfile returns an endpoint that makes HTTP requests to the user
-// service getUserProfile server.
-func (c *Client) GetUserProfile() goa.Endpoint {
+// GetProfile returns an endpoint that makes HTTP requests to the user service
+// getProfile server.
+func (c *Client) GetProfile() goa.Endpoint {
 	var (
-		decodeResponse = DecodeGetUserProfileResponse(c.decoder, c.RestoreResponseBody)
+		decodeResponse = DecodeGetProfileResponse(c.decoder, c.RestoreResponseBody)
 	)
 	return func(ctx context.Context, v any) (any, error) {
-		req, err := c.BuildGetUserProfileRequest(ctx, v)
+		req, err := c.BuildGetProfileRequest(ctx, v)
 		if err != nil {
 			return nil, err
 		}
-		resp, err := c.GetUserProfileDoer.Do(req)
+		resp, err := c.GetProfileDoer.Do(req)
 		if err != nil {
-			return nil, goahttp.ErrRequestError("user", "getUserProfile", err)
+			return nil, goahttp.ErrRequestError("user", "getProfile", err)
 		}
 		return decodeResponse(resp)
 	}
@@ -127,6 +137,49 @@ func (c *Client) UpdateProfileNames() goa.Endpoint {
 		resp, err := c.UpdateProfileNamesDoer.Do(req)
 		if err != nil {
 			return nil, goahttp.ErrRequestError("user", "updateProfileNames", err)
+		}
+		return decodeResponse(resp)
+	}
+}
+
+// AddFriend returns an endpoint that makes HTTP requests to the user service
+// addFriend server.
+func (c *Client) AddFriend() goa.Endpoint {
+	var (
+		encodeRequest  = EncodeAddFriendRequest(c.encoder)
+		decodeResponse = DecodeAddFriendResponse(c.decoder, c.RestoreResponseBody)
+	)
+	return func(ctx context.Context, v any) (any, error) {
+		req, err := c.BuildAddFriendRequest(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+		err = encodeRequest(req, v)
+		if err != nil {
+			return nil, err
+		}
+		resp, err := c.AddFriendDoer.Do(req)
+		if err != nil {
+			return nil, goahttp.ErrRequestError("user", "addFriend", err)
+		}
+		return decodeResponse(resp)
+	}
+}
+
+// RemoveFriend returns an endpoint that makes HTTP requests to the user
+// service removeFriend server.
+func (c *Client) RemoveFriend() goa.Endpoint {
+	var (
+		decodeResponse = DecodeRemoveFriendResponse(c.decoder, c.RestoreResponseBody)
+	)
+	return func(ctx context.Context, v any) (any, error) {
+		req, err := c.BuildRemoveFriendRequest(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+		resp, err := c.RemoveFriendDoer.Do(req)
+		if err != nil {
+			return nil, goahttp.ErrRequestError("user", "removeFriend", err)
 		}
 		return decodeResponse(resp)
 	}

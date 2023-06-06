@@ -20,15 +20,6 @@ func isRouteProtected(method string, URL *url.URL) bool {
 	return false
 }
 
-func validateRole(role string, URL *url.URL) bool {
-	for _, route := range protectedRoutes {
-		if strings.Contains(URL.Path, route.URL) && sliceContains(route.AllowedRoles, role) {
-			return true
-		}
-	}
-	return false
-}
-
 func sliceContains(s []string, e string) bool {
 	for _, a := range s {
 		if a == e {

@@ -9,16 +9,16 @@ services:
     volumes:
       - $PWD:/api
     depends_on:
-      - sfit-db
+      - user-management-db
     environment:
-     - SFIT_HTTP_HOST=0.0.0.0
-     - SFIT_HTTP_PORT=8090
-     - SFIT_POSTGRES_HOST=user-management-db
-     - SFIT_POSTGRES_PORT=5432
-     - SFIT_POSTGRES_USER=um-dev
-     - SFIT_POSTGRES_PASSWORD=123456
-     - SFIT_POSTGRES_DB_NAME=um-dev-db
-     - SFIT_JWT_SECRET=9r57294ftt76g8f3t7
+     - CHATBOOK_HTTP_HOST=0.0.0.0
+     - CHATBOOK_HTTP_PORT=8091
+     - CHATBOOK_POSTGRES_HOST=user-management-db
+     - CHATBOOK_POSTGRES_PORT=5432
+     - CHATBOOK_POSTGRES_USER=um-dev
+     - CHATBOOK_POSTGRES_PASSWORD=123456
+     - CHATBOOK_POSTGRES_DB_NAME=um-dev-db
+     - CHATBOOK_JWT_SECRET=9r57294ftt76g8f3t7
 
   user-management-db:
     image: "postgres"

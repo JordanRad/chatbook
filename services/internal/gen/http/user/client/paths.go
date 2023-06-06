@@ -8,17 +8,31 @@
 
 package client
 
+import (
+	"fmt"
+)
+
 // RegisterUserPath returns the URL path to the user service register HTTP endpoint.
 func RegisterUserPath() string {
 	return "/api/v1/users/register"
 }
 
-// GetUserProfileUserPath returns the URL path to the user service getUserProfile HTTP endpoint.
-func GetUserProfileUserPath() string {
-	return "/api/v1/users"
+// GetProfileUserPath returns the URL path to the user service getProfile HTTP endpoint.
+func GetProfileUserPath() string {
+	return "/api/v1/users/profile"
 }
 
 // UpdateProfileNamesUserPath returns the URL path to the user service updateProfileNames HTTP endpoint.
 func UpdateProfileNamesUserPath() string {
 	return "/api/v1/users/profile"
+}
+
+// AddFriendUserPath returns the URL path to the user service addFriend HTTP endpoint.
+func AddFriendUserPath() string {
+	return "/api/v1/users/friend"
+}
+
+// RemoveFriendUserPath returns the URL path to the user service removeFriend HTTP endpoint.
+func RemoveFriendUserPath(id string) string {
+	return fmt.Sprintf("/api/v1/users/friends/%v", id)
 }

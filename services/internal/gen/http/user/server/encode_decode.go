@@ -98,13 +98,13 @@ func EncodeRegisterError(encoder func(context.Context, http.ResponseWriter) goah
 	}
 }
 
-// EncodeGetUserProfileResponse returns an encoder for responses returned by
-// the user getUserProfile endpoint.
-func EncodeGetUserProfileResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, any) error {
+// EncodeGetProfileResponse returns an encoder for responses returned by the
+// user getProfile endpoint.
+func EncodeGetProfileResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, any) error {
 	return func(ctx context.Context, w http.ResponseWriter, v any) error {
 		res, _ := v.(*user.UserProfileResponse)
 		enc := encoder(ctx, w)
-		body := NewGetUserProfileResponseBody(res)
+		body := NewGetProfileResponseBody(res)
 		w.WriteHeader(http.StatusOK)
 		return enc.Encode(body)
 	}
@@ -142,6 +142,71 @@ func DecodeUpdateProfileNamesRequest(mux goahttp.Muxer, decoder func(*http.Reque
 			return nil, err
 		}
 		payload := NewUpdateProfileNamesPayload(&body)
+
+		return payload, nil
+	}
+}
+
+// EncodeAddFriendResponse returns an encoder for responses returned by the
+// user addFriend endpoint.
+func EncodeAddFriendResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, any) error {
+	return func(ctx context.Context, w http.ResponseWriter, v any) error {
+		res, _ := v.(*user.OperationStatusResponse)
+		enc := encoder(ctx, w)
+		body := NewAddFriendResponseBody(res)
+		w.WriteHeader(http.StatusOK)
+		return enc.Encode(body)
+	}
+}
+
+// DecodeAddFriendRequest returns a decoder for requests sent to the user
+// addFriend endpoint.
+func DecodeAddFriendRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (any, error) {
+	return func(r *http.Request) (any, error) {
+		var (
+			body AddFriendRequestBody
+			err  error
+		)
+		err = decoder(r).Decode(&body)
+		if err != nil {
+			if err == io.EOF {
+				return nil, goa.MissingPayloadError()
+			}
+			return nil, goa.DecodePayloadError(err.Error())
+		}
+		err = ValidateAddFriendRequestBody(&body)
+		if err != nil {
+			return nil, err
+		}
+		payload := NewAddFriendPayload(&body)
+
+		return payload, nil
+	}
+}
+
+// EncodeRemoveFriendResponse returns an encoder for responses returned by the
+// user removeFriend endpoint.
+func EncodeRemoveFriendResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, any) error {
+	return func(ctx context.Context, w http.ResponseWriter, v any) error {
+		res, _ := v.(*user.OperationStatusResponse)
+		enc := encoder(ctx, w)
+		body := NewRemoveFriendResponseBody(res)
+		w.WriteHeader(http.StatusOK)
+		return enc.Encode(body)
+	}
+}
+
+// DecodeRemoveFriendRequest returns a decoder for requests sent to the user
+// removeFriend endpoint.
+func DecodeRemoveFriendRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (any, error) {
+	return func(r *http.Request) (any, error) {
+		var (
+			id string
+
+			params = mux.Vars(r)
+		)
+		id = params["id"]
+		payload := NewRemoveFriendPayload(id)
 
 		return payload, nil
 	}

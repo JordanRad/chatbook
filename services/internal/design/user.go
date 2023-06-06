@@ -4,13 +4,6 @@ import (
 	. "goa.design/goa/v3/dsl"
 )
 
-// ------ POST login/: Handles user login and authentication.
-// ------ POST register/: Handles user registration and account creation.
-// POST friend/: Adds a user to the friend list.
-// DELETE friend/: Removes a user from the friend list.
-// ------ GET profile: Retrieves user profile information, including the list of friends.
-// ------ PUT profile/: Allows modification of the user's profile, such as updating the name.
-
 var _ = Service("user", func() {
 	Description("User service is responsible for handling user data and requests")
 	HTTP(func() {
@@ -42,10 +35,10 @@ var _ = Service("user", func() {
 		})
 	})
 
-	Method("getUserProfile", func() {
+	Method("getProfile", func() {
 		Result(UserProfileResponse)
 		HTTP(func() {
-			GET("/")
+			GET("/profile")
 		})
 
 	})
@@ -61,6 +54,30 @@ var _ = Service("user", func() {
 			PUT("/profile")
 		})
 	})
+
+	Method("addFriend", func() {
+		Payload(func() {
+			Attribute("id", String, "User ID")
+
+			Required("id")
+		})
+		Result(OperationStatusResponse)
+		HTTP(func() {
+			POST("/friend")
+		})
+	})
+
+	Method("removeFriend", func() {
+		Payload(func() {
+			Attribute("id", String, "User ID")
+
+			Required("id")
+		})
+		Result(OperationStatusResponse)
+		HTTP(func() {
+			DELETE("/friends/{id}")
+		})
+	})
 })
 
 var Friend = Type("Friend", func() {
@@ -73,7 +90,7 @@ var Friend = Type("Friend", func() {
 })
 
 var UserProfileResponse = Type("UserProfileResponse", func() {
-	Attribute("id", Int, "User ID")
+	Attribute("id", String, "User ID")
 	Attribute("email", String, "Email")
 	Attribute("firstName", String, "First name")
 	Attribute("lastName", String, "Last name")

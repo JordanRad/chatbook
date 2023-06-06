@@ -5,8 +5,8 @@ COPY --from=gocrane /bin/gocrane /bin/gocrane
 COPY . /api
 WORKDIR /api
 
-ENV GOCRANE_MAIN="./cmd/user-management"
-ENV GOCRANE_BINARY="/bin/user-management"
+ENV GOCRANE_MAIN="./cmd/user-management-service"
+ENV GOCRANE_BINARY="/bin/user-management-service"
 
 RUN gocrane build -v
 

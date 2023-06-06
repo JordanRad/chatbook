@@ -85,17 +85,61 @@ paths:
                             - message
             schemes:
                 - http
-    /api/v1/users:
-        get:
+    /api/v1/users/friend:
+        post:
             tags:
                 - user
-            summary: getUserProfile user
-            operationId: user#getUserProfile
+            summary: addFriend user
+            operationId: user#addFriend
+            parameters:
+                - name: AddFriendRequestBody
+                  in: body
+                  required: true
+                  schema:
+                    $ref: '#/definitions/UserAddFriendRequestBody'
+                    required:
+                        - id
             responses:
                 "200":
                     description: OK response.
                     schema:
-                        $ref: '#/definitions/UserGetUserProfileResponseBody'
+                        $ref: '#/definitions/UserAddFriendResponseBody'
+                        required:
+                            - message
+            schemes:
+                - http
+    /api/v1/users/friends/{id}:
+        delete:
+            tags:
+                - user
+            summary: removeFriend user
+            operationId: user#removeFriend
+            parameters:
+                - name: id
+                  in: path
+                  description: User ID
+                  required: true
+                  type: string
+            responses:
+                "200":
+                    description: OK response.
+                    schema:
+                        $ref: '#/definitions/UserRemoveFriendResponseBody'
+                        required:
+                            - message
+            schemes:
+                - http
+    /api/v1/users/profile:
+        get:
+            tags:
+                - user
+            summary: getProfile user
+            operationId: user#getProfile
+            responses:
+                "200":
+                    description: OK response.
+                    schema:
+                        $ref: '#/definitions/UserGetProfileResponseBody'
                         required:
                             - id
                             - email
@@ -104,7 +148,6 @@ paths:
                             - friendsList
             schemes:
                 - http
-    /api/v1/users/profile:
         put:
             tags:
                 - user
@@ -167,14 +210,14 @@ definitions:
             email:
                 type: string
                 description: User email
-                example: Aut facere molestiae cumque quia blanditiis quos.
+                example: Qui voluptates nostrum iure incidunt dolorem.
             password:
                 type: string
                 description: User password
-                example: Amet quia vero illum.
+                example: Qui sequi voluptates.
         example:
-            email: Quidem sapiente ex et sunt earum.
-            password: Enim vel sapiente.
+            email: Asperiores illum accusantium nam ipsa.
+            password: Natus animi aperiam veniam enim.
         required:
             - email
             - password
@@ -185,29 +228,29 @@ definitions:
             email:
                 type: string
                 description: User's email
-                example: Et velit illo fugit.
+                example: At aut facere molestiae cumque quia blanditiis.
             id:
                 type: string
                 description: User account's ID
-                example: Quia repellat et quia excepturi error.
+                example: Molestiae similique omnis voluptate pariatur non.
             refresh_token:
                 type: string
                 description: Refresh token
-                example: Ea autem et rerum ad.
+                example: Eos quidem sapiente ex et sunt earum.
             role:
                 type: string
                 description: User's role
-                example: Quisquam laudantium suscipit qui nesciunt.
+                example: Enim vel sapiente.
             token:
                 type: string
                 description: JWT Token
-                example: Magni officia maxime aut unde libero.
+                example: Numquam amet quia vero.
         example:
-            email: Aliquid doloremque omnis reprehenderit eos.
-            id: Et est consequatur voluptatem quas libero inventore.
-            refresh_token: Delectus ut sed soluta earum ab.
-            role: Ipsa sint.
-            token: Dolor et minus.
+            email: Cum soluta possimus accusamus similique quibusdam.
+            id: Nihil excepturi dolore eveniet ratione.
+            refresh_token: Occaecati minima amet architecto sint.
+            role: Aliquam modi deleniti earum ea repellendus.
+            token: Veniam eos rerum quas et et.
         required:
             - email
             - token
@@ -220,7 +263,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: false
+                example: true
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -248,7 +291,7 @@ definitions:
             message: parameter 'p' must be an integer
             name: bad_request
             temporary: true
-            timeout: false
+            timeout: true
         required:
             - name
             - id
@@ -263,14 +306,14 @@ definitions:
             email:
                 type: string
                 description: User email
-                example: Vel id doloremque et error.
+                example: Delectus ut sed soluta earum ab.
             refreshToken:
                 type: string
                 description: Refresh token
-                example: Expedita beatae et alias.
+                example: Ipsa sint.
         example:
-            email: Quo quia et.
-            refreshToken: Nisi eos vel atque necessitatibus eum.
+            email: Et est consequatur voluptatem quas libero inventore.
+            refreshToken: Tempore consequatur nemo laboriosam.
         required:
             - email
             - refreshToken
@@ -281,29 +324,29 @@ definitions:
             email:
                 type: string
                 description: User's email
-                example: Possimus ad.
+                example: Expedita beatae et alias.
             id:
                 type: string
                 description: User account's ID
-                example: Modi officia ipsum consequatur quas velit et.
+                example: Magni officia maxime aut unde libero.
             refresh_token:
                 type: string
                 description: Refresh token
-                example: Sint quia molestias aut dolores soluta.
+                example: Nisi eos vel atque necessitatibus eum.
             role:
                 type: string
                 description: User's role
-                example: Recusandae libero omnis commodi qui quis et.
+                example: Et velit illo fugit.
             token:
                 type: string
                 description: JWT Token
-                example: Quasi quas.
+                example: Quo quia et.
         example:
-            email: Rerum qui.
-            id: Similique molestiae necessitatibus sint.
-            refresh_token: Eum ullam eveniet temporibus quis dolore mollitia.
-            role: Distinctio sunt necessitatibus.
-            token: Laboriosam tempore atque mollitia ut.
+            email: Ea autem et rerum ad.
+            id: Dolor et minus.
+            refresh_token: Quia repellat et quia excepturi error.
+            role: Aliquid doloremque omnis reprehenderit eos.
+            token: Quisquam laudantium suscipit qui nesciunt.
         required:
             - email
             - token
@@ -316,25 +359,25 @@ definitions:
             email:
                 type: string
                 description: Email
-                example: At ab aut saepe optio doloribus libero.
+                example: Sequi magnam et.
             firstName:
                 type: string
                 description: First name
-                example: Non beatae.
+                example: In accusamus praesentium rem dicta reiciendis.
             id:
                 type: integer
                 description: User ID
-                example: 4705873181574475438
+                example: 3788879021894123621
                 format: int64
             lastName:
                 type: string
                 description: Last name
-                example: Omnis exercitationem.
+                example: Aperiam rerum.
         example:
-            email: Quaerat sapiente alias sint iste nulla.
-            firstName: Eum esse adipisci hic assumenda.
-            id: 1997203386397882681
-            lastName: Ratione molestiae expedita quam.
+            email: Rerum qui molestias veritatis dolorem aut quisquam.
+            firstName: Suscipit consequatur dolor ducimus.
+            id: 7269780941959858678
+            lastName: Labore culpa.
         required:
             - id
             - email
@@ -347,72 +390,87 @@ definitions:
             message:
                 type: string
                 description: Operation status
-                example: Molestiae similique omnis voluptate pariatur non.
+                example: Ad voluptatem dolor quae.
         example:
-            message: Cum soluta possimus accusamus similique quibusdam.
+            message: Deleniti aut.
         required:
             - message
-    UserGetUserProfileResponseBody:
-        title: UserGetUserProfileResponseBody
+    UserAddFriendRequestBody:
+        title: UserAddFriendRequestBody
+        type: object
+        properties:
+            id:
+                type: string
+                description: User ID
+                example: Quasi eum dignissimos excepturi.
+        example:
+            id: Ut harum.
+        required:
+            - id
+    UserAddFriendResponseBody:
+        title: UserAddFriendResponseBody
+        type: object
+        properties:
+            message:
+                type: string
+                description: Operation status
+                example: Ut doloremque qui voluptatem sed odit.
+        example:
+            message: Aliquam beatae ipsam aut.
+        required:
+            - message
+    UserGetProfileResponseBody:
+        title: UserGetProfileResponseBody
         type: object
         properties:
             email:
                 type: string
                 description: Email
-                example: Voluptates blanditiis eum ex nam dolorem fugit.
+                example: Dolores officiis vitae quidem.
             firstName:
                 type: string
                 description: First name
-                example: Id velit sint fuga ut dolores quia.
+                example: Debitis iste et consequatur fugiat.
             friendsList:
                 type: array
                 items:
                     $ref: '#/definitions/FriendResponseBody'
                 description: Friendslist
                 example:
-                    - email: Natus quisquam.
-                      firstName: Illo omnis nesciunt minus sed.
-                      id: 2306687740220369761
-                      lastName: Inventore quisquam.
-                    - email: Natus quisquam.
-                      firstName: Illo omnis nesciunt minus sed.
-                      id: 2306687740220369761
-                      lastName: Inventore quisquam.
-                    - email: Natus quisquam.
-                      firstName: Illo omnis nesciunt minus sed.
-                      id: 2306687740220369761
-                      lastName: Inventore quisquam.
+                    - email: Quisquam sapiente a cum eum molestiae sit.
+                      firstName: Non ratione maxime molestiae eaque dolorum.
+                      id: 1399635200057641260
+                      lastName: Ab dolores.
+                    - email: Quisquam sapiente a cum eum molestiae sit.
+                      firstName: Non ratione maxime molestiae eaque dolorum.
+                      id: 1399635200057641260
+                      lastName: Ab dolores.
             id:
-                type: integer
+                type: string
                 description: User ID
-                example: 2919405487196878743
-                format: int64
+                example: Ratione molestiae expedita quam.
             lastName:
                 type: string
                 description: Last name
-                example: Velit enim modi consequatur.
+                example: Ad aut eius labore maiores eos omnis.
         example:
-            email: Vitae quidem culpa.
-            firstName: Iste et consequatur fugiat quia ad aut.
+            email: Sunt et ratione perspiciatis cupiditate quia.
+            firstName: Qui totam aut quia.
             friendsList:
-                - email: Natus quisquam.
-                  firstName: Illo omnis nesciunt minus sed.
-                  id: 2306687740220369761
-                  lastName: Inventore quisquam.
-                - email: Natus quisquam.
-                  firstName: Illo omnis nesciunt minus sed.
-                  id: 2306687740220369761
-                  lastName: Inventore quisquam.
-                - email: Natus quisquam.
-                  firstName: Illo omnis nesciunt minus sed.
-                  id: 2306687740220369761
-                  lastName: Inventore quisquam.
-                - email: Natus quisquam.
-                  firstName: Illo omnis nesciunt minus sed.
-                  id: 2306687740220369761
-                  lastName: Inventore quisquam.
-            id: 3518200106484161617
-            lastName: Labore maiores.
+                - email: Quisquam sapiente a cum eum molestiae sit.
+                  firstName: Non ratione maxime molestiae eaque dolorum.
+                  id: 1399635200057641260
+                  lastName: Ab dolores.
+                - email: Quisquam sapiente a cum eum molestiae sit.
+                  firstName: Non ratione maxime molestiae eaque dolorum.
+                  id: 1399635200057641260
+                  lastName: Ab dolores.
+                - email: Quisquam sapiente a cum eum molestiae sit.
+                  firstName: Non ratione maxime molestiae eaque dolorum.
+                  id: 1399635200057641260
+                  lastName: Ab dolores.
+            id: Ut libero veritatis.
+            lastName: Dolores enim excepturi dolore blanditiis ut nostrum.
         required:
             - id
             - email
@@ -426,29 +484,29 @@ definitions:
             confirmedPassword:
                 type: string
                 description: Confirmed password of the user
-                example: Natus animi aperiam veniam enim.
+                example: Aut saepe.
             email:
                 type: string
                 description: User email
-                example: Iure incidunt dolorem nisi qui.
+                example: Quia sint.
             firstName:
                 type: string
                 description: User first name
-                example: Et impedit.
+                example: Fugit aut id velit.
             lastName:
                 type: string
                 description: User last name
-                example: Assumenda ipsum adipisci voluptatem qui voluptates.
+                example: Fuga ut.
             password:
                 type: string
                 description: User password
-                example: Voluptates quia asperiores illum accusantium nam ipsa.
+                example: Enim modi consequatur architecto voluptas at.
         example:
-            confirmedPassword: Non ut voluptas aut.
-            email: Labore aut vel.
-            firstName: Ad voluptatem dolor quae.
-            lastName: Deleniti aut.
-            password: Eligendi reiciendis fuga.
+            confirmedPassword: Esse adipisci hic assumenda.
+            email: Quia quaerat sapiente alias sint.
+            firstName: Doloribus libero repellendus non.
+            lastName: Iste omnis exercitationem.
+            password: Nulla et.
         required:
             - email
             - password
@@ -462,9 +520,9 @@ definitions:
             message:
                 type: string
                 description: Operation status
-                example: Veniam eos rerum quas et et.
+                example: Labore aut vel.
         example:
-            message: Occaecati minima amet architecto sint.
+            message: Eligendi reiciendis fuga.
         required:
             - message
     UserRegisterUniqueEmailErrorResponseBody:
@@ -474,7 +532,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: false
+                example: true
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -501,7 +559,7 @@ definitions:
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
-            temporary: false
+            temporary: true
             timeout: false
         required:
             - name
@@ -540,12 +598,12 @@ definitions:
                 example: false
         description: register_UnmatchingPassowrds_response_body result type (default view)
         example:
-            fault: false
+            fault: true
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
             temporary: false
-            timeout: false
+            timeout: true
         required:
             - name
             - id
@@ -553,6 +611,18 @@ definitions:
             - temporary
             - timeout
             - fault
+    UserRemoveFriendResponseBody:
+        title: UserRemoveFriendResponseBody
+        type: object
+        properties:
+            message:
+                type: string
+                description: Operation status
+                example: Quaerat iure quod ut voluptate.
+        example:
+            message: Quis eligendi ullam quasi enim laudantium aliquam.
+        required:
+            - message
     UserUpdateProfileNamesRequestBody:
         title: UserUpdateProfileNamesRequestBody
         type: object
@@ -560,14 +630,14 @@ definitions:
             firstName:
                 type: string
                 description: Updated user first name
-                example: Voluptates quam rerum qui molestias veritatis.
+                example: Dolorem velit eaque vel et error veritatis.
             lastName:
                 type: string
                 description: Updated user last name
-                example: Aut quisquam eum suscipit consequatur dolor ducimus.
+                example: Doloremque maxime molestiae natus voluptatem.
         example:
-            firstName: Labore culpa.
-            lastName: Voluptatum ut libero veritatis odio.
+            firstName: Omnis ut quod quia beatae magni consequatur.
+            lastName: Qui quasi rerum fugit cum.
         required:
             - firstName
             - lastName
@@ -578,8 +648,8 @@ definitions:
             message:
                 type: string
                 description: Operation status
-                example: Molestiae mollitia sequi magnam et beatae.
+                example: Ut deleniti esse nisi quod at.
         example:
-            message: Accusamus praesentium rem dicta reiciendis praesentium aperiam.
+            message: Et repellendus earum quia magnam.
         required:
             - message
