@@ -1,0 +1,1 @@
+goa gen github.com/JordanRad/chatbook/services/internal/design -o ./internal

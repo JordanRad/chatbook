@@ -1,0 +1,13 @@
+FROM mokiat/gocrane:0.5.0 AS gocrane
+
+FROM golang:1.20
+COPY --from=gocrane /bin/gocrane /bin/gocrane
+COPY . /api
+WORKDIR /api
+
+ENV GOCRANE_MAIN="./cmd/user-management"
+ENV GOCRANE_BINARY="/bin/user-management"
+
+RUN gocrane build -v
+
+CMD ["gocrane","run","-v"]
