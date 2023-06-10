@@ -39,5 +39,5 @@ Design an intuitive user interface with features like chat bubbles, typing indic
 
 ## System Design
 
-![](https://github.com/JordanRad/chatbook/blob/main/chatbook.svg)
+![](https://github.com/JordanRad/chatbook/blob/main/chatbook.png)
 
