@@ -28,8 +28,8 @@ func UpdateProfileNamesUserPath() string {
 }
 
 // AddFriendUserPath returns the URL path to the user service addFriend HTTP endpoint.
-func AddFriendUserPath() string {
-	return "/api/user-management/v1/users/friend"
+func AddFriendUserPath(id string) string {
+	return fmt.Sprintf("/api/user-management/v1/users/friend/%v", id)
 }
 
 // RemoveFriendUserPath returns the URL path to the user service removeFriend HTTP endpoint.

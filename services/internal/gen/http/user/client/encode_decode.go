@@ -258,7 +258,17 @@ func DecodeUpdateProfileNamesResponse(decoder func(*http.Response) goahttp.Decod
 // BuildAddFriendRequest instantiates a HTTP request object with method and
 // path set to call the "user" service "addFriend" endpoint
 func (c *Client) BuildAddFriendRequest(ctx context.Context, v any) (*http.Request, error) {
-	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: AddFriendUserPath()}
+	var (
+		id string
+	)
+	{
+		p, ok := v.(*user.AddFriendPayload)
+		if !ok {
+			return nil, goahttp.ErrInvalidType("user", "addFriend", "*user.AddFriendPayload", v)
+		}
+		id = p.ID
+	}
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: AddFriendUserPath(id)}
 	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
 		return nil, goahttp.ErrInvalidURL("user", "addFriend", u.String(), err)
@@ -268,22 +278,6 @@ func (c *Client) BuildAddFriendRequest(ctx context.Context, v any) (*http.Reques
 	}
 
 	return req, nil
-}
-
-// EncodeAddFriendRequest returns an encoder for requests sent to the user
-// addFriend server.
-func EncodeAddFriendRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, any) error {
-	return func(req *http.Request, v any) error {
-		p, ok := v.(*user.AddFriendPayload)
-		if !ok {
-			return goahttp.ErrInvalidType("user", "addFriend", "*user.AddFriendPayload", v)
-		}
-		body := NewAddFriendRequestBody(p)
-		if err := encoder(req).Encode(&body); err != nil {
-			return goahttp.ErrEncodingError("user", "addFriend", err)
-		}
-		return nil
-	}
 }
 
 // DecodeAddFriendResponse returns a decoder for responses returned by the user

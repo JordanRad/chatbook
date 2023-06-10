@@ -37,13 +37,6 @@ type UpdateProfileNamesRequestBody struct {
 	LastName *string `form:"lastName,omitempty" json:"lastName,omitempty" xml:"lastName,omitempty"`
 }
 
-// AddFriendRequestBody is the type of the "user" service "addFriend" endpoint
-// HTTP request body.
-type AddFriendRequestBody struct {
-	// User ID
-	ID *string `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
-}
-
 // RegisterResponseBody is the type of the "user" service "register" endpoint
 // HTTP response body.
 type RegisterResponseBody struct {
@@ -242,10 +235,9 @@ func NewUpdateProfileNamesPayload(body *UpdateProfileNamesRequestBody) *user.Upd
 }
 
 // NewAddFriendPayload builds a user service addFriend endpoint payload.
-func NewAddFriendPayload(body *AddFriendRequestBody) *user.AddFriendPayload {
-	v := &user.AddFriendPayload{
-		ID: *body.ID,
-	}
+func NewAddFriendPayload(id string) *user.AddFriendPayload {
+	v := &user.AddFriendPayload{}
+	v.ID = id
 
 	return v
 }
@@ -287,15 +279,6 @@ func ValidateUpdateProfileNamesRequestBody(body *UpdateProfileNamesRequestBody) 
 	}
 	if body.LastName == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("lastName", "body"))
-	}
-	return
-}
-
-// ValidateAddFriendRequestBody runs the validations defined on
-// AddFriendRequestBody
-func ValidateAddFriendRequestBody(body *AddFriendRequestBody) (err error) {
-	if body.ID == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
 	}
 	return
 }

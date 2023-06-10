@@ -164,21 +164,12 @@ func EncodeAddFriendResponse(encoder func(context.Context, http.ResponseWriter) 
 func DecodeAddFriendRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (any, error) {
 	return func(r *http.Request) (any, error) {
 		var (
-			body AddFriendRequestBody
-			err  error
+			id string
+
+			params = mux.Vars(r)
 		)
-		err = decoder(r).Decode(&body)
-		if err != nil {
-			if err == io.EOF {
-				return nil, goa.MissingPayloadError()
-			}
-			return nil, goa.DecodePayloadError(err.Error())
-		}
-		err = ValidateAddFriendRequestBody(&body)
-		if err != nil {
-			return nil, err
-		}
-		payload := NewAddFriendPayload(&body)
+		id = params["id"]
+		payload := NewAddFriendPayload(id)
 
 		return payload, nil
 	}

@@ -60,11 +60,11 @@ func New(
 			{"Register", "POST", "/api/user-management/v1/users/register"},
 			{"GetProfile", "GET", "/api/user-management/v1/users/profile"},
 			{"UpdateProfileNames", "PUT", "/api/user-management/v1/users/profile"},
-			{"AddFriend", "POST", "/api/user-management/v1/users/friend"},
+			{"AddFriend", "POST", "/api/user-management/v1/users/friend/{id}"},
 			{"RemoveFriend", "DELETE", "/api/user-management/v1/users/friends/{id}"},
 			{"CORS", "OPTIONS", "/api/user-management/v1/users/register"},
 			{"CORS", "OPTIONS", "/api/user-management/v1/users/profile"},
-			{"CORS", "OPTIONS", "/api/user-management/v1/users/friend"},
+			{"CORS", "OPTIONS", "/api/user-management/v1/users/friend/{id}"},
 			{"CORS", "OPTIONS", "/api/user-management/v1/users/friends/{id}"},
 		},
 		Register:           NewRegisterHandler(e.Register, mux, decoder, encoder, errhandler, formatter),
@@ -262,7 +262,7 @@ func MountAddFriendHandler(mux goahttp.Muxer, h http.Handler) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("POST", "/api/user-management/v1/users/friend", f)
+	mux.Handle("POST", "/api/user-management/v1/users/friend/{id}", f)
 }
 
 // NewAddFriendHandler creates a HTTP handler which loads the HTTP request and
@@ -361,7 +361,7 @@ func MountCORSHandler(mux goahttp.Muxer, h http.Handler) {
 	h = HandleUserOrigin(h)
 	mux.Handle("OPTIONS", "/api/user-management/v1/users/register", h.ServeHTTP)
 	mux.Handle("OPTIONS", "/api/user-management/v1/users/profile", h.ServeHTTP)
-	mux.Handle("OPTIONS", "/api/user-management/v1/users/friend", h.ServeHTTP)
+	mux.Handle("OPTIONS", "/api/user-management/v1/users/friend/{id}", h.ServeHTTP)
 	mux.Handle("OPTIONS", "/api/user-management/v1/users/friends/{id}", h.ServeHTTP)
 }
 

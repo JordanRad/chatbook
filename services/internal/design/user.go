@@ -63,7 +63,7 @@ var _ = Service("user", func() {
 		})
 		Result(OperationStatusResponse)
 		HTTP(func() {
-			POST("/friend")
+			POST("/friend/{id}")
 		})
 	})
 

@@ -146,15 +146,10 @@ func (c *Client) UpdateProfileNames() goa.Endpoint {
 // addFriend server.
 func (c *Client) AddFriend() goa.Endpoint {
 	var (
-		encodeRequest  = EncodeAddFriendRequest(c.encoder)
 		decodeResponse = DecodeAddFriendResponse(c.decoder, c.RestoreResponseBody)
 	)
 	return func(ctx context.Context, v any) (any, error) {
 		req, err := c.BuildAddFriendRequest(ctx, v)
-		if err != nil {
-			return nil, err
-		}
-		err = encodeRequest(req, v)
 		if err != nil {
 			return nil, err
 		}

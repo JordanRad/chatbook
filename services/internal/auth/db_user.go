@@ -39,21 +39,39 @@ func (s *Store) GetUserByEmail(ctx context.Context, email string) (*User, error)
 	result := new(User)
 
 	row := s.DB.QueryRow(`
-	SELECT id, first_name, last_name, email, password, friendsList from users
-	LEFT JOIN (
-			SELECT f.friend_id as fid, JSON_AGG(
-				json_build_object(
-					'id', u.id,
-					'firstName', u.first_name,
-					'lastName', u.last_name,
-					'email', u.email
+		WITH searched_user AS (
+			SELECT id
+			FROM users
+			WHERE email = $1
+		)
+		SELECT
+			u.id,
+			u.first_name,
+			u.last_name,
+			u.email,
+			u.password,
+			COALESCE((
+				SELECT JSON_AGG(
+					JSON_BUILD_OBJECT(
+						'id', uf.id,
+						'firstName', uf.first_name,
+						'lastName', uf.last_name,
+						'email', uf.email
+					)
 				)
-			) AS friendsList
-			FROM users u
-			INNER JOIN friendships f on f.user_id = u.id
-  			GROUP BY fid
-		)friendships ON friendships.fid = users.id
-        where email = $1	
+				FROM users uf
+				WHERE uf.id IN (
+					SELECT CASE
+						WHEN f.user_id = searched_user.id THEN f.friend_id
+						ELSE f.user_id
+					END
+					FROM friendships f
+					WHERE f.user_id = searched_user.id OR f.friend_id = searched_user.id
+				) AND uf.id != searched_user.id
+			), '[]'::json) AS friendsList
+		FROM users u
+		CROSS JOIN searched_user
+		WHERE u.id = searched_user.id;
 	`, email)
 	err := row.Scan(
 		&result.ID,
@@ -108,17 +126,17 @@ func (s *Store) UpdateProfileNames(ctx context.Context, userID, fname, lname str
 }
 
 func (s *Store) AddFriend(ctx context.Context, userID, friendID string) error {
-	_, err := s.DB.Exec(`INSERT INTO friendhsips (user_id, friend_id) VALUES ($1 , $2)`, userID, friendID)
+	_, err := s.DB.Exec(`INSERT INTO friendships (user_id, friend_id) VALUES ($1 , $2)`, userID, friendID)
 	if err != nil {
-		return fmt.Errorf("error adding a new friend: %w", err)
+		return fmt.Errorf("error inserting a new friend in db: %w", err)
 	}
 	return nil
 
 }
 func (s *Store) RemoveFriend(ctx context.Context, userID, friendID string) error {
-	_, err := s.DB.Exec(`DELETE from friendhsips WHERE (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1)`, userID, friendID)
+	_, err := s.DB.Exec(`DELETE from friendships WHERE (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1)`, userID, friendID)
 	if err != nil {
-		return fmt.Errorf("error adding a new friend: %w", err)
+		return fmt.Errorf("error deleting a friend from db: %w", err)
 	}
 	return nil
 }

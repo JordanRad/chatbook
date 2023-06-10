@@ -80,11 +80,11 @@ func ParseEndpoint(
 		userUpdateProfileNamesFlags    = flag.NewFlagSet("update-profile-names", flag.ExitOnError)
 		userUpdateProfileNamesBodyFlag = userUpdateProfileNamesFlags.String("body", "REQUIRED", "")
 
-		userAddFriendFlags    = flag.NewFlagSet("add-friend", flag.ExitOnError)
-		userAddFriendBodyFlag = userAddFriendFlags.String("body", "REQUIRED", "")
+		userAddFriendFlags  = flag.NewFlagSet("add-friend", flag.ExitOnError)
+		userAddFriendIDFlag = userAddFriendFlags.String("id", "REQUIRED", "User ID to add")
 
 		userRemoveFriendFlags  = flag.NewFlagSet("remove-friend", flag.ExitOnError)
-		userRemoveFriendIDFlag = userRemoveFriendFlags.String("id", "REQUIRED", "User ID")
+		userRemoveFriendIDFlag = userRemoveFriendFlags.String("id", "REQUIRED", "User ID to delete")
 	)
 	authFlags.Usage = authUsage
 	authRefreshTokenFlags.Usage = authRefreshTokenUsage
@@ -223,7 +223,7 @@ func ParseEndpoint(
 				data, err = userc.BuildUpdateProfileNamesPayload(*userUpdateProfileNamesBodyFlag)
 			case "add-friend":
 				endpoint = c.AddFriend()
-				data, err = userc.BuildAddFriendPayload(*userAddFriendBodyFlag)
+				data, err = userc.BuildAddFriendPayload(*userAddFriendIDFlag)
 			case "remove-friend":
 				endpoint = c.RemoveFriend()
 				data, err = userc.BuildRemoveFriendPayload(*userRemoveFriendIDFlag)
@@ -361,15 +361,13 @@ Example:
 }
 
 func userAddFriendUsage() {
-	fmt.Fprintf(os.Stderr, `%[1]s [flags] user add-friend -body JSON
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] user add-friend -id STRING
 
 AddFriend implements addFriend.
-    -body JSON: 
+    -id STRING: User ID to add
 
 Example:
-    %[1]s user add-friend --body '{
-      "id": "Rerum qui."
-   }'
+    %[1]s user add-friend --id "Laboriosam tempore atque mollitia ut."
 `, os.Args[0])
 }
 
@@ -377,9 +375,9 @@ func userRemoveFriendUsage() {
 	fmt.Fprintf(os.Stderr, `%[1]s [flags] user remove-friend -id STRING
 
 RemoveFriend implements removeFriend.
-    -id STRING: User ID
+    -id STRING: User ID to delete
 
 Example:
-    %[1]s user remove-friend --id "Distinctio sunt necessitatibus."
+    %[1]s user remove-friend --id "Similique molestiae necessitatibus sint."
 `, os.Args[0])
 }

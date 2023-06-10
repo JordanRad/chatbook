@@ -15,4 +15,12 @@ var protectedRoutes = []ProtectedRoute{
 		HTTPMethod: "PUT",
 		URL:        "/users/profile",
 	},
+	{
+		HTTPMethod: "POST",
+		URL:        "/users/friend",
+	},
+	{
+		HTTPMethod: "DELETE",
+		URL:        "/users/friends",
+	},
 }

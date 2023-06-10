@@ -58,18 +58,13 @@ func BuildUpdateProfileNamesPayload(userUpdateProfileNamesBody string) (*user.Up
 
 // BuildAddFriendPayload builds the payload for the user addFriend endpoint
 // from CLI flags.
-func BuildAddFriendPayload(userAddFriendBody string) (*user.AddFriendPayload, error) {
-	var err error
-	var body AddFriendRequestBody
+func BuildAddFriendPayload(userAddFriendID string) (*user.AddFriendPayload, error) {
+	var id string
 	{
-		err = json.Unmarshal([]byte(userAddFriendBody), &body)
-		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"id\": \"Rerum qui.\"\n   }'")
-		}
+		id = userAddFriendID
 	}
-	v := &user.AddFriendPayload{
-		ID: body.ID,
-	}
+	v := &user.AddFriendPayload{}
+	v.ID = id
 
 	return v, nil
 }

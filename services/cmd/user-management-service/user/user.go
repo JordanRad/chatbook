@@ -110,10 +110,36 @@ func (s *Service) UpdateProfileNames(ctx context.Context, p *user.UpdateProfileN
 	return r, nil
 }
 
-func (s *Service) AddFriend(ctx context.Context, p *user.AddFriendPayload) (res *user.OperationStatusResponse, err error) {
-	return nil, nil
+func (s *Service) AddFriend(ctx context.Context, p *user.AddFriendPayload) (*user.OperationStatusResponse, error) {
+	u, err := auth.UserInContext(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error extracting token claims: %w", err)
+	}
+
+	err = s.store.AddFriend(ctx, u.ID, p.ID)
+	if err != nil {
+		return nil, fmt.Errorf("error adding new friend: %w", err)
+	}
+
+	r := &user.OperationStatusResponse{
+		Message: "Friend has been added successfully",
+	}
+	return r, nil
 }
 
-func (s *Service) RemoveFriend(ctx context.Context, p *user.RemoveFriendPayload) (res *user.OperationStatusResponse, err error) {
-	return nil, nil
+func (s *Service) RemoveFriend(ctx context.Context, p *user.RemoveFriendPayload) (*user.OperationStatusResponse, error) {
+	u, err := auth.UserInContext(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error extracting token claims: %w", err)
+	}
+
+	err = s.store.RemoveFriend(ctx, u.ID, p.ID)
+	if err != nil {
+		return nil, fmt.Errorf("error removing a friend: %w", err)
+	}
+
+	r := &user.OperationStatusResponse{
+		Message: "Friend has been removed successfully",
+	}
+	return r, nil
 }
