@@ -34,16 +34,16 @@ user (register|get-profile|update-profile-names|add-friend|remove-friend)
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
 	return os.Args[0] + ` auth refresh-token --body '{
-      "email": "Totam dolor quibusdam voluptatum voluptatum vitae.",
-      "refreshToken": "Qui rerum quidem eum id eveniet."
+      "email": "Qui vel voluptas aperiam quae.",
+      "refreshToken": "Explicabo omnis nulla."
    }'` + "\n" +
 		os.Args[0] + ` info get-info` + "\n" +
 		os.Args[0] + ` user register --body '{
-      "confirmedPassword": "Veritatis natus quisquam.",
-      "email": "Magnam facilis incidunt occaecati consequatur ullam.",
-      "firstName": "Ducimus asperiores sunt.",
-      "lastName": "Adipisci qui suscipit ut.",
-      "password": "Quo et."
+      "confirmedPassword": "Inventore quisquam.",
+      "email": "Veritatis natus quisquam.",
+      "firstName": "Magnam facilis incidunt occaecati consequatur ullam.",
+      "lastName": "Quo et.",
+      "password": "Illo omnis nesciunt minus sed."
    }'` + "\n" +
 		""
 }
@@ -259,8 +259,8 @@ RefreshToken implements refreshToken.
 
 Example:
     %[1]s auth refresh-token --body '{
-      "email": "Totam dolor quibusdam voluptatum voluptatum vitae.",
-      "refreshToken": "Qui rerum quidem eum id eveniet."
+      "email": "Qui vel voluptas aperiam quae.",
+      "refreshToken": "Explicabo omnis nulla."
    }'
 `, os.Args[0])
 }
@@ -273,8 +273,8 @@ Login implements login.
 
 Example:
     %[1]s auth login --body '{
-      "email": "Et delectus qui.",
-      "password": "Veniam tempore voluptate sunt."
+      "email": "Sed quia eveniet sit.",
+      "password": "Ut blanditiis qui."
    }'
 `, os.Args[0])
 }
@@ -327,11 +327,11 @@ Register implements register.
 
 Example:
     %[1]s user register --body '{
-      "confirmedPassword": "Veritatis natus quisquam.",
-      "email": "Magnam facilis incidunt occaecati consequatur ullam.",
-      "firstName": "Ducimus asperiores sunt.",
-      "lastName": "Adipisci qui suscipit ut.",
-      "password": "Quo et."
+      "confirmedPassword": "Inventore quisquam.",
+      "email": "Veritatis natus quisquam.",
+      "firstName": "Magnam facilis incidunt occaecati consequatur ullam.",
+      "lastName": "Quo et.",
+      "password": "Illo omnis nesciunt minus sed."
    }'
 `, os.Args[0])
 }
@@ -354,8 +354,8 @@ UpdateProfileNames implements updateProfileNames.
 
 Example:
     %[1]s user update-profile-names --body '{
-      "firstName": "Libero omnis commodi qui quis et.",
-      "lastName": "Modi officia ipsum consequatur quas velit et."
+      "firstName": "Quia molestias aut dolores soluta quia recusandae.",
+      "lastName": "Omnis commodi qui quis et inventore."
    }'
 `, os.Args[0])
 }
@@ -368,7 +368,7 @@ AddFriend implements addFriend.
 
 Example:
     %[1]s user add-friend --body '{
-      "id": "Laboriosam tempore atque mollitia ut."
+      "id": "Rerum qui."
    }'
 `, os.Args[0])
 }
@@ -380,6 +380,6 @@ RemoveFriend implements removeFriend.
     -id STRING: User ID
 
 Example:
-    %[1]s user remove-friend --id "Similique molestiae necessitatibus sint."
+    %[1]s user remove-friend --id "Distinctio sunt necessitatibus."
 `, os.Args[0])
 }

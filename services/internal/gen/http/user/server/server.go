@@ -57,15 +57,15 @@ func New(
 ) *Server {
 	return &Server{
 		Mounts: []*MountPoint{
-			{"Register", "POST", "/api/v1/users/register"},
-			{"GetProfile", "GET", "/api/v1/users/profile"},
-			{"UpdateProfileNames", "PUT", "/api/v1/users/profile"},
-			{"AddFriend", "POST", "/api/v1/users/friend"},
-			{"RemoveFriend", "DELETE", "/api/v1/users/friends/{id}"},
-			{"CORS", "OPTIONS", "/api/v1/users/register"},
-			{"CORS", "OPTIONS", "/api/v1/users/profile"},
-			{"CORS", "OPTIONS", "/api/v1/users/friend"},
-			{"CORS", "OPTIONS", "/api/v1/users/friends/{id}"},
+			{"Register", "POST", "/api/user-management/v1/users/register"},
+			{"GetProfile", "GET", "/api/user-management/v1/users/profile"},
+			{"UpdateProfileNames", "PUT", "/api/user-management/v1/users/profile"},
+			{"AddFriend", "POST", "/api/user-management/v1/users/friend"},
+			{"RemoveFriend", "DELETE", "/api/user-management/v1/users/friends/{id}"},
+			{"CORS", "OPTIONS", "/api/user-management/v1/users/register"},
+			{"CORS", "OPTIONS", "/api/user-management/v1/users/profile"},
+			{"CORS", "OPTIONS", "/api/user-management/v1/users/friend"},
+			{"CORS", "OPTIONS", "/api/user-management/v1/users/friends/{id}"},
 		},
 		Register:           NewRegisterHandler(e.Register, mux, decoder, encoder, errhandler, formatter),
 		GetProfile:         NewGetProfileHandler(e.GetProfile, mux, decoder, encoder, errhandler, formatter),
@@ -116,7 +116,7 @@ func MountRegisterHandler(mux goahttp.Muxer, h http.Handler) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("POST", "/api/v1/users/register", f)
+	mux.Handle("POST", "/api/user-management/v1/users/register", f)
 }
 
 // NewRegisterHandler creates a HTTP handler which loads the HTTP request and
@@ -167,7 +167,7 @@ func MountGetProfileHandler(mux goahttp.Muxer, h http.Handler) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("GET", "/api/v1/users/profile", f)
+	mux.Handle("GET", "/api/user-management/v1/users/profile", f)
 }
 
 // NewGetProfileHandler creates a HTTP handler which loads the HTTP request and
@@ -211,7 +211,7 @@ func MountUpdateProfileNamesHandler(mux goahttp.Muxer, h http.Handler) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("PUT", "/api/v1/users/profile", f)
+	mux.Handle("PUT", "/api/user-management/v1/users/profile", f)
 }
 
 // NewUpdateProfileNamesHandler creates a HTTP handler which loads the HTTP
@@ -262,7 +262,7 @@ func MountAddFriendHandler(mux goahttp.Muxer, h http.Handler) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("POST", "/api/v1/users/friend", f)
+	mux.Handle("POST", "/api/user-management/v1/users/friend", f)
 }
 
 // NewAddFriendHandler creates a HTTP handler which loads the HTTP request and
@@ -313,7 +313,7 @@ func MountRemoveFriendHandler(mux goahttp.Muxer, h http.Handler) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("DELETE", "/api/v1/users/friends/{id}", f)
+	mux.Handle("DELETE", "/api/user-management/v1/users/friends/{id}", f)
 }
 
 // NewRemoveFriendHandler creates a HTTP handler which loads the HTTP request
@@ -359,10 +359,10 @@ func NewRemoveFriendHandler(
 // service user.
 func MountCORSHandler(mux goahttp.Muxer, h http.Handler) {
 	h = HandleUserOrigin(h)
-	mux.Handle("OPTIONS", "/api/v1/users/register", h.ServeHTTP)
-	mux.Handle("OPTIONS", "/api/v1/users/profile", h.ServeHTTP)
-	mux.Handle("OPTIONS", "/api/v1/users/friend", h.ServeHTTP)
-	mux.Handle("OPTIONS", "/api/v1/users/friends/{id}", h.ServeHTTP)
+	mux.Handle("OPTIONS", "/api/user-management/v1/users/register", h.ServeHTTP)
+	mux.Handle("OPTIONS", "/api/user-management/v1/users/profile", h.ServeHTTP)
+	mux.Handle("OPTIONS", "/api/user-management/v1/users/friend", h.ServeHTTP)
+	mux.Handle("OPTIONS", "/api/user-management/v1/users/friends/{id}", h.ServeHTTP)
 }
 
 // NewCORSHandler creates a HTTP handler which returns a simple 200 response.

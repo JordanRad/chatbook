@@ -46,7 +46,7 @@ type AddFriendPayload struct {
 
 type Friend struct {
 	// User ID
-	ID int
+	ID string
 	// Email
 	Email string
 	// First name

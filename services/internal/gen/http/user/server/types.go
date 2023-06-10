@@ -126,7 +126,7 @@ type RegisterUnmatchingPassowrdsResponseBody struct {
 // FriendResponseBody is used to define fields on response body types.
 type FriendResponseBody struct {
 	// User ID
-	ID int `form:"id" json:"id" xml:"id"`
+	ID string `form:"id" json:"id" xml:"id"`
 	// Email
 	Email string `form:"email" json:"email" xml:"email"`
 	// First name

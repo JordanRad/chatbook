@@ -35,6 +35,11 @@ func AuthenticateRequest(us auth.UserStore, jwt jwt.JWTClient) func(http.Handler
 			// Check if the route is protected
 			isProtectedRoute := isRouteProtected(r.Method, r.URL)
 
+			if strings.Contains(r.URL.Path, "login") || strings.Contains(r.URL.Path, "register") {
+				h.ServeHTTP(w, r)
+				return
+			}
+
 			// Check if the JWT is valid
 			if isProtectedRoute {
 				authorizationHeader := r.Header.Get("Authorization")

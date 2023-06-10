@@ -12,6 +12,8 @@ type UserStore interface {
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	Register(ctx context.Context, user *User) (*User, error)
 	UpdateProfileNames(ctx context.Context, userID, firstName, lastName string) error
+	AddFriend(ctx context.Context, userID, friendID string) error
+	RemoveFriend(ctx context.Context, userID, friendID string) error
 }
 
 type Store struct {
@@ -36,16 +38,36 @@ func (e *ErrUserNotFound) Error() string {
 func (s *Store) GetUserByEmail(ctx context.Context, email string) (*User, error) {
 	result := new(User)
 
-	row := s.DB.QueryRow(`SELECT id, firstname, lastname, email, password FROM users WHERE email = $1;`, email)
+	row := s.DB.QueryRow(`
+	SELECT id, first_name, last_name, email, password, friendsList from users
+	LEFT JOIN (
+			SELECT f.friend_id as fid, JSON_AGG(
+				json_build_object(
+					'id', u.id,
+					'firstName', u.first_name,
+					'lastName', u.last_name,
+					'email', u.email
+				)
+			) AS friendsList
+			FROM users u
+			INNER JOIN friendships f on f.user_id = u.id
+  			GROUP BY fid
+		)friendships ON friendships.fid = users.id
+        where email = $1	
+	`, email)
 	err := row.Scan(
 		&result.ID,
 		&result.FirstName,
 		&result.LastName,
 		&result.Email,
 		&result.Password,
+		&result.FriendsList,
 	)
-	if err == sql.ErrNoRows {
-		return nil, &ErrUserNotFound{}
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, &ErrUserNotFound{}
+		}
+		return nil, fmt.Errorf("error retrieving a workout: %w", err)
 	}
 
 	return result, nil
@@ -54,7 +76,7 @@ func (s *Store) GetUserByEmail(ctx context.Context, email string) (*User, error)
 // Register method add a new user to the database and returns the insterted user back along with the errors, if any error is present.
 func (s *Store) Register(ctx context.Context, user *User) (*User, error) {
 	var uid string
-	err := s.DB.QueryRow(`INSERT INTO users(email, firstName, lastName, password) VALUES ($1,$2,$3,$4) RETURNING id;`, user.Email, user.FirstName, user.LastName, user.Password).Scan(&uid)
+	err := s.DB.QueryRow(`INSERT INTO users(email, first_name, last_name, password) VALUES ($1,$2,$3,$4) RETURNING id;`, user.Email, user.FirstName, user.LastName, user.Password).Scan(&uid)
 	if err != nil {
 		return nil, fmt.Errorf("error registering new user: %w", err)
 	}
@@ -70,7 +92,7 @@ func (s *Store) Register(ctx context.Context, user *User) (*User, error) {
 
 // UpdateProfileNames method updates user's names in the database and returns error, if any error is present.
 func (s *Store) UpdateProfileNames(ctx context.Context, userID, fname, lname string) error {
-	result, err := s.DB.Exec(`UPDATE users SET firstName=$1,lastName=$2 WHERE id = $3;`, fname, lname, userID)
+	result, err := s.DB.Exec(`UPDATE users SET first_name = $1,last_name = $2 WHERE id = $3;`, fname, lname, userID)
 
 	if err != nil {
 		return fmt.Errorf("error updating profile names: %w", err)
@@ -83,4 +105,20 @@ func (s *Store) UpdateProfileNames(ctx context.Context, userID, fname, lname str
 	}
 
 	return fmt.Errorf("error updating profile names, zero rows affected")
+}
+
+func (s *Store) AddFriend(ctx context.Context, userID, friendID string) error {
+	_, err := s.DB.Exec(`INSERT INTO friendhsips (user_id, friend_id) VALUES ($1 , $2)`, userID, friendID)
+	if err != nil {
+		return fmt.Errorf("error adding a new friend: %w", err)
+	}
+	return nil
+
+}
+func (s *Store) RemoveFriend(ctx context.Context, userID, friendID string) error {
+	_, err := s.DB.Exec(`DELETE from friendhsips WHERE (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1)`, userID, friendID)
+	if err != nil {
+		return fmt.Errorf("error adding a new friend: %w", err)
+	}
+	return nil
 }

@@ -20,7 +20,7 @@ var _ = Service("info", func() {
 	Description("Application info")
 
 	HTTP(func() {
-		Path("/api/v1/info") // Prefix to HTTP path of all requests.
+		Path("/api/user-management/v1/info") // Prefix to HTTP path of all requests.
 	})
 
 	Method("getInfo", func() {

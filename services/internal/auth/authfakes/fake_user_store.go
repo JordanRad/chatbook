@@ -9,6 +9,19 @@ import (
 )
 
 type FakeUserStore struct {
+	AddFriendStub        func(context.Context, string, string) error
+	addFriendMutex       sync.RWMutex
+	addFriendArgsForCall []struct {
+		arg1 context.Context
+		arg2 string
+		arg3 string
+	}
+	addFriendReturns struct {
+		result1 error
+	}
+	addFriendReturnsOnCall map[int]struct {
+		result1 error
+	}
 	GetUserByEmailStub        func(context.Context, string) (*auth.User, error)
 	getUserByEmailMutex       sync.RWMutex
 	getUserByEmailArgsForCall []struct {
@@ -37,6 +50,19 @@ type FakeUserStore struct {
 		result1 *auth.User
 		result2 error
 	}
+	RemoveFriendStub        func(context.Context, string, string) error
+	removeFriendMutex       sync.RWMutex
+	removeFriendArgsForCall []struct {
+		arg1 context.Context
+		arg2 string
+		arg3 string
+	}
+	removeFriendReturns struct {
+		result1 error
+	}
+	removeFriendReturnsOnCall map[int]struct {
+		result1 error
+	}
 	UpdateProfileNamesStub        func(context.Context, string, string, string) error
 	updateProfileNamesMutex       sync.RWMutex
 	updateProfileNamesArgsForCall []struct {
@@ -53,6 +79,69 @@ type FakeUserStore struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *FakeUserStore) AddFriend(arg1 context.Context, arg2 string, arg3 string) error {
+	fake.addFriendMutex.Lock()
+	ret, specificReturn := fake.addFriendReturnsOnCall[len(fake.addFriendArgsForCall)]
+	fake.addFriendArgsForCall = append(fake.addFriendArgsForCall, struct {
+		arg1 context.Context
+		arg2 string
+		arg3 string
+	}{arg1, arg2, arg3})
+	stub := fake.AddFriendStub
+	fakeReturns := fake.addFriendReturns
+	fake.recordInvocation("AddFriend", []interface{}{arg1, arg2, arg3})
+	fake.addFriendMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fakeReturns.result1
+}
+
+func (fake *FakeUserStore) AddFriendCallCount() int {
+	fake.addFriendMutex.RLock()
+	defer fake.addFriendMutex.RUnlock()
+	return len(fake.addFriendArgsForCall)
+}
+
+func (fake *FakeUserStore) AddFriendCalls(stub func(context.Context, string, string) error) {
+	fake.addFriendMutex.Lock()
+	defer fake.addFriendMutex.Unlock()
+	fake.AddFriendStub = stub
+}
+
+func (fake *FakeUserStore) AddFriendArgsForCall(i int) (context.Context, string, string) {
+	fake.addFriendMutex.RLock()
+	defer fake.addFriendMutex.RUnlock()
+	argsForCall := fake.addFriendArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+}
+
+func (fake *FakeUserStore) AddFriendReturns(result1 error) {
+	fake.addFriendMutex.Lock()
+	defer fake.addFriendMutex.Unlock()
+	fake.AddFriendStub = nil
+	fake.addFriendReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeUserStore) AddFriendReturnsOnCall(i int, result1 error) {
+	fake.addFriendMutex.Lock()
+	defer fake.addFriendMutex.Unlock()
+	fake.AddFriendStub = nil
+	if fake.addFriendReturnsOnCall == nil {
+		fake.addFriendReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.addFriendReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
 }
 
 func (fake *FakeUserStore) GetUserByEmail(arg1 context.Context, arg2 string) (*auth.User, error) {
@@ -185,6 +274,69 @@ func (fake *FakeUserStore) RegisterReturnsOnCall(i int, result1 *auth.User, resu
 	}{result1, result2}
 }
 
+func (fake *FakeUserStore) RemoveFriend(arg1 context.Context, arg2 string, arg3 string) error {
+	fake.removeFriendMutex.Lock()
+	ret, specificReturn := fake.removeFriendReturnsOnCall[len(fake.removeFriendArgsForCall)]
+	fake.removeFriendArgsForCall = append(fake.removeFriendArgsForCall, struct {
+		arg1 context.Context
+		arg2 string
+		arg3 string
+	}{arg1, arg2, arg3})
+	stub := fake.RemoveFriendStub
+	fakeReturns := fake.removeFriendReturns
+	fake.recordInvocation("RemoveFriend", []interface{}{arg1, arg2, arg3})
+	fake.removeFriendMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fakeReturns.result1
+}
+
+func (fake *FakeUserStore) RemoveFriendCallCount() int {
+	fake.removeFriendMutex.RLock()
+	defer fake.removeFriendMutex.RUnlock()
+	return len(fake.removeFriendArgsForCall)
+}
+
+func (fake *FakeUserStore) RemoveFriendCalls(stub func(context.Context, string, string) error) {
+	fake.removeFriendMutex.Lock()
+	defer fake.removeFriendMutex.Unlock()
+	fake.RemoveFriendStub = stub
+}
+
+func (fake *FakeUserStore) RemoveFriendArgsForCall(i int) (context.Context, string, string) {
+	fake.removeFriendMutex.RLock()
+	defer fake.removeFriendMutex.RUnlock()
+	argsForCall := fake.removeFriendArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+}
+
+func (fake *FakeUserStore) RemoveFriendReturns(result1 error) {
+	fake.removeFriendMutex.Lock()
+	defer fake.removeFriendMutex.Unlock()
+	fake.RemoveFriendStub = nil
+	fake.removeFriendReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeUserStore) RemoveFriendReturnsOnCall(i int, result1 error) {
+	fake.removeFriendMutex.Lock()
+	defer fake.removeFriendMutex.Unlock()
+	fake.RemoveFriendStub = nil
+	if fake.removeFriendReturnsOnCall == nil {
+		fake.removeFriendReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.removeFriendReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeUserStore) UpdateProfileNames(arg1 context.Context, arg2 string, arg3 string, arg4 string) error {
 	fake.updateProfileNamesMutex.Lock()
 	ret, specificReturn := fake.updateProfileNamesReturnsOnCall[len(fake.updateProfileNamesArgsForCall)]
@@ -252,10 +404,14 @@ func (fake *FakeUserStore) UpdateProfileNamesReturnsOnCall(i int, result1 error)
 func (fake *FakeUserStore) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.addFriendMutex.RLock()
+	defer fake.addFriendMutex.RUnlock()
 	fake.getUserByEmailMutex.RLock()
 	defer fake.getUserByEmailMutex.RUnlock()
 	fake.registerMutex.RLock()
 	defer fake.registerMutex.RUnlock()
+	fake.removeFriendMutex.RLock()
+	defer fake.removeFriendMutex.RUnlock()
 	fake.updateProfileNamesMutex.RLock()
 	defer fake.updateProfileNamesMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}

@@ -80,10 +80,11 @@ func (s *Service) GetProfile(ctx context.Context) (*user.UserProfileResponse, er
 	}
 
 	response := &user.UserProfileResponse{
-		ID:        result.ID,
-		FirstName: result.FirstName,
-		LastName:  result.LastName,
-		Email:     result.Email,
+		ID:          result.ID,
+		FirstName:   result.FirstName,
+		LastName:    result.LastName,
+		Email:       result.Email,
+		FriendsList: result.FriendsList,
 	}
 	return response, nil
 }
