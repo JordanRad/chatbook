@@ -3,15 +3,15 @@ Chatbook is a hobby project of mine. It aims to create a highly available chat s
 
 ## Functional Requirements:
 
-- [ ] **User Registration and Authentication** -allow users to register an account with a unique username and password.
+- [X] **User Registration and Authentication** -allow users to register an account with a unique username and password.
   Provide authentication mechanisms to ensure secure access to the chat application.
 
-- [ ] **Real-Time Chat Features** - enable users to create chat rooms or join existing rooms. Support real-time messaging with features like sending and receiving text messages and emojis.Allow users to view the list of online users in a chat room. Implement message history, allowing users to scroll back and view previous messages.
-
- - [ ] **User Management** - provide options for users to update their profile information. Allow users to add or remove friends and manage their contact list. Support blocking or reporting other users for inappropriate behavior.
+ - [X] **User Management** - provide options for users to update their profile information. Allow users to add or remove friends and manage their contact list. Support blocking or reporting other users for inappropriate behavior.
 
 - [ ] **Notifications** - implement notifications for new messages, friend requests, or other relevant events.
 Allow users to customize notification preferences.
+
+- [ ] **Real-Time Chat Features** - enable users to create chat rooms or join existing rooms. Support real-time messaging with features like sending and receiving text messages and emojis.Allow users to view the list of online users in a chat room. Implement message history, allowing users to scroll back and view previous messages.
 
 - [ ] **Search and Filtering** - enable users to search for specific chat rooms or messages.Implement filters to sort and display chat rooms based on criteria such as popularity or user activity.
 
