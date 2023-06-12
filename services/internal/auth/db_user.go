@@ -11,7 +11,7 @@ import (
 type UserStore interface {
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	Register(ctx context.Context, user *User) (*User, error)
-	UpdateProfileNames(ctx context.Context, userID, firstName, lastName string) error
+	UpdateProfileNames(ctx context.Context, userID, firstName, lastName string) (User, error)
 	AddFriend(ctx context.Context, userID, friendID string) error
 	RemoveFriend(ctx context.Context, userID, friendID string) error
 }
@@ -109,20 +109,19 @@ func (s *Store) Register(ctx context.Context, user *User) (*User, error) {
 }
 
 // UpdateProfileNames method updates user's names in the database and returns error, if any error is present.
-func (s *Store) UpdateProfileNames(ctx context.Context, userID, fname, lname string) error {
-	result, err := s.DB.Exec(`UPDATE users SET first_name = $1,last_name = $2 WHERE id = $3;`, fname, lname, userID)
-
+func (s *Store) UpdateProfileNames(ctx context.Context, userID, fname, lname string) (User, error) {
+	_, err := s.DB.Exec(`UPDATE users SET first_name = $1,last_name = $2 WHERE id = $3;`, fname, lname, userID)
 	if err != nil {
-		return fmt.Errorf("error updating profile names: %w", err)
+		return User{}, fmt.Errorf("error updating profile names: %w", err)
 	}
 
-	rowsAffected, _ := result.RowsAffected()
-
-	if rowsAffected == 1 {
-		return nil
+	updatedUser := User{}
+	err = s.DB.QueryRow(`SELECT id, first_name, last_name, email FROM users WHERE id = $1;`, userID).Scan(&updatedUser.ID, &updatedUser.FirstName, &updatedUser.LastName, &updatedUser.Email)
+	if err != nil {
+		return User{}, fmt.Errorf("error fetching updated user: %w", err)
 	}
 
-	return fmt.Errorf("error updating profile names, zero rows affected")
+	return updatedUser, nil
 }
 
 func (s *Store) AddFriend(ctx context.Context, userID, friendID string) error {

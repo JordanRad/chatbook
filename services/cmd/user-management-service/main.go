@@ -28,7 +28,9 @@ import (
 	usersvc "github.com/JordanRad/chatbook/services/internal/gen/user"
 
 	"github.com/JordanRad/chatbook/services/internal/middleware"
+	"google.golang.org/grpc"
 
+	notificationsprotobuf "github.com/JordanRad/chatbook/services/internal/gen/grpc/notification/pb"
 	goahttp "goa.design/goa/v3/http"
 )
 
@@ -38,10 +40,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Config file cannot be read: %v", err)
 	}
-	fmt.Println(config)
 
 	// Connect to database
-
 	db := postgresql.ConnectToDatabase(config.Postgres.User, config.Postgres.Password, config.Postgres.Host, config.Postgres.Port, config.Postgres.DBName)
 	migrationTool := migrations.Tool{
 		DB: db,
@@ -72,7 +72,16 @@ func main() {
 	jwtService := &jwt.JWTService{}
 	encryptionTool := &encryption.Encrypter{}
 
-	userService := user.NewService(userStore, encryptionTool, logger)
+	conn, err := grpc.Dial(":5002", grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("cannot connect to gRPC server: %s", err)
+	}
+	defer conn.Close()
+	log.Println("gRPC connection to Notifications Servcer has been established successfully.")
+
+	notificationsClient := notificationsprotobuf.NewNotificationClient(conn)
+
+	userService := user.NewService(userStore, encryptionTool, logger, notificationsClient)
 	var userEndpoints *usersvc.Endpoints = usersvc.NewEndpoints(userService)
 
 	authService := userauth.NewService(userStore, encryptionTool, jwtService, logger)
@@ -104,6 +113,25 @@ func main() {
 	var authServer *authsrv.Server = authsrv.New(authEndpoints, mux, dec, enc, nil, nil)
 	authServer.Use(middleware.AuthenticateRequest(userStore, jwtService))
 	authsrv.Mount(mux, authServer)
+
+	// notificationsprotobuf "github.com/JordanRad/chatbook/services/internal/gen/grpc/user/pb"
+	// notificationsgrpcsrv "github.com/JordanRad/chatbook/services/internal/gen/grpc/user/server"
+	// go func() {
+	// 	grpcEndpoints := usersvc.NewEndpoints(userService)
+	// 	grpcsrv := notificationsgrpcsrv.New(grpcEndpoints, nil)
+
+	// 	grpcServer := grpc.NewServer()
+	// 	fmt.Printf("Notifications gRPC server has just started on %d ...\n", 5002)
+	// 	notificationsprotobuf.RegisterUserServer(grpcServer, grpcsrv)
+	// 	lis, err := net.Listen("tcp", "localhost:5002")
+
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// 	if err := grpcServer.Serve(lis); err != nil {
+	// 		panic(err)
+	// 	}
+	// }()
 
 	// Start the HTTP server
 	address := fmt.Sprintf("%s:%d", config.HTTP.Host, config.HTTP.Port)

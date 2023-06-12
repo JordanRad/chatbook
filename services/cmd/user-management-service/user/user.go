@@ -9,12 +9,20 @@ import (
 	"github.com/JordanRad/chatbook/services/internal/auth"
 	"github.com/JordanRad/chatbook/services/internal/auth/encryption"
 	"github.com/JordanRad/chatbook/services/internal/gen/user"
+	"google.golang.org/grpc"
+
+	notificationsprotobuf "github.com/JordanRad/chatbook/services/internal/gen/grpc/notification/pb"
 )
 
+type NotificationService interface {
+	NotifyUserNamesUpdate(ctx context.Context, in *notificationsprotobuf.NotifyUserNamesUpdateRequest, opts ...grpc.CallOption) (*notificationsprotobuf.NotifyUserNamesUpdateResponse, error)
+}
+
 type Service struct {
-	store   auth.UserStore
-	encrypt encryption.Encryption
-	logger  *log.Logger
+	store                auth.UserStore
+	encrypt              encryption.Encryption
+	logger               *log.Logger
+	notificationsService notificationsprotobuf.NotificationClient
 }
 
 type LoginDetails struct {
@@ -24,11 +32,12 @@ type LoginDetails struct {
 
 func NewService(store auth.UserStore,
 	encryption encryption.Encryption,
-	logger *log.Logger) *Service {
+	logger *log.Logger, notificationsService NotificationService) *Service {
 	return &Service{
-		store:   store,
-		encrypt: encryption,
-		logger:  logger,
+		store:                store,
+		encrypt:              encryption,
+		logger:               logger,
+		notificationsService: notificationsService,
 	}
 }
 
@@ -99,9 +108,21 @@ func (s *Service) UpdateProfileNames(ctx context.Context, p *user.UpdateProfileN
 		return nil, fmt.Errorf("names payload is incomplete")
 	}
 
-	err = s.store.UpdateProfileNames(ctx, u.ID, p.FirstName, p.LastName)
+	updatedUser, err := s.store.UpdateProfileNames(ctx, u.ID, p.FirstName, p.LastName)
 	if err != nil {
 		return nil, fmt.Errorf("error updating user settings: %w", err)
+	}
+
+	grpcPayload := &notificationsprotobuf.NotifyUserNamesUpdateRequest{
+		Id:           updatedUser.ID,
+		FirstName:    updatedUser.FirstName,
+		OldFirstName: u.FirstName,
+		OldLastName:  u.LastName,
+		LastName:     updatedUser.LastName,
+	}
+	_, err = s.notificationsService.NotifyUserNamesUpdate(ctx, grpcPayload)
+	if err != nil {
+		return nil, fmt.Errorf("grpc error notifying chat service: %w", err)
 	}
 
 	r := &user.OperationStatusResponse{

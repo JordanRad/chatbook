@@ -6,6 +6,45 @@ servers:
     - url: http://localhost:80
       description: Default server for chatbook-microservices
 paths:
+    /api/chat/v1/chatrooms/{ID}/history:
+        get:
+            tags:
+                - chat
+            summary: getChatHistory chat
+            operationId: chat#getChatHistory
+            parameters:
+                - name: ID
+                  in: path
+                  description: Chatroom ID
+                  required: true
+                  schema:
+                    type: string
+                    description: Chatroom ID
+                    example: Ipsa labore.
+                  example: Maxime quibusdam.
+            responses:
+                "200":
+                    description: OK response.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ChatHistoryResponse'
+                            example:
+                                count: 7502369160443435265
+                                id: Quas eos sint quia.
+                                messages:
+                                    - nextMessageID: Possimus ad.
+                                      previousMessageID: Optio a.
+                                      timestamp: 0.8769020674047365
+                                    - nextMessageID: Possimus ad.
+                                      previousMessageID: Optio a.
+                                      timestamp: 0.8769020674047365
+                                    - nextMessageID: Possimus ad.
+                                      previousMessageID: Optio a.
+                                      timestamp: 0.8769020674047365
+                                    - nextMessageID: Possimus ad.
+                                      previousMessageID: Optio a.
+                                      timestamp: 0.8769020674047365
     /api/user-management/v1/auth/login:
         post:
             tags:
@@ -19,8 +58,8 @@ paths:
                         schema:
                             $ref: '#/components/schemas/LoginRequestBody'
                         example:
-                            email: Sed quia eveniet sit.
-                            password: Ut blanditiis qui.
+                            email: Veritatis natus quisquam.
+                            password: Illo omnis nesciunt minus sed.
             responses:
                 "200":
                     description: OK response.
@@ -29,11 +68,11 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/LoginResponse'
                             example:
-                                email: Quas voluptas ducimus perferendis assumenda eum officiis.
-                                id: Ducimus asperiores sunt.
-                                refresh_token: Qui impedit tempore sunt optio.
-                                role: Quisquam eos vitae velit quis.
-                                token: Amet ut nihil consequuntur odio.
+                                email: Inventore quisquam.
+                                id: Dolores quibusdam.
+                                refresh_token: Maxime molestiae.
+                                role: Dolorum rerum.
+                                token: A cum eum molestiae sit enim non.
                 "404":
                     description: 'WrongCredentials: Email and/or password don''t match'
                     content:
@@ -53,8 +92,8 @@ paths:
                         schema:
                             $ref: '#/components/schemas/RefreshTokenRequestBody'
                         example:
-                            email: Qui vel voluptas aperiam quae.
-                            refreshToken: Explicabo omnis nulla.
+                            email: Amet ut nihil consequuntur odio.
+                            refreshToken: Qui impedit tempore sunt optio.
             responses:
                 "200":
                     description: OK response.
@@ -63,11 +102,11 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/LoginResponse'
                             example:
-                                email: Sit veniam delectus.
-                                id: Veniam tempore voluptate sunt.
-                                refresh_token: Sequi libero et qui soluta error.
-                                role: Et delectus qui.
-                                token: Provident harum similique saepe fuga assumenda.
+                                email: Quisquam eos vitae velit quis.
+                                id: Quo et.
+                                refresh_token: Adipisci qui suscipit ut.
+                                role: Magnam facilis incidunt occaecati consequatur ullam.
+                                token: Ducimus asperiores sunt.
     /api/user-management/v1/info:
         get:
             tags:
@@ -82,7 +121,7 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/OperationStatusResponse'
                             example:
-                                message: Adipisci qui suscipit ut.
+                                message: Soluta quia.
     /api/user-management/v1/users/friend/{id}:
         post:
             tags:
@@ -97,8 +136,8 @@ paths:
                   schema:
                     type: string
                     description: User ID to add
-                    example: Non dolor earum unde.
-                  example: Sed numquam.
+                    example: Qui animi qui excepturi.
+                  example: Dolores omnis exercitationem ea nam quaerat.
             responses:
                 "200":
                     description: OK response.
@@ -107,7 +146,7 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/OperationStatusResponse'
                             example:
-                                message: Eum ullam eveniet temporibus quis dolore mollitia.
+                                message: Sint quasi et.
     /api/user-management/v1/users/friends/{id}:
         delete:
             tags:
@@ -122,8 +161,8 @@ paths:
                   schema:
                     type: string
                     description: User ID to delete
-                    example: Voluptatem incidunt eum reiciendis molestiae quasi impedit.
-                  example: Qui officia rerum nulla cum magnam.
+                    example: Sed rerum aliquid qui quisquam asperiores fugiat.
+                  example: Repellendus magnam qui.
             responses:
                 "200":
                     description: OK response.
@@ -132,7 +171,7 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/OperationStatusResponse'
                             example:
-                                message: Vel id doloremque et error.
+                                message: Nemo laboriosam optio.
     /api/user-management/v1/users/profile:
         get:
             tags:
@@ -147,27 +186,27 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/UserProfileResponse'
                             example:
-                                email: Optio a.
-                                firstName: Possimus ad.
+                                email: Et velit illo fugit.
+                                firstName: Magni officia maxime aut unde libero.
                                 friendsList:
-                                    - email: Dolorum rerum.
-                                      firstName: Dolores quibusdam.
-                                      id: Maxime molestiae.
-                                      lastName: Labore tempora.
-                                    - email: Dolorum rerum.
-                                      firstName: Dolores quibusdam.
-                                      id: Maxime molestiae.
-                                      lastName: Labore tempora.
-                                    - email: Dolorum rerum.
-                                      firstName: Dolores quibusdam.
-                                      id: Maxime molestiae.
-                                      lastName: Labore tempora.
-                                    - email: Dolorum rerum.
-                                      firstName: Dolores quibusdam.
-                                      id: Maxime molestiae.
-                                      lastName: Labore tempora.
-                                id: Ut ut.
-                                lastName: Quasi quas.
+                                    - email: Vel id doloremque et error.
+                                      firstName: Expedita beatae et alias.
+                                      id: Similique molestiae necessitatibus sint.
+                                      lastName: Quo quia et.
+                                    - email: Vel id doloremque et error.
+                                      firstName: Expedita beatae et alias.
+                                      id: Similique molestiae necessitatibus sint.
+                                      lastName: Quo quia et.
+                                    - email: Vel id doloremque et error.
+                                      firstName: Expedita beatae et alias.
+                                      id: Similique molestiae necessitatibus sint.
+                                      lastName: Quo quia et.
+                                    - email: Vel id doloremque et error.
+                                      firstName: Expedita beatae et alias.
+                                      id: Similique molestiae necessitatibus sint.
+                                      lastName: Quo quia et.
+                                id: Nisi eos vel atque necessitatibus eum.
+                                lastName: Ea autem et rerum ad.
         put:
             tags:
                 - user
@@ -180,8 +219,8 @@ paths:
                         schema:
                             $ref: '#/components/schemas/UpdateProfileNamesRequestBody'
                         example:
-                            firstName: Quia molestias aut dolores soluta quia recusandae.
-                            lastName: Omnis commodi qui quis et inventore.
+                            firstName: Laudantium suscipit qui nesciunt consequatur quia repellat.
+                            lastName: Quia excepturi error similique.
             responses:
                 "200":
                     description: OK response.
@@ -190,7 +229,7 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/OperationStatusResponse'
                             example:
-                                message: Officia ipsum consequatur quas velit et.
+                                message: Doloremque omnis reprehenderit eos rerum.
     /api/user-management/v1/users/register:
         post:
             tags:
@@ -204,11 +243,11 @@ paths:
                         schema:
                             $ref: '#/components/schemas/RegisterRequestBody'
                         example:
-                            confirmedPassword: Inventore quisquam.
-                            email: Veritatis natus quisquam.
-                            firstName: Magnam facilis incidunt occaecati consequatur ullam.
-                            lastName: Quo et.
-                            password: Illo omnis nesciunt minus sed.
+                            confirmedPassword: Eum ullam eveniet temporibus quis dolore mollitia.
+                            email: Rerum qui.
+                            firstName: Libero omnis commodi qui quis et.
+                            lastName: Modi officia ipsum consequatur quas velit et.
+                            password: Laboriosam tempore atque mollitia ut.
             responses:
                 "200":
                     description: OK response.
@@ -217,7 +256,7 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/OperationStatusResponse'
                             example:
-                                message: A cum eum molestiae sit enim non.
+                                message: Distinctio sunt necessitatibus.
                 "409":
                     description: 'UnmatchingPassowrds: Provided passwords are not the same'
                     content:
@@ -226,13 +265,81 @@ paths:
                                 $ref: '#/components/schemas/Error'
 components:
     schemas:
+        ChatHistoryResponse:
+            type: object
+            properties:
+                count:
+                    type: integer
+                    description: Messages Count
+                    example: 898392797315693975
+                    format: int64
+                id:
+                    type: string
+                    description: Chatroom ID
+                    example: Et minima voluptatem explicabo occaecati asperiores minus.
+                messages:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ChatMessage'
+                    description: Chat history
+                    example:
+                        - nextMessageID: Possimus ad.
+                          previousMessageID: Optio a.
+                          timestamp: 0.8769020674047365
+                        - nextMessageID: Possimus ad.
+                          previousMessageID: Optio a.
+                          timestamp: 0.8769020674047365
+                        - nextMessageID: Possimus ad.
+                          previousMessageID: Optio a.
+                          timestamp: 0.8769020674047365
+            example:
+                count: 7650130806802272220
+                id: Nesciunt iure.
+                messages:
+                    - nextMessageID: Possimus ad.
+                      previousMessageID: Optio a.
+                      timestamp: 0.8769020674047365
+                    - nextMessageID: Possimus ad.
+                      previousMessageID: Optio a.
+                      timestamp: 0.8769020674047365
+                    - nextMessageID: Possimus ad.
+                      previousMessageID: Optio a.
+                      timestamp: 0.8769020674047365
+            required:
+                - id
+                - count
+                - messages
+        ChatMessage:
+            type: object
+            properties:
+                nextMessageID:
+                    type: string
+                    description: Next message ID
+                    example: Temporibus et numquam.
+                previousMessageID:
+                    type: string
+                    description: Previous message ID
+                    example: Quis sed voluptates nihil.
+                timestamp:
+                    type: number
+                    description: Timestamp of the message
+                    example: 0.21227583677059897
+                    format: double
+            example:
+                nextMessageID: Corporis ut magnam dolor quas incidunt.
+                previousMessageID: Totam velit repudiandae.
+                timestamp: 0.228044762666239
+            required:
+                - timestamp
+                - previousMessageID
+                - nextMessageID
         Error:
             type: object
             properties:
                 fault:
                     type: boolean
                     description: Is the error a server-side fault?
-                    example: true
+                    example: false
                 id:
                     type: string
                     description: ID is a unique identifier for this particular occurrence of the problem.
@@ -248,7 +355,7 @@ components:
                 temporary:
                     type: boolean
                     description: Is the error temporary?
-                    example: false
+                    example: true
                 timeout:
                     type: boolean
                     description: Is the error a timeout?
@@ -270,24 +377,24 @@ components:
                 email:
                     type: string
                     description: Email
-                    example: Voluptates nesciunt rerum beatae praesentium accusantium blanditiis.
+                    example: Est consequuntur.
                 firstName:
                     type: string
                     description: First name
-                    example: Et officia quia saepe quia dolore nemo.
+                    example: Unde corporis sit.
                 id:
                     type: string
                     description: User ID
-                    example: Facere consequuntur.
+                    example: Doloribus dolor voluptatum.
                 lastName:
                     type: string
                     description: Last name
-                    example: Iusto aliquam nihil dolorum et dicta tempore.
+                    example: Excepturi labore nesciunt repudiandae officia qui debitis.
             example:
-                email: Nemo quos consequuntur laborum ut officiis commodi.
-                firstName: Dolorem ut fuga deleniti id provident molestiae.
-                id: Suscipit inventore sint aut est hic.
-                lastName: Qui reprehenderit ut.
+                email: Sit corporis aut maiores porro.
+                firstName: Vel impedit quia.
+                id: Est ut consequatur molestiae voluptates.
+                lastName: Omnis voluptatem.
             required:
                 - id
                 - email
@@ -299,14 +406,14 @@ components:
                 email:
                     type: string
                     description: User email
-                    example: Facilis quis blanditiis rem.
+                    example: Qui reprehenderit ut.
                 password:
                     type: string
                     description: User password
-                    example: Et molestias ducimus.
+                    example: Minus ipsa totam.
             example:
-                email: Est repellat culpa at itaque ad architecto.
-                password: Ipsam vel placeat laborum.
+                email: Ut asperiores.
+                password: Est sapiente quas quia.
             required:
                 - email
                 - password
@@ -316,29 +423,29 @@ components:
                 email:
                     type: string
                     description: User's email
-                    example: Dolorem saepe voluptate veniam incidunt inventore illum.
+                    example: Dolores sit sed officiis consequatur.
                 id:
                     type: string
                     description: User account's ID
-                    example: Sit perferendis sapiente minima.
+                    example: Voluptates nesciunt rerum beatae praesentium accusantium blanditiis.
                 refresh_token:
                     type: string
                     description: Refresh token
-                    example: Aliquid debitis amet officiis dicta ea.
+                    example: Doloremque sequi sed.
                 role:
                     type: string
                     description: User's role
-                    example: Molestiae omnis.
+                    example: Facere consequuntur.
                 token:
                     type: string
                     description: JWT Token
-                    example: Delectus possimus nam accusamus.
+                    example: Quia est in aut id accusantium ab.
             example:
-                email: Nulla sed.
-                id: Aliquid provident est illo officiis.
-                refresh_token: Voluptatem amet fugit dolores sequi.
-                role: Dolorem dolorem et pariatur voluptas.
-                token: Minima error ad veniam pariatur qui.
+                email: Et officia quia saepe quia dolore nemo.
+                id: Dolorem ut fuga deleniti id provident molestiae.
+                refresh_token: Suscipit inventore sint aut est hic.
+                role: Nemo quos consequuntur laborum ut officiis commodi.
+                token: Iusto aliquam nihil dolorum et dicta tempore.
             required:
                 - email
                 - token
@@ -350,9 +457,9 @@ components:
                 message:
                     type: string
                     description: Operation status
-                    example: Delectus cumque et et quo.
+                    example: Non dolor earum unde.
             example:
-                message: Commodi pariatur reiciendis ex possimus eius accusantium.
+                message: Sed numquam.
             required:
                 - message
         RefreshTokenRequestBody:
@@ -361,14 +468,14 @@ components:
                 email:
                     type: string
                     description: User email
-                    example: Quaerat iure quod ut voluptate.
+                    example: Ex repellendus.
                 refreshToken:
                     type: string
                     description: Refresh token
-                    example: Quis eligendi ullam quasi enim laudantium aliquam.
+                    example: Sapiente nostrum minima reiciendis.
             example:
-                email: Reiciendis culpa velit optio error.
-                refreshToken: Ut velit velit numquam.
+                email: Qui beatae deserunt nihil qui recusandae hic.
+                refreshToken: Doloribus atque accusantium odio natus tenetur.
             required:
                 - email
                 - refreshToken
@@ -378,29 +485,29 @@ components:
                 confirmedPassword:
                     type: string
                     description: Confirmed password of the user
-                    example: Illum placeat autem.
+                    example: Ratione recusandae vitae suscipit.
                 email:
                     type: string
                     description: User email
-                    example: Veritatis suscipit deleniti sit ipsam.
+                    example: Reprehenderit eum sint quidem ipsa.
                 firstName:
                     type: string
                     description: User first name
-                    example: Ipsam commodi ut autem.
+                    example: Voluptatem incidunt eum reiciendis molestiae quasi impedit.
                 lastName:
                     type: string
                     description: User last name
-                    example: Voluptatem qui autem dolorem ipsum.
+                    example: Qui officia rerum nulla cum magnam.
                 password:
                     type: string
                     description: User password
-                    example: Est repellendus alias corporis mollitia neque consequuntur.
+                    example: Cumque iusto.
             example:
-                confirmedPassword: Qui beatae deserunt nihil qui recusandae hic.
-                email: Ex repellendus.
-                firstName: Qui quia.
-                lastName: Est repellendus exercitationem aut delectus.
-                password: Sapiente nostrum minima reiciendis.
+                confirmedPassword: Eius incidunt est aut voluptatibus omnis sint.
+                email: Est placeat laboriosam quia quibusdam ipsum voluptate.
+                firstName: Sunt quas et consequatur.
+                lastName: Est unde ipsam qui ad ex.
+                password: Libero in sit doloremque accusantium dolores.
             required:
                 - email
                 - password
@@ -413,14 +520,14 @@ components:
                 firstName:
                     type: string
                     description: Updated user first name
-                    example: Facere temporibus et numquam officia.
+                    example: Iure hic totam.
                 lastName:
                     type: string
                     description: Updated user last name
-                    example: Totam velit repudiandae.
+                    example: Quis repudiandae.
             example:
-                firstName: Corporis ut magnam dolor quas incidunt.
-                lastName: Ex et nesciunt iure non dolor.
+                firstName: Reiciendis molestiae qui porro sunt qui.
+                lastName: Quae nulla praesentium magnam et suscipit veniam.
             required:
                 - firstName
                 - lastName
@@ -430,47 +537,59 @@ components:
                 email:
                     type: string
                     description: Email
-                    example: Dolores sit sed officiis consequatur.
+                    example: Consectetur dicta quaerat iure.
                 firstName:
                     type: string
                     description: First name
-                    example: Quia est in aut id accusantium ab.
+                    example: Provident consequuntur occaecati ipsam eius hic.
                 friendsList:
                     type: array
                     items:
                         $ref: '#/components/schemas/Friend'
                     description: Friendslist
                     example:
-                        - email: Dolorum rerum.
-                          firstName: Dolores quibusdam.
-                          id: Maxime molestiae.
-                          lastName: Labore tempora.
-                        - email: Dolorum rerum.
-                          firstName: Dolores quibusdam.
-                          id: Maxime molestiae.
-                          lastName: Labore tempora.
+                        - email: Vel id doloremque et error.
+                          firstName: Expedita beatae et alias.
+                          id: Similique molestiae necessitatibus sint.
+                          lastName: Quo quia et.
+                        - email: Vel id doloremque et error.
+                          firstName: Expedita beatae et alias.
+                          id: Similique molestiae necessitatibus sint.
+                          lastName: Quo quia et.
+                        - email: Vel id doloremque et error.
+                          firstName: Expedita beatae et alias.
+                          id: Similique molestiae necessitatibus sint.
+                          lastName: Quo quia et.
                 id:
                     type: string
                     description: User ID
-                    example: Doloribus atque accusantium odio natus tenetur.
+                    example: Fugit eos voluptas eligendi quam praesentium quas.
                 lastName:
                     type: string
                     description: Last name
-                    example: Doloremque sequi sed.
+                    example: Dolorem et sint doloremque deleniti voluptatibus id.
             example:
-                email: Impedit est sapiente quas quia voluptatem.
-                firstName: Eos repellat et minima voluptatem.
+                email: Qui sint harum sunt rerum delectus corrupti.
+                firstName: Non ipsam mollitia nulla aut natus.
                 friendsList:
-                    - email: Dolorum rerum.
-                      firstName: Dolores quibusdam.
-                      id: Maxime molestiae.
-                      lastName: Labore tempora.
-                    - email: Dolorum rerum.
-                      firstName: Dolores quibusdam.
-                      id: Maxime molestiae.
-                      lastName: Labore tempora.
-                id: Ipsa totam nihil ut.
-                lastName: Occaecati asperiores minus impedit sed quis sed.
+                    - email: Vel id doloremque et error.
+                      firstName: Expedita beatae et alias.
+                      id: Similique molestiae necessitatibus sint.
+                      lastName: Quo quia et.
+                    - email: Vel id doloremque et error.
+                      firstName: Expedita beatae et alias.
+                      id: Similique molestiae necessitatibus sint.
+                      lastName: Quo quia et.
+                    - email: Vel id doloremque et error.
+                      firstName: Expedita beatae et alias.
+                      id: Similique molestiae necessitatibus sint.
+                      lastName: Quo quia et.
+                    - email: Vel id doloremque et error.
+                      firstName: Expedita beatae et alias.
+                      id: Similique molestiae necessitatibus sint.
+                      lastName: Quo quia et.
+                id: Ut impedit distinctio perspiciatis omnis libero.
+                lastName: Eum mollitia recusandae delectus sunt.
             required:
                 - id
                 - email
@@ -480,7 +599,11 @@ components:
 tags:
     - name: auth
       description: Authentication service is responsible for handling user data and requests
+    - name: chat
+      description: User service is responsible for handling user data and requests
     - name: info
       description: Application info
+    - name: notification
+      description: Notification service is responsible for handling user data and requests
     - name: user
       description: User service is responsible for handling user data and requests

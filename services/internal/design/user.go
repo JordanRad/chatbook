@@ -78,6 +78,7 @@ var _ = Service("user", func() {
 			DELETE("/friends/{id}")
 		})
 	})
+
 })
 
 var Friend = Type("Friend", func() {

@@ -15,6 +15,7 @@ import (
 	"os"
 
 	authc "github.com/JordanRad/chatbook/services/internal/gen/http/auth/client"
+	chatc "github.com/JordanRad/chatbook/services/internal/gen/http/chat/client"
 	infoc "github.com/JordanRad/chatbook/services/internal/gen/http/info/client"
 	userc "github.com/JordanRad/chatbook/services/internal/gen/http/user/client"
 	goahttp "goa.design/goa/v3/http"
@@ -26,6 +27,7 @@ import (
 //	command (subcommand1|subcommand2|...)
 func UsageCommands() string {
 	return `auth (refresh-token|login)
+chat get-chat-history
 info get-info
 user (register|get-profile|update-profile-names|add-friend|remove-friend)
 `
@@ -34,16 +36,17 @@ user (register|get-profile|update-profile-names|add-friend|remove-friend)
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
 	return os.Args[0] + ` auth refresh-token --body '{
-      "email": "Qui vel voluptas aperiam quae.",
-      "refreshToken": "Explicabo omnis nulla."
+      "email": "Amet ut nihil consequuntur odio.",
+      "refreshToken": "Qui impedit tempore sunt optio."
    }'` + "\n" +
+		os.Args[0] + ` chat get-chat-history --id "Ut ut."` + "\n" +
 		os.Args[0] + ` info get-info` + "\n" +
 		os.Args[0] + ` user register --body '{
-      "confirmedPassword": "Inventore quisquam.",
-      "email": "Veritatis natus quisquam.",
-      "firstName": "Magnam facilis incidunt occaecati consequatur ullam.",
-      "lastName": "Quo et.",
-      "password": "Illo omnis nesciunt minus sed."
+      "confirmedPassword": "Eum ullam eveniet temporibus quis dolore mollitia.",
+      "email": "Rerum qui.",
+      "firstName": "Libero omnis commodi qui quis et.",
+      "lastName": "Modi officia ipsum consequatur quas velit et.",
+      "password": "Laboriosam tempore atque mollitia ut."
    }'` + "\n" +
 		""
 }
@@ -65,6 +68,11 @@ func ParseEndpoint(
 
 		authLoginFlags    = flag.NewFlagSet("login", flag.ExitOnError)
 		authLoginBodyFlag = authLoginFlags.String("body", "REQUIRED", "")
+
+		chatFlags = flag.NewFlagSet("chat", flag.ContinueOnError)
+
+		chatGetChatHistoryFlags  = flag.NewFlagSet("get-chat-history", flag.ExitOnError)
+		chatGetChatHistoryIDFlag = chatGetChatHistoryFlags.String("id", "REQUIRED", "Chatroom ID")
 
 		infoFlags = flag.NewFlagSet("info", flag.ContinueOnError)
 
@@ -89,6 +97,9 @@ func ParseEndpoint(
 	authFlags.Usage = authUsage
 	authRefreshTokenFlags.Usage = authRefreshTokenUsage
 	authLoginFlags.Usage = authLoginUsage
+
+	chatFlags.Usage = chatUsage
+	chatGetChatHistoryFlags.Usage = chatGetChatHistoryUsage
 
 	infoFlags.Usage = infoUsage
 	infoGetInfoFlags.Usage = infoGetInfoUsage
@@ -117,6 +128,8 @@ func ParseEndpoint(
 		switch svcn {
 		case "auth":
 			svcf = authFlags
+		case "chat":
+			svcf = chatFlags
 		case "info":
 			svcf = infoFlags
 		case "user":
@@ -143,6 +156,13 @@ func ParseEndpoint(
 
 			case "login":
 				epf = authLoginFlags
+
+			}
+
+		case "chat":
+			switch epn {
+			case "get-chat-history":
+				epf = chatGetChatHistoryFlags
 
 			}
 
@@ -202,6 +222,13 @@ func ParseEndpoint(
 				endpoint = c.Login()
 				data, err = authc.BuildLoginPayload(*authLoginBodyFlag)
 			}
+		case "chat":
+			c := chatc.NewClient(scheme, host, doer, enc, dec, restore)
+			switch epn {
+			case "get-chat-history":
+				endpoint = c.GetChatHistory()
+				data, err = chatc.BuildGetChatHistoryPayload(*chatGetChatHistoryIDFlag)
+			}
 		case "info":
 			c := infoc.NewClient(scheme, host, doer, enc, dec, restore)
 			switch epn {
@@ -259,8 +286,8 @@ RefreshToken implements refreshToken.
 
 Example:
     %[1]s auth refresh-token --body '{
-      "email": "Qui vel voluptas aperiam quae.",
-      "refreshToken": "Explicabo omnis nulla."
+      "email": "Amet ut nihil consequuntur odio.",
+      "refreshToken": "Qui impedit tempore sunt optio."
    }'
 `, os.Args[0])
 }
@@ -273,9 +300,33 @@ Login implements login.
 
 Example:
     %[1]s auth login --body '{
-      "email": "Sed quia eveniet sit.",
-      "password": "Ut blanditiis qui."
+      "email": "Veritatis natus quisquam.",
+      "password": "Illo omnis nesciunt minus sed."
    }'
+`, os.Args[0])
+}
+
+// chatUsage displays the usage of the chat command and its subcommands.
+func chatUsage() {
+	fmt.Fprintf(os.Stderr, `User service is responsible for handling user data and requests
+Usage:
+    %[1]s [globalflags] chat COMMAND [flags]
+
+COMMAND:
+    get-chat-history: GetChatHistory implements getChatHistory.
+
+Additional help:
+    %[1]s chat COMMAND --help
+`, os.Args[0])
+}
+func chatGetChatHistoryUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] chat get-chat-history -id STRING
+
+GetChatHistory implements getChatHistory.
+    -id STRING: Chatroom ID
+
+Example:
+    %[1]s chat get-chat-history --id "Ut ut."
 `, os.Args[0])
 }
 
@@ -327,11 +378,11 @@ Register implements register.
 
 Example:
     %[1]s user register --body '{
-      "confirmedPassword": "Inventore quisquam.",
-      "email": "Veritatis natus quisquam.",
-      "firstName": "Magnam facilis incidunt occaecati consequatur ullam.",
-      "lastName": "Quo et.",
-      "password": "Illo omnis nesciunt minus sed."
+      "confirmedPassword": "Eum ullam eveniet temporibus quis dolore mollitia.",
+      "email": "Rerum qui.",
+      "firstName": "Libero omnis commodi qui quis et.",
+      "lastName": "Modi officia ipsum consequatur quas velit et.",
+      "password": "Laboriosam tempore atque mollitia ut."
    }'
 `, os.Args[0])
 }
@@ -354,8 +405,8 @@ UpdateProfileNames implements updateProfileNames.
 
 Example:
     %[1]s user update-profile-names --body '{
-      "firstName": "Quia molestias aut dolores soluta quia recusandae.",
-      "lastName": "Omnis commodi qui quis et inventore."
+      "firstName": "Laudantium suscipit qui nesciunt consequatur quia repellat.",
+      "lastName": "Quia excepturi error similique."
    }'
 `, os.Args[0])
 }
@@ -367,7 +418,7 @@ AddFriend implements addFriend.
     -id STRING: User ID to add
 
 Example:
-    %[1]s user add-friend --id "Laboriosam tempore atque mollitia ut."
+    %[1]s user add-friend --id "Ab est."
 `, os.Args[0])
 }
 
@@ -378,6 +429,6 @@ RemoveFriend implements removeFriend.
     -id STRING: User ID to delete
 
 Example:
-    %[1]s user remove-friend --id "Similique molestiae necessitatibus sint."
+    %[1]s user remove-friend --id "Libero inventore in tempore."
 `, os.Args[0])
 }
