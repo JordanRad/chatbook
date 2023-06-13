@@ -1,5 +1,5 @@
 # Chatbook (chat application clone)
-Chatbook is a hobby project of mine. It aims to create a highly available chat system.
+Chatbook is a hobby project of mine. It aims to create a highly available chat system and improve my knowledge of complex system design and implementation.
 
 ## Functional Requirements:
 
