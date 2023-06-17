@@ -41,3 +41,14 @@ func EncodeNotifyUserNamesUpdateRequest(ctx context.Context, v any, md *metadata
 	}
 	return NewProtoNotifyUserNamesUpdateRequest(payload), nil
 }
+
+// DecodeNotifyUserNamesUpdateResponse decodes responses from the notification
+// notifyUserNamesUpdate endpoint.
+func DecodeNotifyUserNamesUpdateResponse(ctx context.Context, v any, hdr, trlr metadata.MD) (any, error) {
+	message, ok := v.(*notificationpb.NotifyUserNamesUpdateResponse)
+	if !ok {
+		return nil, goagrpc.ErrInvalidType("notification", "notifyUserNamesUpdate", "*notificationpb.NotifyUserNamesUpdateResponse", v)
+	}
+	res := NewNotifyUserNamesUpdateResult(message)
+	return res, nil
+}

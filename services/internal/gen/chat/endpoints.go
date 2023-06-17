@@ -16,26 +16,62 @@ import (
 
 // Endpoints wraps the "chat" service endpoints.
 type Endpoints struct {
-	GetChatHistory goa.Endpoint
+	GetConversationHistory goa.Endpoint
+	SearchInConversation   goa.Endpoint
+	GetConversationsList   goa.Endpoint
+	AddConversation        goa.Endpoint
 }
 
 // NewEndpoints wraps the methods of the "chat" service with endpoints.
 func NewEndpoints(s Service) *Endpoints {
 	return &Endpoints{
-		GetChatHistory: NewGetChatHistoryEndpoint(s),
+		GetConversationHistory: NewGetConversationHistoryEndpoint(s),
+		SearchInConversation:   NewSearchInConversationEndpoint(s),
+		GetConversationsList:   NewGetConversationsListEndpoint(s),
+		AddConversation:        NewAddConversationEndpoint(s),
 	}
 }
 
 // Use applies the given middleware to all the "chat" service endpoints.
 func (e *Endpoints) Use(m func(goa.Endpoint) goa.Endpoint) {
-	e.GetChatHistory = m(e.GetChatHistory)
+	e.GetConversationHistory = m(e.GetConversationHistory)
+	e.SearchInConversation = m(e.SearchInConversation)
+	e.GetConversationsList = m(e.GetConversationsList)
+	e.AddConversation = m(e.AddConversation)
 }
 
-// NewGetChatHistoryEndpoint returns an endpoint function that calls the method
-// "getChatHistory" of service "chat".
-func NewGetChatHistoryEndpoint(s Service) goa.Endpoint {
+// NewGetConversationHistoryEndpoint returns an endpoint function that calls
+// the method "getConversationHistory" of service "chat".
+func NewGetConversationHistoryEndpoint(s Service) goa.Endpoint {
 	return func(ctx context.Context, req any) (any, error) {
-		p := req.(*GetChatHistoryPayload)
-		return s.GetChatHistory(ctx, p)
+		p := req.(*GetConversationHistoryPayload)
+		return s.GetConversationHistory(ctx, p)
+	}
+}
+
+// NewSearchInConversationEndpoint returns an endpoint function that calls the
+// method "searchInConversation" of service "chat".
+func NewSearchInConversationEndpoint(s Service) goa.Endpoint {
+	return func(ctx context.Context, req any) (any, error) {
+		p := req.(*SearchInConversationPayload)
+		return s.SearchInConversation(ctx, p)
+	}
+}
+
+// NewGetConversationsListEndpoint returns an endpoint function that calls the
+// method "getConversationsList" of service "chat".
+func NewGetConversationsListEndpoint(s Service) goa.Endpoint {
+	return func(ctx context.Context, req any) (any, error) {
+		p := req.(*GetConversationsListPayload)
+		return s.GetConversationsList(ctx, p)
+	}
+}
+
+// NewAddConversationEndpoint returns an endpoint function that calls the
+// method "addConversation" of service "chat".
+func NewAddConversationEndpoint(s Service) goa.Endpoint {
+	return func(ctx context.Context, req any) (any, error) {
+		p := req.(*AddConversationPayload)
+		return s.AddConversation(ctx, p)
 	}
 }

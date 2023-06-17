@@ -29,6 +29,7 @@ import (
 
 	"github.com/JordanRad/chatbook/services/internal/middleware"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	notificationsprotobuf "github.com/JordanRad/chatbook/services/internal/gen/grpc/notification/pb"
 	goahttp "goa.design/goa/v3/http"
@@ -72,13 +73,13 @@ func main() {
 	jwtService := &jwt.JWTService{}
 	encryptionTool := &encryption.Encrypter{}
 
-	conn, err := grpc.Dial(":5002", grpc.WithInsecure())
+	conn, err := grpc.Dial("localhost:5002", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("cannot connect to gRPC server: %s", err)
 	}
 	defer conn.Close()
-	log.Println("gRPC connection to Notifications Servcer has been established successfully.")
 
+	log.Println("gRPC connection to Notifications Server has been established successfully.")
 	notificationsClient := notificationsprotobuf.NewNotificationClient(conn)
 
 	userService := user.NewService(userStore, encryptionTool, logger, notificationsClient)

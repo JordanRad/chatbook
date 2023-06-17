@@ -28,7 +28,11 @@ func NewClient(notifyUserNamesUpdate goa.Endpoint) *Client {
 
 // NotifyUserNamesUpdate calls the "notifyUserNamesUpdate" endpoint of the
 // "notification" service.
-func (c *Client) NotifyUserNamesUpdate(ctx context.Context, p *NotifyUserNamesUpdatePayload) (err error) {
-	_, err = c.NotifyUserNamesUpdateEndpoint(ctx, p)
-	return
+func (c *Client) NotifyUserNamesUpdate(ctx context.Context, p *NotifyUserNamesUpdatePayload) (res *BlankResponse, err error) {
+	var ires any
+	ires, err = c.NotifyUserNamesUpdateEndpoint(ctx, p)
+	if err != nil {
+		return
+	}
+	return ires.(*BlankResponse), nil
 }

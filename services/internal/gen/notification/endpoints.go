@@ -36,6 +36,6 @@ func (e *Endpoints) Use(m func(goa.Endpoint) goa.Endpoint) {
 func NewNotifyUserNamesUpdateEndpoint(s Service) goa.Endpoint {
 	return func(ctx context.Context, req any) (any, error) {
 		p := req.(*NotifyUserNamesUpdatePayload)
-		return nil, s.NotifyUserNamesUpdate(ctx, p)
+		return s.NotifyUserNamesUpdate(ctx, p)
 	}
 }

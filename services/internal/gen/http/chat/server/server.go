@@ -21,9 +21,12 @@ import (
 
 // Server lists the chat service endpoint HTTP handlers.
 type Server struct {
-	Mounts         []*MountPoint
-	GetChatHistory http.Handler
-	CORS           http.Handler
+	Mounts                 []*MountPoint
+	GetConversationHistory http.Handler
+	SearchInConversation   http.Handler
+	GetConversationsList   http.Handler
+	AddConversation        http.Handler
+	CORS                   http.Handler
 }
 
 // MountPoint holds information about the mounted endpoints.
@@ -53,11 +56,20 @@ func New(
 ) *Server {
 	return &Server{
 		Mounts: []*MountPoint{
-			{"GetChatHistory", "GET", "/api/chat/v1/chatrooms/{ID}/history"},
-			{"CORS", "OPTIONS", "/api/chat/v1/chatrooms/{ID}/history"},
+			{"GetConversationHistory", "GET", "/api/chat/v1/conversations/{ID}/history"},
+			{"SearchInConversation", "GET", "/api/chat/v1/conversations/{ID}"},
+			{"GetConversationsList", "GET", "/api/chat/v1/conversations"},
+			{"AddConversation", "POST", "/api/chat/v1/conversation"},
+			{"CORS", "OPTIONS", "/api/chat/v1/conversations/{ID}/history"},
+			{"CORS", "OPTIONS", "/api/chat/v1/conversations/{ID}"},
+			{"CORS", "OPTIONS", "/api/chat/v1/conversations"},
+			{"CORS", "OPTIONS", "/api/chat/v1/conversation"},
 		},
-		GetChatHistory: NewGetChatHistoryHandler(e.GetChatHistory, mux, decoder, encoder, errhandler, formatter),
-		CORS:           NewCORSHandler(),
+		GetConversationHistory: NewGetConversationHistoryHandler(e.GetConversationHistory, mux, decoder, encoder, errhandler, formatter),
+		SearchInConversation:   NewSearchInConversationHandler(e.SearchInConversation, mux, decoder, encoder, errhandler, formatter),
+		GetConversationsList:   NewGetConversationsListHandler(e.GetConversationsList, mux, decoder, encoder, errhandler, formatter),
+		AddConversation:        NewAddConversationHandler(e.AddConversation, mux, decoder, encoder, errhandler, formatter),
+		CORS:                   NewCORSHandler(),
 	}
 }
 
@@ -66,7 +78,10 @@ func (s *Server) Service() string { return "chat" }
 
 // Use wraps the server handlers with the given middleware.
 func (s *Server) Use(m func(http.Handler) http.Handler) {
-	s.GetChatHistory = m(s.GetChatHistory)
+	s.GetConversationHistory = m(s.GetConversationHistory)
+	s.SearchInConversation = m(s.SearchInConversation)
+	s.GetConversationsList = m(s.GetConversationsList)
+	s.AddConversation = m(s.AddConversation)
 	s.CORS = m(s.CORS)
 }
 
@@ -75,7 +90,10 @@ func (s *Server) MethodNames() []string { return chat.MethodNames[:] }
 
 // Mount configures the mux to serve the chat endpoints.
 func Mount(mux goahttp.Muxer, h *Server) {
-	MountGetChatHistoryHandler(mux, h.GetChatHistory)
+	MountGetConversationHistoryHandler(mux, h.GetConversationHistory)
+	MountSearchInConversationHandler(mux, h.SearchInConversation)
+	MountGetConversationsListHandler(mux, h.GetConversationsList)
+	MountAddConversationHandler(mux, h.AddConversation)
 	MountCORSHandler(mux, h.CORS)
 }
 
@@ -84,21 +102,21 @@ func (s *Server) Mount(mux goahttp.Muxer) {
 	Mount(mux, s)
 }
 
-// MountGetChatHistoryHandler configures the mux to serve the "chat" service
-// "getChatHistory" endpoint.
-func MountGetChatHistoryHandler(mux goahttp.Muxer, h http.Handler) {
+// MountGetConversationHistoryHandler configures the mux to serve the "chat"
+// service "getConversationHistory" endpoint.
+func MountGetConversationHistoryHandler(mux goahttp.Muxer, h http.Handler) {
 	f, ok := HandleChatOrigin(h).(http.HandlerFunc)
 	if !ok {
 		f = func(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("GET", "/api/chat/v1/chatrooms/{ID}/history", f)
+	mux.Handle("GET", "/api/chat/v1/conversations/{ID}/history", f)
 }
 
-// NewGetChatHistoryHandler creates a HTTP handler which loads the HTTP request
-// and calls the "chat" service "getChatHistory" endpoint.
-func NewGetChatHistoryHandler(
+// NewGetConversationHistoryHandler creates a HTTP handler which loads the HTTP
+// request and calls the "chat" service "getConversationHistory" endpoint.
+func NewGetConversationHistoryHandler(
 	endpoint goa.Endpoint,
 	mux goahttp.Muxer,
 	decoder func(*http.Request) goahttp.Decoder,
@@ -107,13 +125,166 @@ func NewGetChatHistoryHandler(
 	formatter func(ctx context.Context, err error) goahttp.Statuser,
 ) http.Handler {
 	var (
-		decodeRequest  = DecodeGetChatHistoryRequest(mux, decoder)
-		encodeResponse = EncodeGetChatHistoryResponse(encoder)
+		decodeRequest  = DecodeGetConversationHistoryRequest(mux, decoder)
+		encodeResponse = EncodeGetConversationHistoryResponse(encoder)
 		encodeError    = goahttp.ErrorEncoder(encoder, formatter)
 	)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
-		ctx = context.WithValue(ctx, goa.MethodKey, "getChatHistory")
+		ctx = context.WithValue(ctx, goa.MethodKey, "getConversationHistory")
+		ctx = context.WithValue(ctx, goa.ServiceKey, "chat")
+		payload, err := decodeRequest(r)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		res, err := endpoint(ctx, payload)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		if err := encodeResponse(ctx, w, res); err != nil {
+			errhandler(ctx, w, err)
+		}
+	})
+}
+
+// MountSearchInConversationHandler configures the mux to serve the "chat"
+// service "searchInConversation" endpoint.
+func MountSearchInConversationHandler(mux goahttp.Muxer, h http.Handler) {
+	f, ok := HandleChatOrigin(h).(http.HandlerFunc)
+	if !ok {
+		f = func(w http.ResponseWriter, r *http.Request) {
+			h.ServeHTTP(w, r)
+		}
+	}
+	mux.Handle("GET", "/api/chat/v1/conversations/{ID}", f)
+}
+
+// NewSearchInConversationHandler creates a HTTP handler which loads the HTTP
+// request and calls the "chat" service "searchInConversation" endpoint.
+func NewSearchInConversationHandler(
+	endpoint goa.Endpoint,
+	mux goahttp.Muxer,
+	decoder func(*http.Request) goahttp.Decoder,
+	encoder func(context.Context, http.ResponseWriter) goahttp.Encoder,
+	errhandler func(context.Context, http.ResponseWriter, error),
+	formatter func(ctx context.Context, err error) goahttp.Statuser,
+) http.Handler {
+	var (
+		decodeRequest  = DecodeSearchInConversationRequest(mux, decoder)
+		encodeResponse = EncodeSearchInConversationResponse(encoder)
+		encodeError    = goahttp.ErrorEncoder(encoder, formatter)
+	)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
+		ctx = context.WithValue(ctx, goa.MethodKey, "searchInConversation")
+		ctx = context.WithValue(ctx, goa.ServiceKey, "chat")
+		payload, err := decodeRequest(r)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		res, err := endpoint(ctx, payload)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		if err := encodeResponse(ctx, w, res); err != nil {
+			errhandler(ctx, w, err)
+		}
+	})
+}
+
+// MountGetConversationsListHandler configures the mux to serve the "chat"
+// service "getConversationsList" endpoint.
+func MountGetConversationsListHandler(mux goahttp.Muxer, h http.Handler) {
+	f, ok := HandleChatOrigin(h).(http.HandlerFunc)
+	if !ok {
+		f = func(w http.ResponseWriter, r *http.Request) {
+			h.ServeHTTP(w, r)
+		}
+	}
+	mux.Handle("GET", "/api/chat/v1/conversations", f)
+}
+
+// NewGetConversationsListHandler creates a HTTP handler which loads the HTTP
+// request and calls the "chat" service "getConversationsList" endpoint.
+func NewGetConversationsListHandler(
+	endpoint goa.Endpoint,
+	mux goahttp.Muxer,
+	decoder func(*http.Request) goahttp.Decoder,
+	encoder func(context.Context, http.ResponseWriter) goahttp.Encoder,
+	errhandler func(context.Context, http.ResponseWriter, error),
+	formatter func(ctx context.Context, err error) goahttp.Statuser,
+) http.Handler {
+	var (
+		decodeRequest  = DecodeGetConversationsListRequest(mux, decoder)
+		encodeResponse = EncodeGetConversationsListResponse(encoder)
+		encodeError    = goahttp.ErrorEncoder(encoder, formatter)
+	)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
+		ctx = context.WithValue(ctx, goa.MethodKey, "getConversationsList")
+		ctx = context.WithValue(ctx, goa.ServiceKey, "chat")
+		payload, err := decodeRequest(r)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		res, err := endpoint(ctx, payload)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		if err := encodeResponse(ctx, w, res); err != nil {
+			errhandler(ctx, w, err)
+		}
+	})
+}
+
+// MountAddConversationHandler configures the mux to serve the "chat" service
+// "addConversation" endpoint.
+func MountAddConversationHandler(mux goahttp.Muxer, h http.Handler) {
+	f, ok := HandleChatOrigin(h).(http.HandlerFunc)
+	if !ok {
+		f = func(w http.ResponseWriter, r *http.Request) {
+			h.ServeHTTP(w, r)
+		}
+	}
+	mux.Handle("POST", "/api/chat/v1/conversation", f)
+}
+
+// NewAddConversationHandler creates a HTTP handler which loads the HTTP
+// request and calls the "chat" service "addConversation" endpoint.
+func NewAddConversationHandler(
+	endpoint goa.Endpoint,
+	mux goahttp.Muxer,
+	decoder func(*http.Request) goahttp.Decoder,
+	encoder func(context.Context, http.ResponseWriter) goahttp.Encoder,
+	errhandler func(context.Context, http.ResponseWriter, error),
+	formatter func(ctx context.Context, err error) goahttp.Statuser,
+) http.Handler {
+	var (
+		decodeRequest  = DecodeAddConversationRequest(mux, decoder)
+		encodeResponse = EncodeAddConversationResponse(encoder)
+		encodeError    = goahttp.ErrorEncoder(encoder, formatter)
+	)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
+		ctx = context.WithValue(ctx, goa.MethodKey, "addConversation")
 		ctx = context.WithValue(ctx, goa.ServiceKey, "chat")
 		payload, err := decodeRequest(r)
 		if err != nil {
@@ -139,7 +310,10 @@ func NewGetChatHistoryHandler(
 // service chat.
 func MountCORSHandler(mux goahttp.Muxer, h http.Handler) {
 	h = HandleChatOrigin(h)
-	mux.Handle("OPTIONS", "/api/chat/v1/chatrooms/{ID}/history", h.ServeHTTP)
+	mux.Handle("OPTIONS", "/api/chat/v1/conversations/{ID}/history", h.ServeHTTP)
+	mux.Handle("OPTIONS", "/api/chat/v1/conversations/{ID}", h.ServeHTTP)
+	mux.Handle("OPTIONS", "/api/chat/v1/conversations", h.ServeHTTP)
+	mux.Handle("OPTIONS", "/api/chat/v1/conversation", h.ServeHTTP)
 }
 
 // NewCORSHandler creates a HTTP handler which returns a simple 200 response.

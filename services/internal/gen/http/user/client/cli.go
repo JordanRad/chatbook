@@ -23,7 +23,7 @@ func BuildRegisterPayload(userRegisterBody string) (*user.RegisterPayload, error
 	{
 		err = json.Unmarshal([]byte(userRegisterBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"confirmedPassword\": \"Eum ullam eveniet temporibus quis dolore mollitia.\",\n      \"email\": \"Rerum qui.\",\n      \"firstName\": \"Libero omnis commodi qui quis et.\",\n      \"lastName\": \"Modi officia ipsum consequatur quas velit et.\",\n      \"password\": \"Laboriosam tempore atque mollitia ut.\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"confirmedPassword\": \"Molestiae similique omnis voluptate pariatur non.\",\n      \"email\": \"Quidem sapiente ex et sunt earum.\",\n      \"firstName\": \"Aut facere molestiae cumque quia blanditiis quos.\",\n      \"lastName\": \"Amet quia vero illum.\",\n      \"password\": \"Enim vel sapiente.\"\n   }'")
 		}
 	}
 	v := &user.RegisterPayload{
@@ -45,7 +45,7 @@ func BuildUpdateProfileNamesPayload(userUpdateProfileNamesBody string) (*user.Up
 	{
 		err = json.Unmarshal([]byte(userUpdateProfileNamesBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"firstName\": \"Laudantium suscipit qui nesciunt consequatur quia repellat.\",\n      \"lastName\": \"Quia excepturi error similique.\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"firstName\": \"Animi aperiam veniam.\",\n      \"lastName\": \"Quam ad voluptatem dolor quae accusamus deleniti.\"\n   }'")
 		}
 	}
 	v := &user.UpdateProfileNamesPayload{

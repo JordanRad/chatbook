@@ -38,7 +38,7 @@ func (c *Client) NotifyUserNamesUpdate() goa.Endpoint {
 		inv := goagrpc.NewInvoker(
 			BuildNotifyUserNamesUpdateFunc(c.grpccli, c.opts...),
 			EncodeNotifyUserNamesUpdateRequest,
-			nil)
+			DecodeNotifyUserNamesUpdateResponse)
 		res, err := inv.Invoke(ctx, v)
 		if err != nil {
 			return nil, goa.Fault(err.Error())

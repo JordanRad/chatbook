@@ -20,7 +20,11 @@ import (
 // EncodeNotifyUserNamesUpdateResponse encodes responses from the
 // "notification" service "notifyUserNamesUpdate" endpoint.
 func EncodeNotifyUserNamesUpdateResponse(ctx context.Context, v any, hdr, trlr *metadata.MD) (any, error) {
-	resp := NewProtoNotifyUserNamesUpdateResponse()
+	result, ok := v.(*notification.BlankResponse)
+	if !ok {
+		return nil, goagrpc.ErrInvalidType("notification", "notifyUserNamesUpdate", "*notification.BlankResponse", v)
+	}
+	resp := NewProtoNotifyUserNamesUpdateResponse(result)
 	return resp, nil
 }
 

@@ -25,7 +25,7 @@ func BuildNotifyUserNamesUpdatePayload(notificationNotifyUserNamesUpdateMessage 
 		if notificationNotifyUserNamesUpdateMessage != "" {
 			err = json.Unmarshal([]byte(notificationNotifyUserNamesUpdateMessage), &message)
 			if err != nil {
-				return nil, fmt.Errorf("invalid JSON for message, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"firstName\": \"Amet quia vero illum.\",\n      \"id\": \"Aut facere molestiae cumque quia blanditiis quos.\",\n      \"lastName\": \"Enim vel sapiente.\",\n      \"oldFirstName\": \"Quidem sapiente ex et sunt earum.\",\n      \"oldLastName\": \"Molestiae similique omnis voluptate pariatur non.\",\n      \"ts\": \"Cum soluta possimus accusamus similique quibusdam.\"\n   }'")
+				return nil, fmt.Errorf("invalid JSON for message, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"firstName\": \"Iste omnis exercitationem.\",\n      \"id\": \"Doloribus libero repellendus non.\",\n      \"lastName\": \"Nulla et.\",\n      \"oldFirstName\": \"Quia quaerat sapiente alias sint.\",\n      \"oldLastName\": \"Esse adipisci hic assumenda.\",\n      \"ts\": \"Ratione molestiae expedita quam.\"\n   }'")
 			}
 		}
 	}

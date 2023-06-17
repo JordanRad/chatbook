@@ -30,7 +30,9 @@ func NewNotifyUserNamesUpdatePayload(message *notificationpb.NotifyUserNamesUpda
 
 // NewProtoNotifyUserNamesUpdateResponse builds the gRPC response type from the
 // result of the "notifyUserNamesUpdate" endpoint of the "notification" service.
-func NewProtoNotifyUserNamesUpdateResponse() *notificationpb.NotifyUserNamesUpdateResponse {
-	message := &notificationpb.NotifyUserNamesUpdateResponse{}
+func NewProtoNotifyUserNamesUpdateResponse(result *notification.BlankResponse) *notificationpb.NotifyUserNamesUpdateResponse {
+	message := &notificationpb.NotifyUserNamesUpdateResponse{
+		Id: result.ID,
+	}
 	return message
 }

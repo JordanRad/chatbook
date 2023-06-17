@@ -17,7 +17,7 @@ func NewService() *Service {
 // Compile time assertion that this service implements the generated interface
 var _ notification.Service = (*Service)(nil)
 
-func (s *Service) NotifyUserNamesUpdate(ctx context.Context, p *notification.NotifyUserNamesUpdatePayload) (err error) {
+func (s *Service) NotifyUserNamesUpdate(ctx context.Context, p *notification.NotifyUserNamesUpdatePayload) (res *notification.BlankResponse, err error) {
 	fmt.Println("User update notification: ", p)
-	return nil
+	return nil, nil
 }

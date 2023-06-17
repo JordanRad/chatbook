@@ -13,45 +13,172 @@ import (
 	goa "goa.design/goa/v3/pkg"
 )
 
-// GetChatHistoryResponseBody is the type of the "chat" service
-// "getChatHistory" endpoint HTTP response body.
-type GetChatHistoryResponseBody struct {
+// GetConversationsListRequestBody is the type of the "chat" service
+// "getConversationsList" endpoint HTTP request body.
+type GetConversationsListRequestBody struct {
+	// Conversation ID
+	ID string `form:"ID" json:"ID" xml:"ID"`
+}
+
+// AddConversationRequestBody is the type of the "chat" service
+// "addConversation" endpoint HTTP request body.
+type AddConversationRequestBody struct {
+	// Participants
+	Participants []*FriendRequestBody `form:"participants" json:"participants" xml:"participants"`
+}
+
+// GetConversationHistoryResponseBody is the type of the "chat" service
+// "getConversationHistory" endpoint HTTP response body.
+type GetConversationHistoryResponseBody struct {
 	// Chatroom ID
 	ID *string `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
 	// Messages Count
 	Count *int `form:"count,omitempty" json:"count,omitempty" xml:"count,omitempty"`
 	// Chat history
-	Messages []*ChatMessageResponseBody `form:"messages,omitempty" json:"messages,omitempty" xml:"messages,omitempty"`
+	Messages []*ConversationMessageResponseBody `form:"messages,omitempty" json:"messages,omitempty" xml:"messages,omitempty"`
 }
 
-// ChatMessageResponseBody is used to define fields on response body types.
-type ChatMessageResponseBody struct {
-	// Previous message ID
-	PreviousMessageID *string `form:"previousMessageID,omitempty" json:"previousMessageID,omitempty" xml:"previousMessageID,omitempty"`
-	// Next message ID
-	NextMessageID *string `form:"nextMessageID,omitempty" json:"nextMessageID,omitempty" xml:"nextMessageID,omitempty"`
+// SearchInConversationResponseBody is the type of the "chat" service
+// "searchInConversation" endpoint HTTP response body.
+type SearchInConversationResponseBody struct {
+	// Chatroom ID
+	ID *string `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
+	// Messages Count
+	Count *int `form:"count,omitempty" json:"count,omitempty" xml:"count,omitempty"`
+	// Chat history
+	Messages []*ConversationMessageResponseBody `form:"messages,omitempty" json:"messages,omitempty" xml:"messages,omitempty"`
+}
+
+// GetConversationsListResponseBody is the type of the "chat" service
+// "getConversationsList" endpoint HTTP response body.
+type GetConversationsListResponseBody struct {
+	// Messages Count
+	Total *int `form:"total,omitempty" json:"total,omitempty" xml:"total,omitempty"`
+	// Chat history
+	Resources []*ConversationResponseBody `form:"resources,omitempty" json:"resources,omitempty" xml:"resources,omitempty"`
+}
+
+// AddConversationResponseBody is the type of the "chat" service
+// "addConversation" endpoint HTTP response body.
+type AddConversationResponseBody struct {
+	// Operation status
+	Message *string `form:"message,omitempty" json:"message,omitempty" xml:"message,omitempty"`
+}
+
+// ConversationMessageResponseBody is used to define fields on response body
+// types.
+type ConversationMessageResponseBody struct {
+	// Sender ID
+	SenderID *string `form:"senderID,omitempty" json:"senderID,omitempty" xml:"senderID,omitempty"`
 	// Timestamp of the message
 	Timestamp *float64 `form:"timestamp,omitempty" json:"timestamp,omitempty" xml:"timestamp,omitempty"`
+	// Message Content
+	Content *string `form:"content,omitempty" json:"content,omitempty" xml:"content,omitempty"`
 }
 
-// NewGetChatHistoryChatHistoryResponseOK builds a "chat" service
-// "getChatHistory" endpoint result from a HTTP "OK" response.
-func NewGetChatHistoryChatHistoryResponseOK(body *GetChatHistoryResponseBody) *chat.ChatHistoryResponse {
+// ConversationResponseBody is used to define fields on response body types.
+type ConversationResponseBody struct {
+	// Conversation ID
+	ID *string `form:"ID,omitempty" json:"ID,omitempty" xml:"ID,omitempty"`
+	// Timestamp of the message
+	Participants *float64 `form:"participants,omitempty" json:"participants,omitempty" xml:"participants,omitempty"`
+	// Last message
+	LastMessage *string `form:"lastMessage,omitempty" json:"lastMessage,omitempty" xml:"lastMessage,omitempty"`
+	// TS for delivered time
+	DeliveredAt *int64 `form:"deliveredAt,omitempty" json:"deliveredAt,omitempty" xml:"deliveredAt,omitempty"`
+}
+
+// FriendRequestBody is used to define fields on request body types.
+type FriendRequestBody struct {
+	// User ID
+	ID string `form:"id" json:"id" xml:"id"`
+	// Email
+	Email string `form:"email" json:"email" xml:"email"`
+	// First name
+	FirstName string `form:"firstName" json:"firstName" xml:"firstName"`
+	// Last name
+	LastName string `form:"lastName" json:"lastName" xml:"lastName"`
+}
+
+// NewGetConversationsListRequestBody builds the HTTP request body from the
+// payload of the "getConversationsList" endpoint of the "chat" service.
+func NewGetConversationsListRequestBody(p *chat.GetConversationsListPayload) *GetConversationsListRequestBody {
+	body := &GetConversationsListRequestBody{
+		ID: p.ID,
+	}
+	return body
+}
+
+// NewAddConversationRequestBody builds the HTTP request body from the payload
+// of the "addConversation" endpoint of the "chat" service.
+func NewAddConversationRequestBody(p *chat.AddConversationPayload) *AddConversationRequestBody {
+	body := &AddConversationRequestBody{}
+	if p.Participants != nil {
+		body.Participants = make([]*FriendRequestBody, len(p.Participants))
+		for i, val := range p.Participants {
+			body.Participants[i] = marshalChatFriendToFriendRequestBody(val)
+		}
+	}
+	return body
+}
+
+// NewGetConversationHistoryChatHistoryResponseOK builds a "chat" service
+// "getConversationHistory" endpoint result from a HTTP "OK" response.
+func NewGetConversationHistoryChatHistoryResponseOK(body *GetConversationHistoryResponseBody) *chat.ChatHistoryResponse {
 	v := &chat.ChatHistoryResponse{
 		ID:    *body.ID,
 		Count: *body.Count,
 	}
-	v.Messages = make([]*chat.ChatMessage, len(body.Messages))
+	v.Messages = make([]*chat.ConversationMessage, len(body.Messages))
 	for i, val := range body.Messages {
-		v.Messages[i] = unmarshalChatMessageResponseBodyToChatChatMessage(val)
+		v.Messages[i] = unmarshalConversationMessageResponseBodyToChatConversationMessage(val)
 	}
 
 	return v
 }
 
-// ValidateGetChatHistoryResponseBody runs the validations defined on
-// GetChatHistoryResponseBody
-func ValidateGetChatHistoryResponseBody(body *GetChatHistoryResponseBody) (err error) {
+// NewSearchInConversationChatHistoryResponseOK builds a "chat" service
+// "searchInConversation" endpoint result from a HTTP "OK" response.
+func NewSearchInConversationChatHistoryResponseOK(body *SearchInConversationResponseBody) *chat.ChatHistoryResponse {
+	v := &chat.ChatHistoryResponse{
+		ID:    *body.ID,
+		Count: *body.Count,
+	}
+	v.Messages = make([]*chat.ConversationMessage, len(body.Messages))
+	for i, val := range body.Messages {
+		v.Messages[i] = unmarshalConversationMessageResponseBodyToChatConversationMessage(val)
+	}
+
+	return v
+}
+
+// NewGetConversationsListConversationsListResponseOK builds a "chat" service
+// "getConversationsList" endpoint result from a HTTP "OK" response.
+func NewGetConversationsListConversationsListResponseOK(body *GetConversationsListResponseBody) *chat.ConversationsListResponse {
+	v := &chat.ConversationsListResponse{
+		Total: *body.Total,
+	}
+	v.Resources = make([]*chat.Conversation, len(body.Resources))
+	for i, val := range body.Resources {
+		v.Resources[i] = unmarshalConversationResponseBodyToChatConversation(val)
+	}
+
+	return v
+}
+
+// NewAddConversationOperationStatusResponseOK builds a "chat" service
+// "addConversation" endpoint result from a HTTP "OK" response.
+func NewAddConversationOperationStatusResponseOK(body *AddConversationResponseBody) *chat.OperationStatusResponse {
+	v := &chat.OperationStatusResponse{
+		Message: *body.Message,
+	}
+
+	return v
+}
+
+// ValidateGetConversationHistoryResponseBody runs the validations defined on
+// GetConversationHistoryResponseBody
+func ValidateGetConversationHistoryResponseBody(body *GetConversationHistoryResponseBody) (err error) {
 	if body.ID == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
 	}
@@ -63,7 +190,7 @@ func ValidateGetChatHistoryResponseBody(body *GetChatHistoryResponseBody) (err e
 	}
 	for _, e := range body.Messages {
 		if e != nil {
-			if err2 := ValidateChatMessageResponseBody(e); err2 != nil {
+			if err2 := ValidateConversationMessageResponseBody(e); err2 != nil {
 				err = goa.MergeErrors(err, err2)
 			}
 		}
@@ -71,17 +198,85 @@ func ValidateGetChatHistoryResponseBody(body *GetChatHistoryResponseBody) (err e
 	return
 }
 
-// ValidateChatMessageResponseBody runs the validations defined on
-// ChatMessageResponseBody
-func ValidateChatMessageResponseBody(body *ChatMessageResponseBody) (err error) {
+// ValidateSearchInConversationResponseBody runs the validations defined on
+// SearchInConversationResponseBody
+func ValidateSearchInConversationResponseBody(body *SearchInConversationResponseBody) (err error) {
+	if body.ID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
+	}
+	if body.Count == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("count", "body"))
+	}
+	if body.Messages == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("messages", "body"))
+	}
+	for _, e := range body.Messages {
+		if e != nil {
+			if err2 := ValidateConversationMessageResponseBody(e); err2 != nil {
+				err = goa.MergeErrors(err, err2)
+			}
+		}
+	}
+	return
+}
+
+// ValidateGetConversationsListResponseBody runs the validations defined on
+// GetConversationsListResponseBody
+func ValidateGetConversationsListResponseBody(body *GetConversationsListResponseBody) (err error) {
+	if body.Total == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("total", "body"))
+	}
+	if body.Resources == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("resources", "body"))
+	}
+	for _, e := range body.Resources {
+		if e != nil {
+			if err2 := ValidateConversationResponseBody(e); err2 != nil {
+				err = goa.MergeErrors(err, err2)
+			}
+		}
+	}
+	return
+}
+
+// ValidateAddConversationResponseBody runs the validations defined on
+// AddConversationResponseBody
+func ValidateAddConversationResponseBody(body *AddConversationResponseBody) (err error) {
+	if body.Message == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("message", "body"))
+	}
+	return
+}
+
+// ValidateConversationMessageResponseBody runs the validations defined on
+// ConversationMessageResponseBody
+func ValidateConversationMessageResponseBody(body *ConversationMessageResponseBody) (err error) {
 	if body.Timestamp == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("timestamp", "body"))
 	}
-	if body.PreviousMessageID == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("previousMessageID", "body"))
+	if body.SenderID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("senderID", "body"))
 	}
-	if body.NextMessageID == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("nextMessageID", "body"))
+	if body.Content == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("content", "body"))
+	}
+	return
+}
+
+// ValidateConversationResponseBody runs the validations defined on
+// ConversationResponseBody
+func ValidateConversationResponseBody(body *ConversationResponseBody) (err error) {
+	if body.ID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("ID", "body"))
+	}
+	if body.Participants == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("participants", "body"))
+	}
+	if body.LastMessage == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("lastMessage", "body"))
+	}
+	if body.DeliveredAt == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("deliveredAt", "body"))
 	}
 	return
 }

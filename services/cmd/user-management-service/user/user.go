@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/JordanRad/chatbook/services/internal/auth"
 	"github.com/JordanRad/chatbook/services/internal/auth/encryption"
@@ -119,6 +120,7 @@ func (s *Service) UpdateProfileNames(ctx context.Context, p *user.UpdateProfileN
 		OldFirstName: u.FirstName,
 		OldLastName:  u.LastName,
 		LastName:     updatedUser.LastName,
+		Ts:           time.Now().Format("24-07-2009"),
 	}
 	_, err = s.notificationsService.NotifyUserNamesUpdate(ctx, grpcPayload)
 	if err != nil {

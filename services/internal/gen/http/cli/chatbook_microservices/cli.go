@@ -27,8 +27,8 @@ import (
 //	command (subcommand1|subcommand2|...)
 func UsageCommands() string {
 	return `auth (refresh-token|login)
-chat get-chat-history
 info get-info
+chat (get-conversation-history|search-in-conversation|get-conversations-list|add-conversation)
 user (register|get-profile|update-profile-names|add-friend|remove-friend)
 `
 }
@@ -36,17 +36,17 @@ user (register|get-profile|update-profile-names|add-friend|remove-friend)
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
 	return os.Args[0] + ` auth refresh-token --body '{
-      "email": "Amet ut nihil consequuntur odio.",
-      "refreshToken": "Qui impedit tempore sunt optio."
+      "email": "Natus quisquam.",
+      "refreshToken": "Illo omnis nesciunt minus sed."
    }'` + "\n" +
-		os.Args[0] + ` chat get-chat-history --id "Ut ut."` + "\n" +
 		os.Args[0] + ` info get-info` + "\n" +
+		os.Args[0] + ` chat get-conversation-history --id "Laboriosam tempore atque mollitia ut." --limit "Eum ullam eveniet temporibus quis dolore mollitia." --before-timestamp 5540675296674446940` + "\n" +
 		os.Args[0] + ` user register --body '{
-      "confirmedPassword": "Eum ullam eveniet temporibus quis dolore mollitia.",
-      "email": "Rerum qui.",
-      "firstName": "Libero omnis commodi qui quis et.",
-      "lastName": "Modi officia ipsum consequatur quas velit et.",
-      "password": "Laboriosam tempore atque mollitia ut."
+      "confirmedPassword": "Molestiae similique omnis voluptate pariatur non.",
+      "email": "Quidem sapiente ex et sunt earum.",
+      "firstName": "Aut facere molestiae cumque quia blanditiis quos.",
+      "lastName": "Amet quia vero illum.",
+      "password": "Enim vel sapiente."
    }'` + "\n" +
 		""
 }
@@ -69,14 +69,28 @@ func ParseEndpoint(
 		authLoginFlags    = flag.NewFlagSet("login", flag.ExitOnError)
 		authLoginBodyFlag = authLoginFlags.String("body", "REQUIRED", "")
 
-		chatFlags = flag.NewFlagSet("chat", flag.ContinueOnError)
-
-		chatGetChatHistoryFlags  = flag.NewFlagSet("get-chat-history", flag.ExitOnError)
-		chatGetChatHistoryIDFlag = chatGetChatHistoryFlags.String("id", "REQUIRED", "Chatroom ID")
-
 		infoFlags = flag.NewFlagSet("info", flag.ContinueOnError)
 
 		infoGetInfoFlags = flag.NewFlagSet("get-info", flag.ExitOnError)
+
+		chatFlags = flag.NewFlagSet("chat", flag.ContinueOnError)
+
+		chatGetConversationHistoryFlags               = flag.NewFlagSet("get-conversation-history", flag.ExitOnError)
+		chatGetConversationHistoryIDFlag              = chatGetConversationHistoryFlags.String("id", "REQUIRED", "Conversation ID")
+		chatGetConversationHistoryLimitFlag           = chatGetConversationHistoryFlags.String("limit", "200", "")
+		chatGetConversationHistoryBeforeTimestampFlag = chatGetConversationHistoryFlags.String("before-timestamp", "1257894000", "")
+
+		chatSearchInConversationFlags           = flag.NewFlagSet("search-in-conversation", flag.ExitOnError)
+		chatSearchInConversationIDFlag          = chatSearchInConversationFlags.String("id", "REQUIRED", "Conversation ID")
+		chatSearchInConversationLimitFlag       = chatSearchInConversationFlags.String("limit", "200", "")
+		chatSearchInConversationSearchInputFlag = chatSearchInConversationFlags.String("search-input", "200", "")
+
+		chatGetConversationsListFlags     = flag.NewFlagSet("get-conversations-list", flag.ExitOnError)
+		chatGetConversationsListBodyFlag  = chatGetConversationsListFlags.String("body", "REQUIRED", "")
+		chatGetConversationsListLimitFlag = chatGetConversationsListFlags.String("limit", "100", "")
+
+		chatAddConversationFlags    = flag.NewFlagSet("add-conversation", flag.ExitOnError)
+		chatAddConversationBodyFlag = chatAddConversationFlags.String("body", "REQUIRED", "")
 
 		userFlags = flag.NewFlagSet("user", flag.ContinueOnError)
 
@@ -98,11 +112,14 @@ func ParseEndpoint(
 	authRefreshTokenFlags.Usage = authRefreshTokenUsage
 	authLoginFlags.Usage = authLoginUsage
 
-	chatFlags.Usage = chatUsage
-	chatGetChatHistoryFlags.Usage = chatGetChatHistoryUsage
-
 	infoFlags.Usage = infoUsage
 	infoGetInfoFlags.Usage = infoGetInfoUsage
+
+	chatFlags.Usage = chatUsage
+	chatGetConversationHistoryFlags.Usage = chatGetConversationHistoryUsage
+	chatSearchInConversationFlags.Usage = chatSearchInConversationUsage
+	chatGetConversationsListFlags.Usage = chatGetConversationsListUsage
+	chatAddConversationFlags.Usage = chatAddConversationUsage
 
 	userFlags.Usage = userUsage
 	userRegisterFlags.Usage = userRegisterUsage
@@ -128,10 +145,10 @@ func ParseEndpoint(
 		switch svcn {
 		case "auth":
 			svcf = authFlags
-		case "chat":
-			svcf = chatFlags
 		case "info":
 			svcf = infoFlags
+		case "chat":
+			svcf = chatFlags
 		case "user":
 			svcf = userFlags
 		default:
@@ -159,17 +176,26 @@ func ParseEndpoint(
 
 			}
 
-		case "chat":
-			switch epn {
-			case "get-chat-history":
-				epf = chatGetChatHistoryFlags
-
-			}
-
 		case "info":
 			switch epn {
 			case "get-info":
 				epf = infoGetInfoFlags
+
+			}
+
+		case "chat":
+			switch epn {
+			case "get-conversation-history":
+				epf = chatGetConversationHistoryFlags
+
+			case "search-in-conversation":
+				epf = chatSearchInConversationFlags
+
+			case "get-conversations-list":
+				epf = chatGetConversationsListFlags
+
+			case "add-conversation":
+				epf = chatAddConversationFlags
 
 			}
 
@@ -222,19 +248,28 @@ func ParseEndpoint(
 				endpoint = c.Login()
 				data, err = authc.BuildLoginPayload(*authLoginBodyFlag)
 			}
-		case "chat":
-			c := chatc.NewClient(scheme, host, doer, enc, dec, restore)
-			switch epn {
-			case "get-chat-history":
-				endpoint = c.GetChatHistory()
-				data, err = chatc.BuildGetChatHistoryPayload(*chatGetChatHistoryIDFlag)
-			}
 		case "info":
 			c := infoc.NewClient(scheme, host, doer, enc, dec, restore)
 			switch epn {
 			case "get-info":
 				endpoint = c.GetInfo()
 				data = nil
+			}
+		case "chat":
+			c := chatc.NewClient(scheme, host, doer, enc, dec, restore)
+			switch epn {
+			case "get-conversation-history":
+				endpoint = c.GetConversationHistory()
+				data, err = chatc.BuildGetConversationHistoryPayload(*chatGetConversationHistoryIDFlag, *chatGetConversationHistoryLimitFlag, *chatGetConversationHistoryBeforeTimestampFlag)
+			case "search-in-conversation":
+				endpoint = c.SearchInConversation()
+				data, err = chatc.BuildSearchInConversationPayload(*chatSearchInConversationIDFlag, *chatSearchInConversationLimitFlag, *chatSearchInConversationSearchInputFlag)
+			case "get-conversations-list":
+				endpoint = c.GetConversationsList()
+				data, err = chatc.BuildGetConversationsListPayload(*chatGetConversationsListBodyFlag, *chatGetConversationsListLimitFlag)
+			case "add-conversation":
+				endpoint = c.AddConversation()
+				data, err = chatc.BuildAddConversationPayload(*chatAddConversationBodyFlag)
 			}
 		case "user":
 			c := userc.NewClient(scheme, host, doer, enc, dec, restore)
@@ -286,8 +321,8 @@ RefreshToken implements refreshToken.
 
 Example:
     %[1]s auth refresh-token --body '{
-      "email": "Amet ut nihil consequuntur odio.",
-      "refreshToken": "Qui impedit tempore sunt optio."
+      "email": "Natus quisquam.",
+      "refreshToken": "Illo omnis nesciunt minus sed."
    }'
 `, os.Args[0])
 }
@@ -300,33 +335,9 @@ Login implements login.
 
 Example:
     %[1]s auth login --body '{
-      "email": "Veritatis natus quisquam.",
-      "password": "Illo omnis nesciunt minus sed."
+      "email": "Labore tempora.",
+      "password": "Ut ut."
    }'
-`, os.Args[0])
-}
-
-// chatUsage displays the usage of the chat command and its subcommands.
-func chatUsage() {
-	fmt.Fprintf(os.Stderr, `User service is responsible for handling user data and requests
-Usage:
-    %[1]s [globalflags] chat COMMAND [flags]
-
-COMMAND:
-    get-chat-history: GetChatHistory implements getChatHistory.
-
-Additional help:
-    %[1]s chat COMMAND --help
-`, os.Args[0])
-}
-func chatGetChatHistoryUsage() {
-	fmt.Fprintf(os.Stderr, `%[1]s [flags] chat get-chat-history -id STRING
-
-GetChatHistory implements getChatHistory.
-    -id STRING: Chatroom ID
-
-Example:
-    %[1]s chat get-chat-history --id "Ut ut."
 `, os.Args[0])
 }
 
@@ -350,6 +361,88 @@ GetInfo implements getInfo.
 
 Example:
     %[1]s info get-info
+`, os.Args[0])
+}
+
+// chatUsage displays the usage of the chat command and its subcommands.
+func chatUsage() {
+	fmt.Fprintf(os.Stderr, `User service is responsible for handling user data and requests
+Usage:
+    %[1]s [globalflags] chat COMMAND [flags]
+
+COMMAND:
+    get-conversation-history: GetConversationHistory implements getConversationHistory.
+    search-in-conversation: SearchInConversation implements searchInConversation.
+    get-conversations-list: GetConversationsList implements getConversationsList.
+    add-conversation: AddConversation implements addConversation.
+
+Additional help:
+    %[1]s chat COMMAND --help
+`, os.Args[0])
+}
+func chatGetConversationHistoryUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] chat get-conversation-history -id STRING -limit STRING -before-timestamp INT64
+
+GetConversationHistory implements getConversationHistory.
+    -id STRING: Conversation ID
+    -limit STRING: 
+    -before-timestamp INT64: 
+
+Example:
+    %[1]s chat get-conversation-history --id "Laboriosam tempore atque mollitia ut." --limit "Eum ullam eveniet temporibus quis dolore mollitia." --before-timestamp 5540675296674446940
+`, os.Args[0])
+}
+
+func chatSearchInConversationUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] chat search-in-conversation -id STRING -limit STRING -search-input STRING
+
+SearchInConversation implements searchInConversation.
+    -id STRING: Conversation ID
+    -limit STRING: 
+    -search-input STRING: 
+
+Example:
+    %[1]s chat search-in-conversation --id "Animi et velit illo." --limit "Eos magni officia." --search-input "ilz"
+`, os.Args[0])
+}
+
+func chatGetConversationsListUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] chat get-conversations-list -body JSON -limit STRING
+
+GetConversationsList implements getConversationsList.
+    -body JSON: 
+    -limit STRING: 
+
+Example:
+    %[1]s chat get-conversations-list --body '{
+      "ID": "Suscipit qui nesciunt consequatur quia repellat."
+   }' --limit "Quia excepturi error similique."
+`, os.Args[0])
+}
+
+func chatAddConversationUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] chat add-conversation -body JSON
+
+AddConversation implements addConversation.
+    -body JSON: 
+
+Example:
+    %[1]s chat add-conversation --body '{
+      "participants": [
+         {
+            "email": "Sint quasi et.",
+            "firstName": "Consequatur voluptatem.",
+            "id": "Ab est.",
+            "lastName": "Libero inventore in tempore."
+         },
+         {
+            "email": "Sint quasi et.",
+            "firstName": "Consequatur voluptatem.",
+            "id": "Ab est.",
+            "lastName": "Libero inventore in tempore."
+         }
+      ]
+   }'
 `, os.Args[0])
 }
 
@@ -378,11 +471,11 @@ Register implements register.
 
 Example:
     %[1]s user register --body '{
-      "confirmedPassword": "Eum ullam eveniet temporibus quis dolore mollitia.",
-      "email": "Rerum qui.",
-      "firstName": "Libero omnis commodi qui quis et.",
-      "lastName": "Modi officia ipsum consequatur quas velit et.",
-      "password": "Laboriosam tempore atque mollitia ut."
+      "confirmedPassword": "Molestiae similique omnis voluptate pariatur non.",
+      "email": "Quidem sapiente ex et sunt earum.",
+      "firstName": "Aut facere molestiae cumque quia blanditiis quos.",
+      "lastName": "Amet quia vero illum.",
+      "password": "Enim vel sapiente."
    }'
 `, os.Args[0])
 }
@@ -405,8 +498,8 @@ UpdateProfileNames implements updateProfileNames.
 
 Example:
     %[1]s user update-profile-names --body '{
-      "firstName": "Laudantium suscipit qui nesciunt consequatur quia repellat.",
-      "lastName": "Quia excepturi error similique."
+      "firstName": "Animi aperiam veniam.",
+      "lastName": "Quam ad voluptatem dolor quae accusamus deleniti."
    }'
 `, os.Args[0])
 }
@@ -418,7 +511,7 @@ AddFriend implements addFriend.
     -id STRING: User ID to add
 
 Example:
-    %[1]s user add-friend --id "Ab est."
+    %[1]s user add-friend --id "Perspiciatis quia."
 `, os.Args[0])
 }
 
@@ -429,6 +522,6 @@ RemoveFriend implements removeFriend.
     -id STRING: User ID to delete
 
 Example:
-    %[1]s user remove-friend --id "Libero inventore in tempore."
+    %[1]s user remove-friend --id "Velit enim modi consequatur."
 `, os.Args[0])
 }

@@ -15,7 +15,7 @@ import (
 // Notification service is responsible for handling user data and requests
 type Service interface {
 	// NotifyUserNamesUpdate implements notifyUserNamesUpdate.
-	NotifyUserNamesUpdate(context.Context, *NotifyUserNamesUpdatePayload) (err error)
+	NotifyUserNamesUpdate(context.Context, *NotifyUserNamesUpdatePayload) (res *BlankResponse, err error)
 }
 
 // ServiceName is the name of the service as defined in the design. This is the
@@ -27,6 +27,12 @@ const ServiceName = "notification"
 // are the same values that are set in the endpoint request contexts under the
 // MethodKey key.
 var MethodNames = [1]string{"notifyUserNamesUpdate"}
+
+// BlankResponse is the result type of the notification service
+// notifyUserNamesUpdate method.
+type BlankResponse struct {
+	ID string
+}
 
 // NotifyUserNamesUpdatePayload is the payload type of the notification service
 // notifyUserNamesUpdate method.

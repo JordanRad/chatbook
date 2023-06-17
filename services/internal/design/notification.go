@@ -6,20 +6,33 @@ import (
 
 var _ = Service("notification", func() {
 	Description("Notification service is responsible for handling user data and requests")
-	HTTP(func() {
-		Path("/api/chat/v1/notifications") // Prefix to HTTP path of all requests.
-	})
 
 	Method("notifyUserNamesUpdate", func() {
 		Payload(func() {
-			Field(1, "id", String)
-			Field(2, "firstName", String)
-			Field(3, "oldFirstName", String)
-			Field(4, "lastName", String)
-			Field(5, "oldLastName", String)
-			Field(6, "ts", String)
+			Field(1, "id", String, func() {
+				Meta("rpc:tag", "1")
+			})
+			Field(2, "firstName", String, func() {
+				Meta("rpc:tag", "2")
+			})
+			Field(3, "oldFirstName", String,
+				func() {
+					Meta("rpc:tag", "3")
+				})
+			Field(4, "lastName", String, func() {
+				Meta("rpc:tag", "4")
+			})
+			Field(5, "oldLastName", String, func() {
+				Meta("rpc:tag", "5")
+			})
+			Field(6, "ts", String, func() {
+				Meta("rpc:tag", "6")
+			})
+
 			Required("id", "oldLastName", "oldFirstName", "firstName", "lastName", "ts")
 		})
+
+		Result(BlankResponse)
 
 		GRPC(func() {
 
@@ -28,11 +41,8 @@ var _ = Service("notification", func() {
 	})
 })
 
-// var UpdatedUserNotification = Type("UpdatedUserNotification", func() {
-// 	Field(1, "id", String)
-// 	Field(2, "firstName", String)
-// 	Field(3, "oldFirstName", String)
-// 	Field(4, "lastName", String)
-// 	Field(5, "oldLastName", String)
-// 	Required("id", "oldLastName", "oldFirstName", "firstName", "lastName")
-// })
+var BlankResponse = Type("BlankResponse", func() {
+	Field(1, "id", String)
+
+	Required("id")
+})

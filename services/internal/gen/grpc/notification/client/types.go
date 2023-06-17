@@ -27,3 +27,13 @@ func NewProtoNotifyUserNamesUpdateRequest(payload *notification.NotifyUserNamesU
 	}
 	return message
 }
+
+// NewNotifyUserNamesUpdateResult builds the result type of the
+// "notifyUserNamesUpdate" endpoint of the "notification" service from the gRPC
+// response type.
+func NewNotifyUserNamesUpdateResult(message *notificationpb.NotifyUserNamesUpdateResponse) *notification.BlankResponse {
+	result := &notification.BlankResponse{
+		ID: message.Id,
+	}
+	return result
+}

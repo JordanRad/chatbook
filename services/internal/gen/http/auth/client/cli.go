@@ -23,7 +23,7 @@ func BuildRefreshTokenPayload(authRefreshTokenBody string) (*auth.RefreshTokenPa
 	{
 		err = json.Unmarshal([]byte(authRefreshTokenBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"email\": \"Amet ut nihil consequuntur odio.\",\n      \"refreshToken\": \"Qui impedit tempore sunt optio.\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"email\": \"Natus quisquam.\",\n      \"refreshToken\": \"Illo omnis nesciunt minus sed.\"\n   }'")
 		}
 	}
 	v := &auth.RefreshTokenPayload{
@@ -42,7 +42,7 @@ func BuildLoginPayload(authLoginBody string) (*auth.LoginPayload, error) {
 	{
 		err = json.Unmarshal([]byte(authLoginBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"email\": \"Veritatis natus quisquam.\",\n      \"password\": \"Illo omnis nesciunt minus sed.\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"email\": \"Labore tempora.\",\n      \"password\": \"Ut ut.\"\n   }'")
 		}
 	}
 	v := &auth.LoginPayload{

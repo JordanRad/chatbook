@@ -12,9 +12,6 @@ import (
 	"github.com/JordanRad/chatbook/services/cmd/chat-service/notifiation"
 	"github.com/JordanRad/chatbook/services/cmd/user-management-service/info"
 
-	"github.com/JordanRad/chatbook/services/internal/auth"
-	"github.com/JordanRad/chatbook/services/internal/auth/jwt"
-
 	infosrv "github.com/JordanRad/chatbook/services/internal/gen/http/info/server"
 	infosvc "github.com/JordanRad/chatbook/services/internal/gen/info"
 
@@ -24,7 +21,6 @@ import (
 	chatsvc "github.com/JordanRad/chatbook/services/internal/gen/chat"
 	chatsrv "github.com/JordanRad/chatbook/services/internal/gen/http/chat/server"
 
-	"github.com/JordanRad/chatbook/services/internal/middleware"
 	"google.golang.org/grpc"
 
 	notificationsprotobuf "github.com/JordanRad/chatbook/services/internal/gen/grpc/notification/pb"
@@ -37,22 +33,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Config file cannot be read: %v", err)
 	}
-
-	// Connect to database
-	// db := postgresql.ConnectToDatabase(config.Postgres.User, config.Postgres.Password, config.Postgres.Host, config.Postgres.Port, config.Postgres.DBName)
-	// migrationTool := migrations.Tool{
-	// 	DB: db,
-	// }
-
-	// withMockData := false
-	// if config.Postgres.Mode == "DEV" {
-	// 	withMockData = true
-	// }
-
-	// err = migrationTool.ApplyMigrations(withMockData)
-	// if err != nil {
-	// 	log.Fatalf("Error applying table creating migrations: %v", err)
-	// }
 
 	// Initialize loger
 	logger := log.New(os.Stdout, "", log.LstdFlags)
@@ -83,55 +63,32 @@ func main() {
 		mux = goahttp.NewMuxer()
 	}
 
-	go func() {
-		s := notifiation.NewService()
-		grpcEndpoints := notificationsvc.NewEndpoints(s)
-		grpcsrv := notificationsrv.New(grpcEndpoints, nil)
-
-		grpcServer := grpc.NewServer()
-		fmt.Printf("Notifications gRPC server has just started on %d ...\n", 5002)
-		notificationsprotobuf.RegisterNotificationServer(grpcServer, grpcsrv)
-		lis, err := net.Listen("tcp", "localhost:5002")
-
-		if err != nil {
-			panic(err)
-		}
-		if err := grpcServer.Serve(lis); err != nil {
-			panic(err)
-		}
-	}()
-
 	// Initialize Info Server
 	var infoServer *infosrv.Server = infosrv.New(infoEndpoints, mux, dec, enc, nil, nil)
 	infosrv.Mount(mux, infoServer)
 
-	//Note (JordanRad): Add store
-	userStore := auth.NewStore(nil)
-	j := &jwt.JWTService{}
 	// Initialize Chat Server
 	var chatServer *chatsrv.Server = chatsrv.New(chatEndpoints, mux, dec, enc, nil, nil)
-	chatServer.Use(middleware.AuthenticateRequest(userStore, j))
+	// chatServer.Use(middleware.AuthenticateRequest(userStore, j))
 	chatsrv.Mount(mux, chatServer)
 
-	// notificationsprotobuf "github.com/JordanRad/chatbook/services/internal/gen/grpc/user/pb"
-	// notificationsgrpcsrv "github.com/JordanRad/chatbook/services/internal/gen/grpc/user/server"
-	// go func() {
-	// 	grpcEndpoints := usersvc.NewEndpoints(userService)
-	// 	grpcsrv := notificationsgrpcsrv.New(grpcEndpoints, nil)
+	go func() {
+		s := notifiation.NewService()
 
-	// 	grpcServer := grpc.NewServer()
-	// 	fmt.Printf("Notifications gRPC server has just started on %d ...\n", 5002)
-	// 	notificationsprotobuf.RegisterUserServer(grpcServer, grpcsrv)
-	// 	lis, err := net.Listen("tcp", "localhost:5002")
+		grpcEndpoints := notificationsvc.NewEndpoints(s)
+		grpcsrv := notificationsrv.New(grpcEndpoints, nil)
+		grpcServer := grpc.NewServer()
+		notificationsprotobuf.RegisterNotificationServer(grpcServer, grpcsrv)
+		lis, err := net.Listen("tcp", "localhost:5002")
+		if err != nil {
+			panic(err)
+		}
 
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// 	if err := grpcServer.Serve(lis); err != nil {
-	// 		panic(err)
-	// 	}
-	// }()
-
+		log.Printf("Notifications gRPC server has just started on  %s ...\n", lis.Addr().String())
+		if err := grpcServer.Serve(lis); err != nil {
+			panic(err)
+		}
+	}()
 	// Start the HTTP server
 	address := fmt.Sprintf("%s:%d", config.HTTP.Host, config.HTTP.Port)
 	log.Printf("Chat service has just started on %s ...\n", address)

@@ -12,7 +12,22 @@ import (
 	"fmt"
 )
 
-// GetChatHistoryChatPath returns the URL path to the chat service getChatHistory HTTP endpoint.
-func GetChatHistoryChatPath(id string) string {
-	return fmt.Sprintf("/api/chat/v1/chatrooms/%v/history", id)
+// GetConversationHistoryChatPath returns the URL path to the chat service getConversationHistory HTTP endpoint.
+func GetConversationHistoryChatPath(id string) string {
+	return fmt.Sprintf("/api/chat/v1/conversations/%v/history", id)
+}
+
+// SearchInConversationChatPath returns the URL path to the chat service searchInConversation HTTP endpoint.
+func SearchInConversationChatPath(id string) string {
+	return fmt.Sprintf("/api/chat/v1/conversations/%v", id)
+}
+
+// GetConversationsListChatPath returns the URL path to the chat service getConversationsList HTTP endpoint.
+func GetConversationsListChatPath() string {
+	return "/api/chat/v1/conversations"
+}
+
+// AddConversationChatPath returns the URL path to the chat service addConversation HTTP endpoint.
+func AddConversationChatPath() string {
+	return "/api/chat/v1/conversation"
 }
