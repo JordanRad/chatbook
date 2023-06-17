@@ -40,13 +40,13 @@ var MethodNames = [5]string{"register", "getProfile", "updateProfileNames", "add
 
 // AddFriendPayload is the payload type of the user service addFriend method.
 type AddFriendPayload struct {
-	// User ID
+	// User ID to add
 	ID string
 }
 
 type Friend struct {
 	// User ID
-	ID int
+	ID string
 	// Email
 	Email string
 	// First name
@@ -85,7 +85,7 @@ type RegisterResponse struct {
 // RemoveFriendPayload is the payload type of the user service removeFriend
 // method.
 type RemoveFriendPayload struct {
-	// User ID
+	// User ID to delete
 	ID string
 }
 

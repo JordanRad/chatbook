@@ -1,5 +1,5 @@
 services:           
-  user-management:
+  user-management-service:
     container_name: user-management-api
     build: 
       context: ./
@@ -29,3 +29,36 @@ services:
       POSTGRES_PASSWORD: "123456"
       POSTGRES_USER: "um-dev"
       POSTGRES_DB: "um-dev-db"
+
+
+  chat-service:
+    container_name: chat-api
+    build: 
+      context: ./
+      dockerfile: Dockerfile.chatservice
+    ports:
+      - "8092:8092"
+      - "5002:5002"
+    volumes:
+      - $PWD:/api
+    depends_on:
+      - chat-db
+    environment:
+     - CHATBOOK_HTTP_HOST=0.0.0.0
+     - CHATBOOK_HTTP_PORT=8092
+     - CHATBOOK_POSTGRES_HOST=chat-db
+     - CHATBOOK_POSTGRES_PORT=5432
+     - CHATBOOK_POSTGRES_USER=um-dev
+     - CHATBOOK_POSTGRES_PASSWORD=123456
+     - CHATBOOK_POSTGRES_DB_NAME=chat-dev-db
+     - CHATBOOK_JWT_SECRET=9r57294ftt76g8f3t7
+
+  chat-db:
+    image: "postgres"
+    restart: "always"
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_PASSWORD: "123456"
+      POSTGRES_USER: "chat-dev"
+      POSTGRES_DB: "chat-dev-db"

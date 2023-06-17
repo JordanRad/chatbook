@@ -1,0 +1,32 @@
+// Code generated with goa v3.11.3, DO NOT EDIT.
+//
+// notification protocol buffer definition
+//
+// Command:
+// $ goa gen github.com/JordanRad/chatbook/services/internal/design -o
+// ./internal
+
+syntax = "proto3";
+
+package notification;
+
+option go_package = "/notificationpb";
+
+// Notification service is responsible for handling user data and requests
+service Notification {
+	// NotifyUserNamesUpdate implements notifyUserNamesUpdate.
+	rpc NotifyUserNamesUpdate (NotifyUserNamesUpdateRequest) returns (NotifyUserNamesUpdateResponse);
+}
+
+message NotifyUserNamesUpdateRequest {
+	string id = 1;
+	string first_name = 2;
+	string old_first_name = 3;
+	string last_name = 4;
+	string old_last_name = 5;
+	string ts = 6;
+}
+
+message NotifyUserNamesUpdateResponse {
+	string id = 1;
+}

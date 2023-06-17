@@ -10,10 +10,10 @@ package client
 
 // RefreshTokenAuthPath returns the URL path to the auth service refreshToken HTTP endpoint.
 func RefreshTokenAuthPath() string {
-	return "/api/v1/auth/refresh-token"
+	return "/api/user-management/v1/auth/refresh-token"
 }
 
 // LoginAuthPath returns the URL path to the auth service login HTTP endpoint.
 func LoginAuthPath() string {
-	return "/api/v1/auth/login"
+	return "/api/user-management/v1/auth/login"
 }

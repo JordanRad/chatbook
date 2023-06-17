@@ -37,13 +37,6 @@ type UpdateProfileNamesRequestBody struct {
 	LastName string `form:"lastName" json:"lastName" xml:"lastName"`
 }
 
-// AddFriendRequestBody is the type of the "user" service "addFriend" endpoint
-// HTTP request body.
-type AddFriendRequestBody struct {
-	// User ID
-	ID string `form:"id" json:"id" xml:"id"`
-}
-
 // RegisterResponseBody is the type of the "user" service "register" endpoint
 // HTTP response body.
 type RegisterResponseBody struct {
@@ -126,7 +119,7 @@ type RegisterUnmatchingPassowrdsResponseBody struct {
 // FriendResponseBody is used to define fields on response body types.
 type FriendResponseBody struct {
 	// User ID
-	ID *int `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
+	ID *string `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
 	// Email
 	Email *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
 	// First name
@@ -154,15 +147,6 @@ func NewUpdateProfileNamesRequestBody(p *user.UpdateProfileNamesPayload) *Update
 	body := &UpdateProfileNamesRequestBody{
 		FirstName: p.FirstName,
 		LastName:  p.LastName,
-	}
-	return body
-}
-
-// NewAddFriendRequestBody builds the HTTP request body from the payload of the
-// "addFriend" endpoint of the "user" service.
-func NewAddFriendRequestBody(p *user.AddFriendPayload) *AddFriendRequestBody {
-	body := &AddFriendRequestBody{
-		ID: p.ID,
 	}
 	return body
 }

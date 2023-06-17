@@ -54,10 +54,10 @@ func New(
 ) *Server {
 	return &Server{
 		Mounts: []*MountPoint{
-			{"RefreshToken", "POST", "/api/v1/auth/refresh-token"},
-			{"Login", "POST", "/api/v1/auth/login"},
-			{"CORS", "OPTIONS", "/api/v1/auth/refresh-token"},
-			{"CORS", "OPTIONS", "/api/v1/auth/login"},
+			{"RefreshToken", "POST", "/api/user-management/v1/auth/refresh-token"},
+			{"Login", "POST", "/api/user-management/v1/auth/login"},
+			{"CORS", "OPTIONS", "/api/user-management/v1/auth/refresh-token"},
+			{"CORS", "OPTIONS", "/api/user-management/v1/auth/login"},
 		},
 		RefreshToken: NewRefreshTokenHandler(e.RefreshToken, mux, decoder, encoder, errhandler, formatter),
 		Login:        NewLoginHandler(e.Login, mux, decoder, encoder, errhandler, formatter),
@@ -99,7 +99,7 @@ func MountRefreshTokenHandler(mux goahttp.Muxer, h http.Handler) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("POST", "/api/v1/auth/refresh-token", f)
+	mux.Handle("POST", "/api/user-management/v1/auth/refresh-token", f)
 }
 
 // NewRefreshTokenHandler creates a HTTP handler which loads the HTTP request
@@ -150,7 +150,7 @@ func MountLoginHandler(mux goahttp.Muxer, h http.Handler) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("POST", "/api/v1/auth/login", f)
+	mux.Handle("POST", "/api/user-management/v1/auth/login", f)
 }
 
 // NewLoginHandler creates a HTTP handler which loads the HTTP request and
@@ -196,8 +196,8 @@ func NewLoginHandler(
 // service auth.
 func MountCORSHandler(mux goahttp.Muxer, h http.Handler) {
 	h = HandleAuthOrigin(h)
-	mux.Handle("OPTIONS", "/api/v1/auth/refresh-token", h.ServeHTTP)
-	mux.Handle("OPTIONS", "/api/v1/auth/login", h.ServeHTTP)
+	mux.Handle("OPTIONS", "/api/user-management/v1/auth/refresh-token", h.ServeHTTP)
+	mux.Handle("OPTIONS", "/api/user-management/v1/auth/login", h.ServeHTTP)
 }
 
 // NewCORSHandler creates a HTTP handler which returns a simple 200 response.

@@ -7,7 +7,7 @@ import (
 var _ = Service("auth", func() {
 	Description("Authentication service is responsible for handling user data and requests")
 	HTTP(func() {
-		Path("/api/v1/auth") // Prefix to HTTP path of all requests.
+		Path("/api/user-management/v1/auth") // Prefix to HTTP path of all requests.
 	})
 
 	Method("refreshToken", func() {

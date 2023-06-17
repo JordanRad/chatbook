@@ -7,7 +7,7 @@ import (
 var _ = Service("user", func() {
 	Description("User service is responsible for handling user data and requests")
 	HTTP(func() {
-		Path("/api/v1/users") // Prefix to HTTP path of all requests.
+		Path("/api/user-management/v1/users") // Prefix to HTTP path of all requests.
 	})
 
 	Method("register", func() {
@@ -57,19 +57,19 @@ var _ = Service("user", func() {
 
 	Method("addFriend", func() {
 		Payload(func() {
-			Attribute("id", String, "User ID")
+			Attribute("id", String, "User ID to add")
 
 			Required("id")
 		})
 		Result(OperationStatusResponse)
 		HTTP(func() {
-			POST("/friend")
+			POST("/friend/{id}")
 		})
 	})
 
 	Method("removeFriend", func() {
 		Payload(func() {
-			Attribute("id", String, "User ID")
+			Attribute("id", String, "User ID to delete")
 
 			Required("id")
 		})
@@ -78,10 +78,11 @@ var _ = Service("user", func() {
 			DELETE("/friends/{id}")
 		})
 	})
+
 })
 
 var Friend = Type("Friend", func() {
-	Attribute("id", Int, "User ID")
+	Attribute("id", String, "User ID")
 	Attribute("email", String, "Email")
 	Attribute("firstName", String, "First name")
 	Attribute("lastName", String, "Last name")

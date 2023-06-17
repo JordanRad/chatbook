@@ -23,7 +23,7 @@ func BuildRegisterPayload(userRegisterBody string) (*user.RegisterPayload, error
 	{
 		err = json.Unmarshal([]byte(userRegisterBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"confirmedPassword\": \"Veritatis natus quisquam.\",\n      \"email\": \"Magnam facilis incidunt occaecati consequatur ullam.\",\n      \"firstName\": \"Ducimus asperiores sunt.\",\n      \"lastName\": \"Adipisci qui suscipit ut.\",\n      \"password\": \"Quo et.\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"confirmedPassword\": \"Molestiae similique omnis voluptate pariatur non.\",\n      \"email\": \"Quidem sapiente ex et sunt earum.\",\n      \"firstName\": \"Aut facere molestiae cumque quia blanditiis quos.\",\n      \"lastName\": \"Amet quia vero illum.\",\n      \"password\": \"Enim vel sapiente.\"\n   }'")
 		}
 	}
 	v := &user.RegisterPayload{
@@ -45,7 +45,7 @@ func BuildUpdateProfileNamesPayload(userUpdateProfileNamesBody string) (*user.Up
 	{
 		err = json.Unmarshal([]byte(userUpdateProfileNamesBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"firstName\": \"Libero omnis commodi qui quis et.\",\n      \"lastName\": \"Modi officia ipsum consequatur quas velit et.\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"firstName\": \"Animi aperiam veniam.\",\n      \"lastName\": \"Quam ad voluptatem dolor quae accusamus deleniti.\"\n   }'")
 		}
 	}
 	v := &user.UpdateProfileNamesPayload{
@@ -58,18 +58,13 @@ func BuildUpdateProfileNamesPayload(userUpdateProfileNamesBody string) (*user.Up
 
 // BuildAddFriendPayload builds the payload for the user addFriend endpoint
 // from CLI flags.
-func BuildAddFriendPayload(userAddFriendBody string) (*user.AddFriendPayload, error) {
-	var err error
-	var body AddFriendRequestBody
+func BuildAddFriendPayload(userAddFriendID string) (*user.AddFriendPayload, error) {
+	var id string
 	{
-		err = json.Unmarshal([]byte(userAddFriendBody), &body)
-		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"id\": \"Laboriosam tempore atque mollitia ut.\"\n   }'")
-		}
+		id = userAddFriendID
 	}
-	v := &user.AddFriendPayload{
-		ID: body.ID,
-	}
+	v := &user.AddFriendPayload{}
+	v.ID = id
 
 	return v, nil
 }

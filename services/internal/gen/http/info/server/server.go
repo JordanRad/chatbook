@@ -53,8 +53,8 @@ func New(
 ) *Server {
 	return &Server{
 		Mounts: []*MountPoint{
-			{"GetInfo", "GET", "/api/v1/info"},
-			{"CORS", "OPTIONS", "/api/v1/info"},
+			{"GetInfo", "GET", "/api/user-management/v1/info"},
+			{"CORS", "OPTIONS", "/api/user-management/v1/info"},
 		},
 		GetInfo: NewGetInfoHandler(e.GetInfo, mux, decoder, encoder, errhandler, formatter),
 		CORS:    NewCORSHandler(),
@@ -93,7 +93,7 @@ func MountGetInfoHandler(mux goahttp.Muxer, h http.Handler) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("GET", "/api/v1/info", f)
+	mux.Handle("GET", "/api/user-management/v1/info", f)
 }
 
 // NewGetInfoHandler creates a HTTP handler which loads the HTTP request and
@@ -132,7 +132,7 @@ func NewGetInfoHandler(
 // service info.
 func MountCORSHandler(mux goahttp.Muxer, h http.Handler) {
 	h = HandleInfoOrigin(h)
-	mux.Handle("OPTIONS", "/api/v1/info", h.ServeHTTP)
+	mux.Handle("OPTIONS", "/api/user-management/v1/info", h.ServeHTTP)
 }
 
 // NewCORSHandler creates a HTTP handler which returns a simple 200 response.

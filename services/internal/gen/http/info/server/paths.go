@@ -10,5 +10,5 @@ package server
 
 // GetInfoInfoPath returns the URL path to the info service getInfo HTTP endpoint.
 func GetInfoInfoPath() string {
-	return "/api/v1/info"
+	return "/api/user-management/v1/info"
 }
