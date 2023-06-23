@@ -55,7 +55,7 @@ func EncodeGetConversationHistoryRequest(encoder func(*http.Request) goahttp.Enc
 			return goahttp.ErrInvalidType("chat", "getConversationHistory", "*chat.GetConversationHistoryPayload", v)
 		}
 		values := req.URL.Query()
-		values.Add("limit", p.Limit)
+		values.Add("limit", fmt.Sprintf("%v", p.Limit))
 		values.Add("beforeTimestamp", fmt.Sprintf("%v", p.BeforeTimestamp))
 		req.URL.RawQuery = values.Encode()
 		return nil
@@ -137,7 +137,7 @@ func EncodeSearchInConversationRequest(encoder func(*http.Request) goahttp.Encod
 			return goahttp.ErrInvalidType("chat", "searchInConversation", "*chat.SearchInConversationPayload", v)
 		}
 		values := req.URL.Query()
-		values.Add("limit", p.Limit)
+		values.Add("limit", fmt.Sprintf("%v", p.Limit))
 		values.Add("searchInput", p.SearchInput)
 		req.URL.RawQuery = values.Encode()
 		return nil
@@ -209,12 +209,8 @@ func EncodeGetConversationsListRequest(encoder func(*http.Request) goahttp.Encod
 			return goahttp.ErrInvalidType("chat", "getConversationsList", "*chat.GetConversationsListPayload", v)
 		}
 		values := req.URL.Query()
-		values.Add("limit", p.Limit)
+		values.Add("limit", fmt.Sprintf("%v", p.Limit))
 		req.URL.RawQuery = values.Encode()
-		body := NewGetConversationsListRequestBody(p)
-		if err := encoder(req).Encode(&body); err != nil {
-			return goahttp.ErrEncodingError("chat", "getConversationsList", err)
-		}
 		return nil
 	}
 }
@@ -347,10 +343,10 @@ func unmarshalConversationMessageResponseBodyToChatConversationMessage(v *Conver
 // *chat.Conversation from a value of type *ConversationResponseBody.
 func unmarshalConversationResponseBodyToChatConversation(v *ConversationResponseBody) *chat.Conversation {
 	res := &chat.Conversation{
-		ID:           *v.ID,
-		Participants: *v.Participants,
-		LastMessage:  *v.LastMessage,
-		DeliveredAt:  *v.DeliveredAt,
+		ID:                     *v.ID,
+		LastMessageSenderID:    *v.LastMessageSenderID,
+		LastMessageContent:     *v.LastMessageContent,
+		LastMessageDeliveredAt: *v.LastMessageDeliveredAt,
 	}
 
 	return res

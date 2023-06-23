@@ -26,10 +26,15 @@ func BuildGetConversationHistoryPayload(chatGetConversationHistoryID string, cha
 	{
 		id = chatGetConversationHistoryID
 	}
-	var limit string
+	var limit int
 	{
 		if chatGetConversationHistoryLimit != "" {
-			limit = chatGetConversationHistoryLimit
+			var v int64
+			v, err = strconv.ParseInt(chatGetConversationHistoryLimit, 10, strconv.IntSize)
+			limit = int(v)
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for limit, must be INT")
+			}
 		}
 	}
 	var beforeTimestamp int64
@@ -57,10 +62,15 @@ func BuildSearchInConversationPayload(chatSearchInConversationID string, chatSea
 	{
 		id = chatSearchInConversationID
 	}
-	var limit string
+	var limit int
 	{
 		if chatSearchInConversationLimit != "" {
-			limit = chatSearchInConversationLimit
+			var v int64
+			v, err = strconv.ParseInt(chatSearchInConversationLimit, 10, strconv.IntSize)
+			limit = int(v)
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for limit, must be INT")
+			}
 		}
 	}
 	var searchInput string
@@ -85,24 +95,20 @@ func BuildSearchInConversationPayload(chatSearchInConversationID string, chatSea
 
 // BuildGetConversationsListPayload builds the payload for the chat
 // getConversationsList endpoint from CLI flags.
-func BuildGetConversationsListPayload(chatGetConversationsListBody string, chatGetConversationsListLimit string) (*chat.GetConversationsListPayload, error) {
+func BuildGetConversationsListPayload(chatGetConversationsListLimit string) (*chat.GetConversationsListPayload, error) {
 	var err error
-	var body GetConversationsListRequestBody
-	{
-		err = json.Unmarshal([]byte(chatGetConversationsListBody), &body)
-		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"ID\": \"Suscipit qui nesciunt consequatur quia repellat.\"\n   }'")
-		}
-	}
-	var limit string
+	var limit int
 	{
 		if chatGetConversationsListLimit != "" {
-			limit = chatGetConversationsListLimit
+			var v int64
+			v, err = strconv.ParseInt(chatGetConversationsListLimit, 10, strconv.IntSize)
+			limit = int(v)
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for limit, must be INT")
+			}
 		}
 	}
-	v := &chat.GetConversationsListPayload{
-		ID: body.ID,
-	}
+	v := &chat.GetConversationsListPayload{}
 	v.Limit = limit
 
 	return v, nil
@@ -116,7 +122,7 @@ func BuildAddConversationPayload(chatAddConversationBody string) (*chat.AddConve
 	{
 		err = json.Unmarshal([]byte(chatAddConversationBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"participants\": [\n         {\n            \"email\": \"Sint quasi et.\",\n            \"firstName\": \"Consequatur voluptatem.\",\n            \"id\": \"Ab est.\",\n            \"lastName\": \"Libero inventore in tempore.\"\n         },\n         {\n            \"email\": \"Sint quasi et.\",\n            \"firstName\": \"Consequatur voluptatem.\",\n            \"id\": \"Ab est.\",\n            \"lastName\": \"Libero inventore in tempore.\"\n         }\n      ]\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"participants\": [\n         {\n            \"email\": \"Et minus nisi delectus ut sed soluta.\",\n            \"firstName\": \"Ab est.\",\n            \"id\": \"Doloremque omnis reprehenderit eos rerum.\",\n            \"lastName\": \"Sint quasi et.\"\n         },\n         {\n            \"email\": \"Et minus nisi delectus ut sed soluta.\",\n            \"firstName\": \"Ab est.\",\n            \"id\": \"Doloremque omnis reprehenderit eos rerum.\",\n            \"lastName\": \"Sint quasi et.\"\n         }\n      ]\n   }'")
 		}
 		if body.Participants == nil {
 			err = goa.MergeErrors(err, goa.MissingFieldError("participants", "body"))

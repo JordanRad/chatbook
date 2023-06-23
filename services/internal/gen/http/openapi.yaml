@@ -46,15 +46,8 @@ paths:
                   in: query
                   description: Messages count
                   required: false
-                  type: string
-                  default: "100"
-                - name: GetConversationsListRequestBody
-                  in: body
-                  required: true
-                  schema:
-                    $ref: '#/definitions/ChatGetConversationsListRequestBody'
-                    required:
-                        - ID
+                  type: integer
+                  default: 100
             responses:
                 "200":
                     description: OK response.
@@ -76,8 +69,8 @@ paths:
                   in: query
                   description: Messages count
                   required: false
-                  type: string
-                  default: "200"
+                  type: integer
+                  default: 200
                 - name: searchInput
                   in: query
                   description: Input
@@ -112,8 +105,8 @@ paths:
                   in: query
                   description: Messages count
                   required: false
-                  type: string
-                  default: "200"
+                  type: integer
+                  default: 200
                 - name: beforeTimestamp
                   in: query
                   description: Before timestamp
@@ -333,14 +326,14 @@ definitions:
             email:
                 type: string
                 description: User email
-                example: Ut voluptate at quis eligendi ullam.
+                example: Ut doloremque qui voluptatem sed odit.
             password:
                 type: string
                 description: User password
-                example: Enim laudantium aliquam perspiciatis.
+                example: Aliquam beatae ipsam aut.
         example:
-            email: Culpa velit optio error est.
-            password: Velit velit numquam molestiae dolorem saepe voluptate.
+            email: Quasi eum dignissimos excepturi.
+            password: Ut harum.
         required:
             - email
             - password
@@ -351,29 +344,29 @@ definitions:
             email:
                 type: string
                 description: User's email
-                example: Quod at aspernatur et repellendus earum.
+                example: Quia sapiente qui.
             id:
                 type: string
                 description: User account's ID
-                example: Doloremque maxime molestiae natus voluptatem.
+                example: Quod at aspernatur et repellendus earum.
             refresh_token:
                 type: string
                 description: Refresh token
-                example: Eaque vel.
+                example: Excepturi dolore blanditiis ut.
             role:
                 type: string
                 description: User's role
-                example: Error veritatis.
+                example: Rerum soluta ut deleniti esse.
             token:
                 type: string
                 description: JWT Token
-                example: Magnam totam dolorem.
+                example: Aut quia minus dolores.
         example:
-            email: Omnis ut quod quia beatae magni consequatur.
-            id: Quasi eum dignissimos excepturi.
-            refresh_token: Ut doloremque qui voluptatem sed odit.
-            role: Aliquam beatae ipsam aut.
-            token: Qui quasi rerum fugit cum.
+            email: Magnam totam dolorem.
+            id: Omnis ut quod quia beatae magni consequatur.
+            refresh_token: Error veritatis.
+            role: Doloremque maxime molestiae natus voluptatem.
+            token: Eaque vel.
         required:
             - email
             - token
@@ -402,19 +395,19 @@ definitions:
             temporary:
                 type: boolean
                 description: Is the error temporary?
-                example: false
+                example: true
             timeout:
                 type: boolean
                 description: Is the error a timeout?
-                example: false
+                example: true
         description: login_WrongCredentials_response_body result type (default view)
         example:
-            fault: true
+            fault: false
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
-            temporary: true
-            timeout: false
+            temporary: false
+            timeout: true
         required:
             - name
             - id
@@ -429,14 +422,14 @@ definitions:
             email:
                 type: string
                 description: User email
-                example: Quia sapiente qui.
+                example: Aut quisquam eum suscipit consequatur dolor ducimus.
             refreshToken:
                 type: string
                 description: Refresh token
-                example: Aut quia minus dolores.
+                example: Labore culpa.
         example:
-            email: Excepturi dolore blanditiis ut.
-            refreshToken: Rerum soluta ut deleniti esse.
+            email: Voluptatum ut libero veritatis odio.
+            refreshToken: Et ratione perspiciatis.
         required:
             - email
             - refreshToken
@@ -447,29 +440,29 @@ definitions:
             email:
                 type: string
                 description: User's email
-                example: Debitis iste et consequatur fugiat.
+                example: Nulla et.
             id:
                 type: string
                 description: User account's ID
-                example: Praesentium aperiam.
+                example: Debitis iste et consequatur fugiat.
             refresh_token:
                 type: string
                 description: Refresh token
-                example: Mollitia sequi magnam et beatae in accusamus.
+                example: Ratione molestiae expedita quam.
             role:
                 type: string
                 description: User's role
-                example: Rem dicta.
+                example: Dolores officiis vitae quidem.
             token:
                 type: string
                 description: JWT Token
-                example: Ad aut eius labore maiores eos omnis.
+                example: Esse adipisci hic assumenda.
         example:
-            email: Voluptates quam rerum qui molestias veritatis.
-            id: Et ratione perspiciatis.
-            refresh_token: Labore culpa.
-            role: Voluptatum ut libero veritatis odio.
-            token: Aut quisquam eum suscipit consequatur dolor ducimus.
+            email: Ad aut eius labore maiores eos omnis.
+            id: Voluptates quam rerum qui molestias veritatis.
+            refresh_token: Rem dicta.
+            role: Praesentium aperiam.
+            token: Mollitia sequi magnam et beatae in accusamus.
         required:
             - email
             - token
@@ -485,36 +478,28 @@ definitions:
                     $ref: '#/definitions/FriendRequestBody'
                 description: Participants
                 example:
-                    - email: Sint quasi et.
-                      firstName: Consequatur voluptatem.
-                      id: Ab est.
-                      lastName: Libero inventore in tempore.
-                    - email: Sint quasi et.
-                      firstName: Consequatur voluptatem.
-                      id: Ab est.
-                      lastName: Libero inventore in tempore.
-                    - email: Sint quasi et.
-                      firstName: Consequatur voluptatem.
-                      id: Ab est.
-                      lastName: Libero inventore in tempore.
+                    - email: Et minus nisi delectus ut sed soluta.
+                      firstName: Ab est.
+                      id: Doloremque omnis reprehenderit eos rerum.
+                      lastName: Sint quasi et.
+                    - email: Et minus nisi delectus ut sed soluta.
+                      firstName: Ab est.
+                      id: Doloremque omnis reprehenderit eos rerum.
+                      lastName: Sint quasi et.
         example:
             participants:
-                - email: Sint quasi et.
-                  firstName: Consequatur voluptatem.
-                  id: Ab est.
-                  lastName: Libero inventore in tempore.
-                - email: Sint quasi et.
-                  firstName: Consequatur voluptatem.
-                  id: Ab est.
-                  lastName: Libero inventore in tempore.
-                - email: Sint quasi et.
-                  firstName: Consequatur voluptatem.
-                  id: Ab est.
-                  lastName: Libero inventore in tempore.
-                - email: Sint quasi et.
-                  firstName: Consequatur voluptatem.
-                  id: Ab est.
-                  lastName: Libero inventore in tempore.
+                - email: Et minus nisi delectus ut sed soluta.
+                  firstName: Ab est.
+                  id: Doloremque omnis reprehenderit eos rerum.
+                  lastName: Sint quasi et.
+                - email: Et minus nisi delectus ut sed soluta.
+                  firstName: Ab est.
+                  id: Doloremque omnis reprehenderit eos rerum.
+                  lastName: Sint quasi et.
+                - email: Et minus nisi delectus ut sed soluta.
+                  firstName: Ab est.
+                  id: Doloremque omnis reprehenderit eos rerum.
+                  lastName: Sint quasi et.
         required:
             - participants
     ChatAddConversationResponseBody:
@@ -524,9 +509,9 @@ definitions:
             message:
                 type: string
                 description: Operation status
-                example: Accusantium error.
+                example: Delectus cumque et et quo.
         example:
-            message: Commodi ut autem nam voluptatem.
+            message: Commodi pariatur reiciendis ex possimus eius accusantium.
         required:
             - message
     ChatGetConversationHistoryResponseBody:
@@ -536,56 +521,47 @@ definitions:
             count:
                 type: integer
                 description: Messages Count
-                example: 3734040940941164140
+                example: 7920442820868335738
                 format: int64
             id:
                 type: string
                 description: Chatroom ID
-                example: Debitis amet.
+                example: Reiciendis culpa velit optio error.
             messages:
                 type: array
                 items:
                     $ref: '#/definitions/ConversationMessageResponseBody'
                 description: Chat history
                 example:
-                    - content: Id doloremque et error totam expedita.
-                      senderID: Sunt necessitatibus numquam similique molestiae necessitatibus sint.
-                      timestamp: 0.4905357328460605
-                    - content: Id doloremque et error totam expedita.
-                      senderID: Sunt necessitatibus numquam similique molestiae necessitatibus sint.
-                      timestamp: 0.4905357328460605
-                    - content: Id doloremque et error totam expedita.
-                      senderID: Sunt necessitatibus numquam similique molestiae necessitatibus sint.
-                      timestamp: 0.4905357328460605
+                    - content: Distinctio sunt necessitatibus.
+                      senderID: Eveniet temporibus quis dolore.
+                      timestamp: 0.9218358147278503
+                    - content: Distinctio sunt necessitatibus.
+                      senderID: Eveniet temporibus quis dolore.
+                      timestamp: 0.9218358147278503
+                    - content: Distinctio sunt necessitatibus.
+                      senderID: Eveniet temporibus quis dolore.
+                      timestamp: 0.9218358147278503
         example:
-            count: 6756878801931692961
-            id: Qui rerum voluptatem.
+            count: 190996180560065942
+            id: Ea atque.
             messages:
-                - content: Id doloremque et error totam expedita.
-                  senderID: Sunt necessitatibus numquam similique molestiae necessitatibus sint.
-                  timestamp: 0.4905357328460605
-                - content: Id doloremque et error totam expedita.
-                  senderID: Sunt necessitatibus numquam similique molestiae necessitatibus sint.
-                  timestamp: 0.4905357328460605
-                - content: Id doloremque et error totam expedita.
-                  senderID: Sunt necessitatibus numquam similique molestiae necessitatibus sint.
-                  timestamp: 0.4905357328460605
+                - content: Distinctio sunt necessitatibus.
+                  senderID: Eveniet temporibus quis dolore.
+                  timestamp: 0.9218358147278503
+                - content: Distinctio sunt necessitatibus.
+                  senderID: Eveniet temporibus quis dolore.
+                  timestamp: 0.9218358147278503
+                - content: Distinctio sunt necessitatibus.
+                  senderID: Eveniet temporibus quis dolore.
+                  timestamp: 0.9218358147278503
+                - content: Distinctio sunt necessitatibus.
+                  senderID: Eveniet temporibus quis dolore.
+                  timestamp: 0.9218358147278503
         required:
             - id
             - count
             - messages
-    ChatGetConversationsListRequestBody:
-        title: ChatGetConversationsListRequestBody
-        type: object
-        properties:
-            ID:
-                type: string
-                description: Conversation ID
-                example: Minima incidunt delectus cumque et et.
-        example:
-            ID: Animi commodi pariatur reiciendis ex possimus.
-        required:
-            - ID
     ChatGetConversationsListResponseBody:
         title: ChatGetConversationsListResponseBody
         type: object
@@ -596,42 +572,42 @@ definitions:
                     $ref: '#/definitions/ConversationResponseBody'
                 description: Chat history
                 example:
-                    - ID: Doloremque omnis reprehenderit eos rerum.
-                      deliveredAt: 436823018389138097
-                      lastMessage: Minus nisi.
-                      participants: 0.8093640858178983
-                    - ID: Doloremque omnis reprehenderit eos rerum.
-                      deliveredAt: 436823018389138097
-                      lastMessage: Minus nisi.
-                      participants: 0.8093640858178983
-                    - ID: Doloremque omnis reprehenderit eos rerum.
-                      deliveredAt: 436823018389138097
-                      lastMessage: Minus nisi.
-                      participants: 0.8093640858178983
+                    - ID: Illo fugit eos magni officia maxime.
+                      lastMessageContent: Autem et rerum ad doloribus quisquam laudantium.
+                      lastMessageDeliveredAt: Qui nesciunt consequatur quia repellat et quia.
+                      lastMessageSenderID: Unde libero est.
+                    - ID: Illo fugit eos magni officia maxime.
+                      lastMessageContent: Autem et rerum ad doloribus quisquam laudantium.
+                      lastMessageDeliveredAt: Qui nesciunt consequatur quia repellat et quia.
+                      lastMessageSenderID: Unde libero est.
+                    - ID: Illo fugit eos magni officia maxime.
+                      lastMessageContent: Autem et rerum ad doloribus quisquam laudantium.
+                      lastMessageDeliveredAt: Qui nesciunt consequatur quia repellat et quia.
+                      lastMessageSenderID: Unde libero est.
+                    - ID: Illo fugit eos magni officia maxime.
+                      lastMessageContent: Autem et rerum ad doloribus quisquam laudantium.
+                      lastMessageDeliveredAt: Qui nesciunt consequatur quia repellat et quia.
+                      lastMessageSenderID: Unde libero est.
             total:
                 type: integer
                 description: Messages Count
-                example: 4375240390735776090
+                example: 8675961255640356602
                 format: int64
         example:
             resources:
-                - ID: Doloremque omnis reprehenderit eos rerum.
-                  deliveredAt: 436823018389138097
-                  lastMessage: Minus nisi.
-                  participants: 0.8093640858178983
-                - ID: Doloremque omnis reprehenderit eos rerum.
-                  deliveredAt: 436823018389138097
-                  lastMessage: Minus nisi.
-                  participants: 0.8093640858178983
-                - ID: Doloremque omnis reprehenderit eos rerum.
-                  deliveredAt: 436823018389138097
-                  lastMessage: Minus nisi.
-                  participants: 0.8093640858178983
-                - ID: Doloremque omnis reprehenderit eos rerum.
-                  deliveredAt: 436823018389138097
-                  lastMessage: Minus nisi.
-                  participants: 0.8093640858178983
-            total: 6154946439569198312
+                - ID: Illo fugit eos magni officia maxime.
+                  lastMessageContent: Autem et rerum ad doloribus quisquam laudantium.
+                  lastMessageDeliveredAt: Qui nesciunt consequatur quia repellat et quia.
+                  lastMessageSenderID: Unde libero est.
+                - ID: Illo fugit eos magni officia maxime.
+                  lastMessageContent: Autem et rerum ad doloribus quisquam laudantium.
+                  lastMessageDeliveredAt: Qui nesciunt consequatur quia repellat et quia.
+                  lastMessageSenderID: Unde libero est.
+                - ID: Illo fugit eos magni officia maxime.
+                  lastMessageContent: Autem et rerum ad doloribus quisquam laudantium.
+                  lastMessageDeliveredAt: Qui nesciunt consequatur quia repellat et quia.
+                  lastMessageSenderID: Unde libero est.
+            total: 1689114226747056987
         required:
             - total
             - resources
@@ -642,40 +618,43 @@ definitions:
             count:
                 type: integer
                 description: Messages Count
-                example: 664752302192154066
+                example: 2415415152687067532
                 format: int64
             id:
                 type: string
                 description: Chatroom ID
-                example: Sequi ipsum.
+                example: Sit perferendis sapiente minima.
             messages:
                 type: array
                 items:
                     $ref: '#/definitions/ConversationMessageResponseBody'
                 description: Chat history
                 example:
-                    - content: Id doloremque et error totam expedita.
-                      senderID: Sunt necessitatibus numquam similique molestiae necessitatibus sint.
-                      timestamp: 0.4905357328460605
-                    - content: Id doloremque et error totam expedita.
-                      senderID: Sunt necessitatibus numquam similique molestiae necessitatibus sint.
-                      timestamp: 0.4905357328460605
+                    - content: Distinctio sunt necessitatibus.
+                      senderID: Eveniet temporibus quis dolore.
+                      timestamp: 0.9218358147278503
+                    - content: Distinctio sunt necessitatibus.
+                      senderID: Eveniet temporibus quis dolore.
+                      timestamp: 0.9218358147278503
+                    - content: Distinctio sunt necessitatibus.
+                      senderID: Eveniet temporibus quis dolore.
+                      timestamp: 0.9218358147278503
+                    - content: Distinctio sunt necessitatibus.
+                      senderID: Eveniet temporibus quis dolore.
+                      timestamp: 0.9218358147278503
         example:
-            count: 5859430749392115041
-            id: Pariatur voluptas et aliquid provident est illo.
+            count: 3368627421131449104
+            id: Laudantium minima error.
             messages:
-                - content: Id doloremque et error totam expedita.
-                  senderID: Sunt necessitatibus numquam similique molestiae necessitatibus sint.
-                  timestamp: 0.4905357328460605
-                - content: Id doloremque et error totam expedita.
-                  senderID: Sunt necessitatibus numquam similique molestiae necessitatibus sint.
-                  timestamp: 0.4905357328460605
-                - content: Id doloremque et error totam expedita.
-                  senderID: Sunt necessitatibus numquam similique molestiae necessitatibus sint.
-                  timestamp: 0.4905357328460605
-                - content: Id doloremque et error totam expedita.
-                  senderID: Sunt necessitatibus numquam similique molestiae necessitatibus sint.
-                  timestamp: 0.4905357328460605
+                - content: Distinctio sunt necessitatibus.
+                  senderID: Eveniet temporibus quis dolore.
+                  timestamp: 0.9218358147278503
+                - content: Distinctio sunt necessitatibus.
+                  senderID: Eveniet temporibus quis dolore.
+                  timestamp: 0.9218358147278503
+                - content: Distinctio sunt necessitatibus.
+                  senderID: Eveniet temporibus quis dolore.
+                  timestamp: 0.9218358147278503
         required:
             - id
             - count
@@ -687,20 +666,20 @@ definitions:
             content:
                 type: string
                 description: Message Content
-                example: Voluptatem sit.
+                example: Inventore illum.
             senderID:
                 type: string
                 description: Sender ID
-                example: Ea atque.
+                example: Velit velit numquam molestiae dolorem saepe voluptate.
             timestamp:
                 type: number
                 description: Timestamp of the message
-                example: 0.020707847389965717
+                example: 0.9850622007502804
                 format: double
         example:
-            content: Sed laudantium minima error ad.
-            senderID: Sapiente minima.
-            timestamp: 0.2618798355997725
+            content: Debitis amet.
+            senderID: Delectus possimus nam accusamus.
+            timestamp: 0.698239883760626
         required:
             - timestamp
             - senderID
@@ -712,31 +691,29 @@ definitions:
             ID:
                 type: string
                 description: Conversation ID
-                example: Blanditiis rem est et.
-            deliveredAt:
-                type: integer
-                description: TS for delivered time
-                example: 1646001695214000169
-                format: int64
-            lastMessage:
+                example: Rerum voluptatem amet.
+            lastMessageContent:
                 type: string
                 description: Last message
-                example: Vitae est.
-            participants:
-                type: number
-                description: Timestamp of the message
-                example: 0.06887241787008296
-                format: double
+                example: Dolorem et pariatur voluptas.
+            lastMessageDeliveredAt:
+                type: string
+                description: TS for delivered time
+                example: Aliquid provident est illo officiis.
+            lastMessageSenderID:
+                type: string
+                description: Sender ID
+                example: Dolores sequi ipsum.
         example:
-            ID: At itaque.
-            deliveredAt: 7734659760466169759
-            lastMessage: Quia ipsam.
-            participants: 0.3654520273692754
+            ID: Facilis quis blanditiis rem.
+            lastMessageContent: Est repellat culpa at itaque ad architecto.
+            lastMessageDeliveredAt: Ipsam vel placeat laborum.
+            lastMessageSenderID: Et molestias ducimus.
         required:
             - ID
-            - participants
-            - lastMessage
-            - deliveredAt
+            - lastMessageSenderID
+            - lastMessageContent
+            - lastMessageDeliveredAt
     FriendRequestBody:
         title: FriendRequestBody
         type: object
@@ -744,24 +721,24 @@ definitions:
             email:
                 type: string
                 description: Email
-                example: Veritatis suscipit deleniti sit ipsam.
+                example: Voluptatem qui autem dolorem ipsum.
             firstName:
                 type: string
                 description: First name
-                example: Est repellendus alias corporis mollitia neque consequuntur.
+                example: Veritatis suscipit deleniti sit ipsam.
             id:
                 type: string
                 description: User ID
-                example: Autem dolorem ipsum.
+                example: Ipsam commodi ut autem.
             lastName:
                 type: string
                 description: Last name
-                example: Illum placeat autem.
+                example: Est repellendus alias corporis mollitia neque consequuntur.
         example:
-            email: Est repellendus exercitationem aut delectus.
-            firstName: Ex repellendus.
-            id: Qui quia.
-            lastName: Sapiente nostrum minima reiciendis.
+            email: Qui quia.
+            firstName: Est repellendus exercitationem aut delectus.
+            id: Illum placeat autem.
+            lastName: Ex repellendus.
         required:
             - id
             - email
@@ -804,9 +781,9 @@ definitions:
             message:
                 type: string
                 description: Operation status
-                example: Incidunt inventore illum quisquam delectus possimus.
+                example: Quaerat iure quod ut voluptate.
         example:
-            message: Accusamus dolorum.
+            message: Quis eligendi ullam quasi enim laudantium aliquam.
         required:
             - message
     UserAddFriendResponseBody:
@@ -839,22 +816,22 @@ definitions:
                     $ref: '#/definitions/FriendResponseBody'
                 description: Friendslist
                 example:
-                    - email: Occaecati minima amet architecto sint.
-                      firstName: Aliquam modi deleniti earum ea repellendus.
-                      id: Veniam eos rerum quas et et.
-                      lastName: Nihil excepturi dolore eveniet ratione.
-                    - email: Occaecati minima amet architecto sint.
-                      firstName: Aliquam modi deleniti earum ea repellendus.
-                      id: Veniam eos rerum quas et et.
-                      lastName: Nihil excepturi dolore eveniet ratione.
-                    - email: Occaecati minima amet architecto sint.
-                      firstName: Aliquam modi deleniti earum ea repellendus.
-                      id: Veniam eos rerum quas et et.
-                      lastName: Nihil excepturi dolore eveniet ratione.
-                    - email: Occaecati minima amet architecto sint.
-                      firstName: Aliquam modi deleniti earum ea repellendus.
-                      id: Veniam eos rerum quas et et.
-                      lastName: Nihil excepturi dolore eveniet ratione.
+                    - email: Cum soluta possimus accusamus similique quibusdam.
+                      firstName: Veniam eos rerum quas et et.
+                      id: Molestiae similique omnis voluptate pariatur non.
+                      lastName: Occaecati minima amet architecto sint.
+                    - email: Cum soluta possimus accusamus similique quibusdam.
+                      firstName: Veniam eos rerum quas et et.
+                      id: Molestiae similique omnis voluptate pariatur non.
+                      lastName: Occaecati minima amet architecto sint.
+                    - email: Cum soluta possimus accusamus similique quibusdam.
+                      firstName: Veniam eos rerum quas et et.
+                      id: Molestiae similique omnis voluptate pariatur non.
+                      lastName: Occaecati minima amet architecto sint.
+                    - email: Cum soluta possimus accusamus similique quibusdam.
+                      firstName: Veniam eos rerum quas et et.
+                      id: Molestiae similique omnis voluptate pariatur non.
+                      lastName: Occaecati minima amet architecto sint.
             id:
                 type: string
                 description: User ID
@@ -867,22 +844,22 @@ definitions:
             email: Reprehenderit eum sint quidem ipsa.
             firstName: Cumque iusto.
             friendsList:
-                - email: Occaecati minima amet architecto sint.
-                  firstName: Aliquam modi deleniti earum ea repellendus.
-                  id: Veniam eos rerum quas et et.
-                  lastName: Nihil excepturi dolore eveniet ratione.
-                - email: Occaecati minima amet architecto sint.
-                  firstName: Aliquam modi deleniti earum ea repellendus.
-                  id: Veniam eos rerum quas et et.
-                  lastName: Nihil excepturi dolore eveniet ratione.
-                - email: Occaecati minima amet architecto sint.
-                  firstName: Aliquam modi deleniti earum ea repellendus.
-                  id: Veniam eos rerum quas et et.
-                  lastName: Nihil excepturi dolore eveniet ratione.
-                - email: Occaecati minima amet architecto sint.
-                  firstName: Aliquam modi deleniti earum ea repellendus.
-                  id: Veniam eos rerum quas et et.
-                  lastName: Nihil excepturi dolore eveniet ratione.
+                - email: Cum soluta possimus accusamus similique quibusdam.
+                  firstName: Veniam eos rerum quas et et.
+                  id: Molestiae similique omnis voluptate pariatur non.
+                  lastName: Occaecati minima amet architecto sint.
+                - email: Cum soluta possimus accusamus similique quibusdam.
+                  firstName: Veniam eos rerum quas et et.
+                  id: Molestiae similique omnis voluptate pariatur non.
+                  lastName: Occaecati minima amet architecto sint.
+                - email: Cum soluta possimus accusamus similique quibusdam.
+                  firstName: Veniam eos rerum quas et et.
+                  id: Molestiae similique omnis voluptate pariatur non.
+                  lastName: Occaecati minima amet architecto sint.
+                - email: Cum soluta possimus accusamus similique quibusdam.
+                  firstName: Veniam eos rerum quas et et.
+                  id: Molestiae similique omnis voluptate pariatur non.
+                  lastName: Occaecati minima amet architecto sint.
             id: Officia rerum nulla cum magnam.
             lastName: Ratione recusandae vitae suscipit.
         required:
@@ -902,19 +879,19 @@ definitions:
             email:
                 type: string
                 description: User email
-                example: Sequi sed autem facere consequuntur qui.
+                example: Facere consequuntur.
             firstName:
                 type: string
                 description: User first name
-                example: Aut id.
+                example: Quia est in aut id accusantium ab.
             lastName:
                 type: string
                 description: User last name
-                example: Ab et.
+                example: Doloremque sequi sed.
             password:
                 type: string
                 description: User password
-                example: Nesciunt rerum beatae praesentium accusantium blanditiis.
+                example: Voluptates nesciunt rerum beatae praesentium accusantium blanditiis.
         example:
             confirmedPassword: Qui reprehenderit ut.
             email: Nemo quos consequuntur laborum ut officiis commodi.
@@ -934,9 +911,9 @@ definitions:
             message:
                 type: string
                 description: Operation status
-                example: Deserunt nihil qui recusandae hic molestiae.
+                example: Minima reiciendis est qui beatae.
         example:
-            message: Atque accusantium.
+            message: Nihil qui recusandae hic molestiae.
         required:
             - message
     UserRegisterUniqueEmailErrorResponseBody:
@@ -946,7 +923,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: true
+                example: false
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -962,7 +939,7 @@ definitions:
             temporary:
                 type: boolean
                 description: Is the error temporary?
-                example: true
+                example: false
             timeout:
                 type: boolean
                 description: Is the error a timeout?
@@ -989,7 +966,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: false
+                example: true
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -1017,7 +994,7 @@ definitions:
             message: parameter 'p' must be an integer
             name: bad_request
             temporary: true
-            timeout: false
+            timeout: true
         required:
             - name
             - id

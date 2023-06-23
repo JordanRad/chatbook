@@ -29,12 +29,12 @@ func UsageCommands() string {
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
 	return os.Args[0] + ` notification notify-user-names-update --message '{
-      "firstName": "Iste omnis exercitationem.",
-      "id": "Doloribus libero repellendus non.",
-      "lastName": "Nulla et.",
-      "oldFirstName": "Quia quaerat sapiente alias sint.",
-      "oldLastName": "Esse adipisci hic assumenda.",
-      "ts": "Ratione molestiae expedita quam."
+      "firstName": "Sint fuga.",
+      "id": "Eum ex nam dolorem fugit aut id.",
+      "lastName": "Voluptas at ab aut saepe.",
+      "oldFirstName": "Dolores quia sint velit enim modi consequatur.",
+      "oldLastName": "Doloribus libero repellendus non.",
+      "ts": "Iste omnis exercitationem."
    }'` + "\n" +
 		""
 }
@@ -148,12 +148,12 @@ NotifyUserNamesUpdate implements notifyUserNamesUpdate.
 
 Example:
     %[1]s notification notify-user-names-update --message '{
-      "firstName": "Iste omnis exercitationem.",
-      "id": "Doloribus libero repellendus non.",
-      "lastName": "Nulla et.",
-      "oldFirstName": "Quia quaerat sapiente alias sint.",
-      "oldLastName": "Esse adipisci hic assumenda.",
-      "ts": "Ratione molestiae expedita quam."
+      "firstName": "Sint fuga.",
+      "id": "Eum ex nam dolorem fugit aut id.",
+      "lastName": "Voluptas at ab aut saepe.",
+      "oldFirstName": "Dolores quia sint velit enim modi consequatur.",
+      "oldLastName": "Doloribus libero repellendus non.",
+      "ts": "Iste omnis exercitationem."
    }'
 `, os.Args[0])
 }

@@ -13,6 +13,7 @@ var _ = API("chatbook-microservices", func() {
 		cors.Headers("*")
 		cors.Methods("GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS")
 		cors.MaxAge(600)
+		cors.Credentials()
 	})
 })
 

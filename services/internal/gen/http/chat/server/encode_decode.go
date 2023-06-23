@@ -38,18 +38,24 @@ func DecodeGetConversationHistoryRequest(mux goahttp.Muxer, decoder func(*http.R
 	return func(r *http.Request) (any, error) {
 		var (
 			id              string
-			limit           string
+			limit           int
 			beforeTimestamp int64
 			err             error
 
 			params = mux.Vars(r)
 		)
 		id = params["ID"]
-		limitRaw := r.URL.Query().Get("limit")
-		if limitRaw != "" {
-			limit = limitRaw
-		} else {
-			limit = "200"
+		{
+			limitRaw := r.URL.Query().Get("limit")
+			if limitRaw == "" {
+				limit = 200
+			} else {
+				v, err2 := strconv.ParseInt(limitRaw, 10, strconv.IntSize)
+				if err2 != nil {
+					err = goa.MergeErrors(err, goa.InvalidFieldTypeError("limit", limitRaw, "integer"))
+				}
+				limit = int(v)
+			}
 		}
 		{
 			beforeTimestampRaw := r.URL.Query().Get("beforeTimestamp")
@@ -90,18 +96,24 @@ func DecodeSearchInConversationRequest(mux goahttp.Muxer, decoder func(*http.Req
 	return func(r *http.Request) (any, error) {
 		var (
 			id          string
-			limit       string
+			limit       int
 			searchInput string
 			err         error
 
 			params = mux.Vars(r)
 		)
 		id = params["ID"]
-		limitRaw := r.URL.Query().Get("limit")
-		if limitRaw != "" {
-			limit = limitRaw
-		} else {
-			limit = "200"
+		{
+			limitRaw := r.URL.Query().Get("limit")
+			if limitRaw == "" {
+				limit = 200
+			} else {
+				v, err2 := strconv.ParseInt(limitRaw, 10, strconv.IntSize)
+				if err2 != nil {
+					err = goa.MergeErrors(err, goa.InvalidFieldTypeError("limit", limitRaw, "integer"))
+				}
+				limit = int(v)
+			}
 		}
 		searchInputRaw := r.URL.Query().Get("searchInput")
 		if searchInputRaw != "" {
@@ -138,31 +150,25 @@ func EncodeGetConversationsListResponse(encoder func(context.Context, http.Respo
 func DecodeGetConversationsListRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (any, error) {
 	return func(r *http.Request) (any, error) {
 		var (
-			body GetConversationsListRequestBody
-			err  error
+			limit int
+			err   error
 		)
-		err = decoder(r).Decode(&body)
-		if err != nil {
-			if err == io.EOF {
-				return nil, goa.MissingPayloadError()
+		{
+			limitRaw := r.URL.Query().Get("limit")
+			if limitRaw == "" {
+				limit = 100
+			} else {
+				v, err2 := strconv.ParseInt(limitRaw, 10, strconv.IntSize)
+				if err2 != nil {
+					err = goa.MergeErrors(err, goa.InvalidFieldTypeError("limit", limitRaw, "integer"))
+				}
+				limit = int(v)
 			}
-			return nil, goa.DecodePayloadError(err.Error())
 		}
-		err = ValidateGetConversationsListRequestBody(&body)
 		if err != nil {
 			return nil, err
 		}
-
-		var (
-			limit string
-		)
-		limitRaw := r.URL.Query().Get("limit")
-		if limitRaw != "" {
-			limit = limitRaw
-		} else {
-			limit = "100"
-		}
-		payload := NewGetConversationsListPayload(&body, limit)
+		payload := NewGetConversationsListPayload(limit)
 
 		return payload, nil
 	}
@@ -222,10 +228,10 @@ func marshalChatConversationMessageToConversationMessageResponseBody(v *chat.Con
 // *ConversationResponseBody from a value of type *chat.Conversation.
 func marshalChatConversationToConversationResponseBody(v *chat.Conversation) *ConversationResponseBody {
 	res := &ConversationResponseBody{
-		ID:           v.ID,
-		Participants: v.Participants,
-		LastMessage:  v.LastMessage,
-		DeliveredAt:  v.DeliveredAt,
+		ID:                     v.ID,
+		LastMessageSenderID:    v.LastMessageSenderID,
+		LastMessageContent:     v.LastMessageContent,
+		LastMessageDeliveredAt: v.LastMessageDeliveredAt,
 	}
 
 	return res

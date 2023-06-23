@@ -83,8 +83,8 @@ func (s *Service) GetProfile(ctx context.Context) (*user.UserProfileResponse, er
 	if err != nil {
 		return nil, fmt.Errorf("error extracting user from context: %w", err)
 	}
-	result, err := s.store.GetUserByEmail(ctx, u.Email)
 
+	result, err := s.store.GetUserByEmail(ctx, u.Email)
 	if err != nil {
 		return nil, fmt.Errorf("error getting user profile: %w", err)
 	}

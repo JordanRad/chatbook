@@ -36,17 +36,17 @@ user (register|get-profile|update-profile-names|add-friend|remove-friend)
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
 	return os.Args[0] + ` auth refresh-token --body '{
-      "email": "Natus quisquam.",
+      "email": "Veritatis natus quisquam.",
       "refreshToken": "Illo omnis nesciunt minus sed."
    }'` + "\n" +
 		os.Args[0] + ` info get-info` + "\n" +
-		os.Args[0] + ` chat get-conversation-history --id "Laboriosam tempore atque mollitia ut." --limit "Eum ullam eveniet temporibus quis dolore mollitia." --before-timestamp 5540675296674446940` + "\n" +
+		os.Args[0] + ` chat get-conversation-history --id "Laboriosam tempore atque mollitia ut." --limit 6090486241029236308 --before-timestamp 8609568903036219109` + "\n" +
 		os.Args[0] + ` user register --body '{
-      "confirmedPassword": "Molestiae similique omnis voluptate pariatur non.",
-      "email": "Quidem sapiente ex et sunt earum.",
-      "firstName": "Aut facere molestiae cumque quia blanditiis quos.",
-      "lastName": "Amet quia vero illum.",
-      "password": "Enim vel sapiente."
+      "confirmedPassword": "Quidem sapiente ex et sunt earum.",
+      "email": "Aut facere molestiae cumque quia blanditiis quos.",
+      "firstName": "Libero inventore in tempore.",
+      "lastName": "Nemo laboriosam optio.",
+      "password": "Amet quia vero illum."
    }'` + "\n" +
 		""
 }
@@ -86,7 +86,6 @@ func ParseEndpoint(
 		chatSearchInConversationSearchInputFlag = chatSearchInConversationFlags.String("search-input", "200", "")
 
 		chatGetConversationsListFlags     = flag.NewFlagSet("get-conversations-list", flag.ExitOnError)
-		chatGetConversationsListBodyFlag  = chatGetConversationsListFlags.String("body", "REQUIRED", "")
 		chatGetConversationsListLimitFlag = chatGetConversationsListFlags.String("limit", "100", "")
 
 		chatAddConversationFlags    = flag.NewFlagSet("add-conversation", flag.ExitOnError)
@@ -266,7 +265,7 @@ func ParseEndpoint(
 				data, err = chatc.BuildSearchInConversationPayload(*chatSearchInConversationIDFlag, *chatSearchInConversationLimitFlag, *chatSearchInConversationSearchInputFlag)
 			case "get-conversations-list":
 				endpoint = c.GetConversationsList()
-				data, err = chatc.BuildGetConversationsListPayload(*chatGetConversationsListBodyFlag, *chatGetConversationsListLimitFlag)
+				data, err = chatc.BuildGetConversationsListPayload(*chatGetConversationsListLimitFlag)
 			case "add-conversation":
 				endpoint = c.AddConversation()
 				data, err = chatc.BuildAddConversationPayload(*chatAddConversationBodyFlag)
@@ -321,7 +320,7 @@ RefreshToken implements refreshToken.
 
 Example:
     %[1]s auth refresh-token --body '{
-      "email": "Natus quisquam.",
+      "email": "Veritatis natus quisquam.",
       "refreshToken": "Illo omnis nesciunt minus sed."
    }'
 `, os.Args[0])
@@ -381,42 +380,39 @@ Additional help:
 `, os.Args[0])
 }
 func chatGetConversationHistoryUsage() {
-	fmt.Fprintf(os.Stderr, `%[1]s [flags] chat get-conversation-history -id STRING -limit STRING -before-timestamp INT64
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] chat get-conversation-history -id STRING -limit INT -before-timestamp INT64
 
 GetConversationHistory implements getConversationHistory.
     -id STRING: Conversation ID
-    -limit STRING: 
+    -limit INT: 
     -before-timestamp INT64: 
 
 Example:
-    %[1]s chat get-conversation-history --id "Laboriosam tempore atque mollitia ut." --limit "Eum ullam eveniet temporibus quis dolore mollitia." --before-timestamp 5540675296674446940
+    %[1]s chat get-conversation-history --id "Laboriosam tempore atque mollitia ut." --limit 6090486241029236308 --before-timestamp 8609568903036219109
 `, os.Args[0])
 }
 
 func chatSearchInConversationUsage() {
-	fmt.Fprintf(os.Stderr, `%[1]s [flags] chat search-in-conversation -id STRING -limit STRING -search-input STRING
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] chat search-in-conversation -id STRING -limit INT -search-input STRING
 
 SearchInConversation implements searchInConversation.
     -id STRING: Conversation ID
-    -limit STRING: 
+    -limit INT: 
     -search-input STRING: 
 
 Example:
-    %[1]s chat search-in-conversation --id "Animi et velit illo." --limit "Eos magni officia." --search-input "ilz"
+    %[1]s chat search-in-conversation --id "Et alias qui." --limit 2559720876411639687 --search-input "rgn"
 `, os.Args[0])
 }
 
 func chatGetConversationsListUsage() {
-	fmt.Fprintf(os.Stderr, `%[1]s [flags] chat get-conversations-list -body JSON -limit STRING
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] chat get-conversations-list -limit INT
 
 GetConversationsList implements getConversationsList.
-    -body JSON: 
-    -limit STRING: 
+    -limit INT: 
 
 Example:
-    %[1]s chat get-conversations-list --body '{
-      "ID": "Suscipit qui nesciunt consequatur quia repellat."
-   }' --limit "Quia excepturi error similique."
+    %[1]s chat get-conversations-list --limit 8224384345764157484
 `, os.Args[0])
 }
 
@@ -430,16 +426,16 @@ Example:
     %[1]s chat add-conversation --body '{
       "participants": [
          {
-            "email": "Sint quasi et.",
-            "firstName": "Consequatur voluptatem.",
-            "id": "Ab est.",
-            "lastName": "Libero inventore in tempore."
+            "email": "Et minus nisi delectus ut sed soluta.",
+            "firstName": "Ab est.",
+            "id": "Doloremque omnis reprehenderit eos rerum.",
+            "lastName": "Sint quasi et."
          },
          {
-            "email": "Sint quasi et.",
-            "firstName": "Consequatur voluptatem.",
-            "id": "Ab est.",
-            "lastName": "Libero inventore in tempore."
+            "email": "Et minus nisi delectus ut sed soluta.",
+            "firstName": "Ab est.",
+            "id": "Doloremque omnis reprehenderit eos rerum.",
+            "lastName": "Sint quasi et."
          }
       ]
    }'
@@ -471,11 +467,11 @@ Register implements register.
 
 Example:
     %[1]s user register --body '{
-      "confirmedPassword": "Molestiae similique omnis voluptate pariatur non.",
-      "email": "Quidem sapiente ex et sunt earum.",
-      "firstName": "Aut facere molestiae cumque quia blanditiis quos.",
-      "lastName": "Amet quia vero illum.",
-      "password": "Enim vel sapiente."
+      "confirmedPassword": "Quidem sapiente ex et sunt earum.",
+      "email": "Aut facere molestiae cumque quia blanditiis quos.",
+      "firstName": "Libero inventore in tempore.",
+      "lastName": "Nemo laboriosam optio.",
+      "password": "Amet quia vero illum."
    }'
 `, os.Args[0])
 }
@@ -498,8 +494,8 @@ UpdateProfileNames implements updateProfileNames.
 
 Example:
     %[1]s user update-profile-names --body '{
-      "firstName": "Animi aperiam veniam.",
-      "lastName": "Quam ad voluptatem dolor quae accusamus deleniti."
+      "firstName": "Sequi voluptates quia.",
+      "lastName": "Illum accusantium nam."
    }'
 `, os.Args[0])
 }
@@ -511,7 +507,7 @@ AddFriend implements addFriend.
     -id STRING: User ID to add
 
 Example:
-    %[1]s user add-friend --id "Perspiciatis quia."
+    %[1]s user add-friend --id "Deleniti aut."
 `, os.Args[0])
 }
 
@@ -522,6 +518,6 @@ RemoveFriend implements removeFriend.
     -id STRING: User ID to delete
 
 Example:
-    %[1]s user remove-friend --id "Velit enim modi consequatur."
+    %[1]s user remove-friend --id "Non ut voluptas aut."
 `, os.Args[0])
 }
