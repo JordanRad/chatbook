@@ -61,6 +61,8 @@ type Conversation struct {
 	LastMessageContent string
 	// TS for delivered time
 	LastMessageDeliveredAt string
+	// TS for delivered time
+	OtherParticipantID string
 }
 
 type ConversationMessage struct {

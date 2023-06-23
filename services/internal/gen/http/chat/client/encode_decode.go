@@ -347,6 +347,7 @@ func unmarshalConversationResponseBodyToChatConversation(v *ConversationResponse
 		LastMessageSenderID:    *v.LastMessageSenderID,
 		LastMessageContent:     *v.LastMessageContent,
 		LastMessageDeliveredAt: *v.LastMessageDeliveredAt,
+		OtherParticipantID:     *v.OtherParticipantID,
 	}
 
 	return res

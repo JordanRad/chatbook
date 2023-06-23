@@ -102,10 +102,16 @@ func (s *Store) ListConversationsByUserID(ctx context.Context, userID string, li
 			LIMIT $2
 		)
 		
-		SELECT m.conversation_id as id, m.sender_id as last_message_sender_id , m.content last_message_content, m.ts as last_message_delivered_at
+		SELECT 
+		m.conversation_id as id, 
+		m.sender_id as last_message_sender_id , 
+		m.content last_message_content, 
+		m.ts as last_message_delivered_at,
+		cp.participant_id as other_participant_id
 		FROM messages m
 		JOIN conversations_by_id_and_ts as subset ON m.conversation_id = subset.conversation_id
-		WHERE m.ts = subset.max_ts
+		JOIN conversations_participants cp ON cp.conversation_id = m.conversation_id
+		WHERE m.ts = subset.max_ts AND cp.participant_id != $1
 		ORDER BY subset.max_ts DESC;
 		`, userID, limit)
 	if err != nil {
@@ -121,7 +127,8 @@ func (s *Store) ListConversationsByUserID(ctx context.Context, userID string, li
 			&message.ID,
 			&message.LastMessageSenderID,
 			&message.LastMessageContent,
-			&message.LastMessageDeliveredAt)
+			&message.LastMessageDeliveredAt,
+			&message.OtherParticipantID)
 
 		if err != nil {
 			return nil, fmt.Errorf("error mapping a conversation row: %w", err)

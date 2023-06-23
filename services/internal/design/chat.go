@@ -111,6 +111,7 @@ var Conversation = Type("Conversation", func() {
 	Attribute("lastMessageSenderID", String, "Sender ID")
 	Attribute("lastMessageContent", String, "Last message")
 	Attribute("lastMessageDeliveredAt", String, "TS for delivered time")
+	Attribute("otherParticipantID", String, "TS for delivered time")
 
-	Required("ID", "lastMessageSenderID", "lastMessageContent", "lastMessageDeliveredAt")
+	Required("ID", "lastMessageSenderID", "lastMessageContent", "lastMessageDeliveredAt", "otherParticipantID")
 })

@@ -36,17 +36,17 @@ user (register|get-profile|update-profile-names|add-friend|remove-friend)
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
 	return os.Args[0] + ` auth refresh-token --body '{
-      "email": "Veritatis natus quisquam.",
-      "refreshToken": "Illo omnis nesciunt minus sed."
+      "email": "Molestiae sit enim non ratione maxime molestiae.",
+      "refreshToken": "Dolorum rerum."
    }'` + "\n" +
 		os.Args[0] + ` info get-info` + "\n" +
-		os.Args[0] + ` chat get-conversation-history --id "Laboriosam tempore atque mollitia ut." --limit 6090486241029236308 --before-timestamp 8609568903036219109` + "\n" +
+		os.Args[0] + ` chat get-conversation-history --id "Vel id doloremque et error." --limit 4453318380003661876 --before-timestamp 1892074636491157337` + "\n" +
 		os.Args[0] + ` user register --body '{
-      "confirmedPassword": "Quidem sapiente ex et sunt earum.",
-      "email": "Aut facere molestiae cumque quia blanditiis quos.",
-      "firstName": "Libero inventore in tempore.",
-      "lastName": "Nemo laboriosam optio.",
-      "password": "Amet quia vero illum."
+      "confirmedPassword": "Occaecati minima amet architecto sint.",
+      "email": "Cum soluta possimus accusamus similique quibusdam.",
+      "firstName": "Enim vel sapiente.",
+      "lastName": "Molestiae similique omnis voluptate pariatur non.",
+      "password": "Veniam eos rerum quas et et."
    }'` + "\n" +
 		""
 }
@@ -320,8 +320,8 @@ RefreshToken implements refreshToken.
 
 Example:
     %[1]s auth refresh-token --body '{
-      "email": "Veritatis natus quisquam.",
-      "refreshToken": "Illo omnis nesciunt minus sed."
+      "email": "Molestiae sit enim non ratione maxime molestiae.",
+      "refreshToken": "Dolorum rerum."
    }'
 `, os.Args[0])
 }
@@ -334,8 +334,8 @@ Login implements login.
 
 Example:
     %[1]s auth login --body '{
-      "email": "Labore tempora.",
-      "password": "Ut ut."
+      "email": "Quasi quas.",
+      "password": "Sint quia molestias aut dolores soluta."
    }'
 `, os.Args[0])
 }
@@ -388,7 +388,7 @@ GetConversationHistory implements getConversationHistory.
     -before-timestamp INT64: 
 
 Example:
-    %[1]s chat get-conversation-history --id "Laboriosam tempore atque mollitia ut." --limit 6090486241029236308 --before-timestamp 8609568903036219109
+    %[1]s chat get-conversation-history --id "Vel id doloremque et error." --limit 4453318380003661876 --before-timestamp 1892074636491157337
 `, os.Args[0])
 }
 
@@ -401,7 +401,7 @@ SearchInConversation implements searchInConversation.
     -search-input STRING: 
 
 Example:
-    %[1]s chat search-in-conversation --id "Et alias qui." --limit 2559720876411639687 --search-input "rgn"
+    %[1]s chat search-in-conversation --id "Libero est ea." --limit 8928158154998112161 --search-input "tbe"
 `, os.Args[0])
 }
 
@@ -412,7 +412,7 @@ GetConversationsList implements getConversationsList.
     -limit INT: 
 
 Example:
-    %[1]s chat get-conversations-list --limit 8224384345764157484
+    %[1]s chat get-conversations-list --limit 7611293394246426582
 `, os.Args[0])
 }
 
@@ -426,16 +426,28 @@ Example:
     %[1]s chat add-conversation --body '{
       "participants": [
          {
-            "email": "Et minus nisi delectus ut sed soluta.",
-            "firstName": "Ab est.",
-            "id": "Doloremque omnis reprehenderit eos rerum.",
-            "lastName": "Sint quasi et."
+            "email": "Tempore consequatur nemo laboriosam.",
+            "firstName": "At aut facere molestiae cumque quia blanditiis.",
+            "id": "Quas libero inventore.",
+            "lastName": "Numquam amet quia vero."
          },
          {
-            "email": "Et minus nisi delectus ut sed soluta.",
-            "firstName": "Ab est.",
-            "id": "Doloremque omnis reprehenderit eos rerum.",
-            "lastName": "Sint quasi et."
+            "email": "Tempore consequatur nemo laboriosam.",
+            "firstName": "At aut facere molestiae cumque quia blanditiis.",
+            "id": "Quas libero inventore.",
+            "lastName": "Numquam amet quia vero."
+         },
+         {
+            "email": "Tempore consequatur nemo laboriosam.",
+            "firstName": "At aut facere molestiae cumque quia blanditiis.",
+            "id": "Quas libero inventore.",
+            "lastName": "Numquam amet quia vero."
+         },
+         {
+            "email": "Tempore consequatur nemo laboriosam.",
+            "firstName": "At aut facere molestiae cumque quia blanditiis.",
+            "id": "Quas libero inventore.",
+            "lastName": "Numquam amet quia vero."
          }
       ]
    }'
@@ -467,11 +479,11 @@ Register implements register.
 
 Example:
     %[1]s user register --body '{
-      "confirmedPassword": "Quidem sapiente ex et sunt earum.",
-      "email": "Aut facere molestiae cumque quia blanditiis quos.",
-      "firstName": "Libero inventore in tempore.",
-      "lastName": "Nemo laboriosam optio.",
-      "password": "Amet quia vero illum."
+      "confirmedPassword": "Occaecati minima amet architecto sint.",
+      "email": "Cum soluta possimus accusamus similique quibusdam.",
+      "firstName": "Enim vel sapiente.",
+      "lastName": "Molestiae similique omnis voluptate pariatur non.",
+      "password": "Veniam eos rerum quas et et."
    }'
 `, os.Args[0])
 }
@@ -494,8 +506,8 @@ UpdateProfileNames implements updateProfileNames.
 
 Example:
     %[1]s user update-profile-names --body '{
-      "firstName": "Sequi voluptates quia.",
-      "lastName": "Illum accusantium nam."
+      "firstName": "Aut vel eos eligendi reiciendis fuga qui.",
+      "lastName": "Ut voluptas aut perspiciatis quia voluptates."
    }'
 `, os.Args[0])
 }
@@ -507,7 +519,7 @@ AddFriend implements addFriend.
     -id STRING: User ID to add
 
 Example:
-    %[1]s user add-friend --id "Deleniti aut."
+    %[1]s user add-friend --id "Dolores quia sint velit enim modi consequatur."
 `, os.Args[0])
 }
 
@@ -518,6 +530,6 @@ RemoveFriend implements removeFriend.
     -id STRING: User ID to delete
 
 Example:
-    %[1]s user remove-friend --id "Non ut voluptas aut."
+    %[1]s user remove-friend --id "Iste omnis exercitationem."
 `, os.Args[0])
 }

@@ -66,6 +66,7 @@ func toConversationResources(conversations []models.Conversation) []*chat.Conver
 			LastMessageSenderID:    conv.LastMessageSenderID,
 			LastMessageContent:     conv.LastMessageContent,
 			LastMessageDeliveredAt: conv.LastMessageDeliveredAt,
+			OtherParticipantID:     conv.OtherParticipantID,
 		}
 		conversationResources = append(conversationResources, conversation)
 	}

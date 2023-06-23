@@ -79,6 +79,8 @@ type ConversationResponseBody struct {
 	LastMessageContent string `form:"lastMessageContent" json:"lastMessageContent" xml:"lastMessageContent"`
 	// TS for delivered time
 	LastMessageDeliveredAt string `form:"lastMessageDeliveredAt" json:"lastMessageDeliveredAt" xml:"lastMessageDeliveredAt"`
+	// TS for delivered time
+	OtherParticipantID string `form:"otherParticipantID" json:"otherParticipantID" xml:"otherParticipantID"`
 }
 
 // FriendRequestBody is used to define fields on request body types.

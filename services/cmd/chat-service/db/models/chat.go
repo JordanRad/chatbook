@@ -7,5 +7,5 @@ type ConversationMessage struct {
 }
 
 type Conversation struct {
-	ID, LastMessageSenderID, LastMessageContent, LastMessageDeliveredAt string
+	ID, LastMessageSenderID, LastMessageContent, LastMessageDeliveredAt, OtherParticipantID string
 }

@@ -79,6 +79,8 @@ type ConversationResponseBody struct {
 	LastMessageContent *string `form:"lastMessageContent,omitempty" json:"lastMessageContent,omitempty" xml:"lastMessageContent,omitempty"`
 	// TS for delivered time
 	LastMessageDeliveredAt *string `form:"lastMessageDeliveredAt,omitempty" json:"lastMessageDeliveredAt,omitempty" xml:"lastMessageDeliveredAt,omitempty"`
+	// TS for delivered time
+	OtherParticipantID *string `form:"otherParticipantID,omitempty" json:"otherParticipantID,omitempty" xml:"otherParticipantID,omitempty"`
 }
 
 // FriendRequestBody is used to define fields on request body types.
@@ -261,6 +263,9 @@ func ValidateConversationResponseBody(body *ConversationResponseBody) (err error
 	}
 	if body.LastMessageDeliveredAt == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("lastMessageDeliveredAt", "body"))
+	}
+	if body.OtherParticipantID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("otherParticipantID", "body"))
 	}
 	return
 }
