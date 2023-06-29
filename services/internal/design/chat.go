@@ -17,8 +17,8 @@ var _ = Service("chat", func() {
 			Attribute("limit", Int, "Messages count", func() {
 				Default(200)
 			})
-			Attribute("beforeTimestamp", Int64, "Before timestamp", func() {
-				Default(1257894000)
+			Attribute("beforeTimestamp", String, "Before timestamp", func() {
+				Default("2023-06-06 00:00:00.323108")
 			})
 
 			Required("ID")
@@ -93,7 +93,7 @@ var ChatHistoryResponse = Type("ChatHistoryResponse", func() {
 
 var ConversationMessage = Type("ConversationMessage", func() {
 	Attribute("senderID", String, "Sender ID")
-	Attribute("timestamp", Float64, "Timestamp of the message")
+	Attribute("timestamp", String, "Timestamp of the message")
 	Attribute("content", String, "Message Content")
 
 	Required("timestamp", "senderID", "content")

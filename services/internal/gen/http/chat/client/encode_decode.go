@@ -56,7 +56,7 @@ func EncodeGetConversationHistoryRequest(encoder func(*http.Request) goahttp.Enc
 		}
 		values := req.URL.Query()
 		values.Add("limit", fmt.Sprintf("%v", p.Limit))
-		values.Add("beforeTimestamp", fmt.Sprintf("%v", p.BeforeTimestamp))
+		values.Add("beforeTimestamp", p.BeforeTimestamp)
 		req.URL.RawQuery = values.Encode()
 		return nil
 	}

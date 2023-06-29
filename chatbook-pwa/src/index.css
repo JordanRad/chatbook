@@ -1,0 +1,16 @@
+.left-message {
+  background-color: #f0f0f0;
+  align-self: flex-start;
+}
+
+.right-message {
+  background-color: #eaf7ff;
+  align-self: flex-end;
+}
+
+.chat-message {
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}

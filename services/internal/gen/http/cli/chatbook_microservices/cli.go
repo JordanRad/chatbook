@@ -40,13 +40,13 @@ func UsageExamples() string {
       "refreshToken": "Dolorum rerum."
    }'` + "\n" +
 		os.Args[0] + ` info get-info` + "\n" +
-		os.Args[0] + ` chat get-conversation-history --id "Vel id doloremque et error." --limit 4453318380003661876 --before-timestamp 1892074636491157337` + "\n" +
+		os.Args[0] + ` chat get-conversation-history --id "Vel id doloremque et error." --limit 4453318380003661876 --before-timestamp "Beatae et alias."` + "\n" +
 		os.Args[0] + ` user register --body '{
-      "confirmedPassword": "Occaecati minima amet architecto sint.",
-      "email": "Cum soluta possimus accusamus similique quibusdam.",
-      "firstName": "Enim vel sapiente.",
-      "lastName": "Molestiae similique omnis voluptate pariatur non.",
-      "password": "Veniam eos rerum quas et et."
+      "confirmedPassword": "Impedit nisi assumenda ipsum adipisci.",
+      "email": "Aliquam modi deleniti earum ea repellendus.",
+      "firstName": "Veniam eos rerum quas et et.",
+      "lastName": "Occaecati minima amet architecto sint.",
+      "password": "Nihil excepturi dolore eveniet ratione."
    }'` + "\n" +
 		""
 }
@@ -78,7 +78,7 @@ func ParseEndpoint(
 		chatGetConversationHistoryFlags               = flag.NewFlagSet("get-conversation-history", flag.ExitOnError)
 		chatGetConversationHistoryIDFlag              = chatGetConversationHistoryFlags.String("id", "REQUIRED", "Conversation ID")
 		chatGetConversationHistoryLimitFlag           = chatGetConversationHistoryFlags.String("limit", "200", "")
-		chatGetConversationHistoryBeforeTimestampFlag = chatGetConversationHistoryFlags.String("before-timestamp", "1257894000", "")
+		chatGetConversationHistoryBeforeTimestampFlag = chatGetConversationHistoryFlags.String("before-timestamp", "2023-06-06 00:00:00.323108", "")
 
 		chatSearchInConversationFlags           = flag.NewFlagSet("search-in-conversation", flag.ExitOnError)
 		chatSearchInConversationIDFlag          = chatSearchInConversationFlags.String("id", "REQUIRED", "Conversation ID")
@@ -380,15 +380,15 @@ Additional help:
 `, os.Args[0])
 }
 func chatGetConversationHistoryUsage() {
-	fmt.Fprintf(os.Stderr, `%[1]s [flags] chat get-conversation-history -id STRING -limit INT -before-timestamp INT64
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] chat get-conversation-history -id STRING -limit INT -before-timestamp STRING
 
 GetConversationHistory implements getConversationHistory.
     -id STRING: Conversation ID
     -limit INT: 
-    -before-timestamp INT64: 
+    -before-timestamp STRING: 
 
 Example:
-    %[1]s chat get-conversation-history --id "Vel id doloremque et error." --limit 4453318380003661876 --before-timestamp 1892074636491157337
+    %[1]s chat get-conversation-history --id "Vel id doloremque et error." --limit 4453318380003661876 --before-timestamp "Beatae et alias."
 `, os.Args[0])
 }
 
@@ -401,7 +401,7 @@ SearchInConversation implements searchInConversation.
     -search-input STRING: 
 
 Example:
-    %[1]s chat search-in-conversation --id "Libero est ea." --limit 8928158154998112161 --search-input "tbe"
+    %[1]s chat search-in-conversation --id "Nesciunt consequatur quia repellat et quia excepturi." --limit 8861045838960020711 --search-input "658"
 `, os.Args[0])
 }
 
@@ -412,7 +412,7 @@ GetConversationsList implements getConversationsList.
     -limit INT: 
 
 Example:
-    %[1]s chat get-conversations-list --limit 7611293394246426582
+    %[1]s chat get-conversations-list --limit 780580003293226390
 `, os.Args[0])
 }
 
@@ -426,28 +426,16 @@ Example:
     %[1]s chat add-conversation --body '{
       "participants": [
          {
-            "email": "Tempore consequatur nemo laboriosam.",
-            "firstName": "At aut facere molestiae cumque quia blanditiis.",
-            "id": "Quas libero inventore.",
-            "lastName": "Numquam amet quia vero."
+            "email": "Et sunt earum.",
+            "firstName": "Enim vel sapiente.",
+            "id": "Quia vero illum eos quidem sapiente.",
+            "lastName": "Molestiae similique omnis voluptate pariatur non."
          },
          {
-            "email": "Tempore consequatur nemo laboriosam.",
-            "firstName": "At aut facere molestiae cumque quia blanditiis.",
-            "id": "Quas libero inventore.",
-            "lastName": "Numquam amet quia vero."
-         },
-         {
-            "email": "Tempore consequatur nemo laboriosam.",
-            "firstName": "At aut facere molestiae cumque quia blanditiis.",
-            "id": "Quas libero inventore.",
-            "lastName": "Numquam amet quia vero."
-         },
-         {
-            "email": "Tempore consequatur nemo laboriosam.",
-            "firstName": "At aut facere molestiae cumque quia blanditiis.",
-            "id": "Quas libero inventore.",
-            "lastName": "Numquam amet quia vero."
+            "email": "Et sunt earum.",
+            "firstName": "Enim vel sapiente.",
+            "id": "Quia vero illum eos quidem sapiente.",
+            "lastName": "Molestiae similique omnis voluptate pariatur non."
          }
       ]
    }'
@@ -479,11 +467,11 @@ Register implements register.
 
 Example:
     %[1]s user register --body '{
-      "confirmedPassword": "Occaecati minima amet architecto sint.",
-      "email": "Cum soluta possimus accusamus similique quibusdam.",
-      "firstName": "Enim vel sapiente.",
-      "lastName": "Molestiae similique omnis voluptate pariatur non.",
-      "password": "Veniam eos rerum quas et et."
+      "confirmedPassword": "Impedit nisi assumenda ipsum adipisci.",
+      "email": "Aliquam modi deleniti earum ea repellendus.",
+      "firstName": "Veniam eos rerum quas et et.",
+      "lastName": "Occaecati minima amet architecto sint.",
+      "password": "Nihil excepturi dolore eveniet ratione."
    }'
 `, os.Args[0])
 }
@@ -506,8 +494,8 @@ UpdateProfileNames implements updateProfileNames.
 
 Example:
     %[1]s user update-profile-names --body '{
-      "firstName": "Aut vel eos eligendi reiciendis fuga qui.",
-      "lastName": "Ut voluptas aut perspiciatis quia voluptates."
+      "firstName": "Voluptates blanditiis eum ex nam dolorem fugit.",
+      "lastName": "Id velit sint fuga ut dolores quia."
    }'
 `, os.Args[0])
 }
@@ -519,7 +507,7 @@ AddFriend implements addFriend.
     -id STRING: User ID to add
 
 Example:
-    %[1]s user add-friend --id "Dolores quia sint velit enim modi consequatur."
+    %[1]s user add-friend --id "Doloribus libero repellendus non."
 `, os.Args[0])
 }
 
@@ -530,6 +518,6 @@ RemoveFriend implements removeFriend.
     -id STRING: User ID to delete
 
 Example:
-    %[1]s user remove-friend --id "Iste omnis exercitationem."
+    %[1]s user remove-friend --id "Nulla et."
 `, os.Args[0])
 }

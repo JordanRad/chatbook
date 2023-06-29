@@ -30,6 +30,9 @@ class UserService {
     async getLastConversations() {
         return await this.client.get('http://localhost:8092/api/chat/v1/conversations')
     }
+    async getChatHistory(conversationID :string) {
+        return await this.client.get(`http://localhost:8092/api/chat/v1/conversations/${conversationID}/history`)
+    }
 
 }
 

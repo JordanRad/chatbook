@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/JordanRad/chatbook/services/cmd/chat-service/db/models"
 
@@ -18,7 +17,7 @@ type Service struct {
 }
 
 type Store interface {
-	FindHistoryByID(ctx context.Context, ID string, limit int, beforeTS string) ([]models.ConversationMessage, error)
+	FindHistoryByID(ctx context.Context, ID, beforeTS string, limit int) ([]models.ConversationMessage, error)
 	FindBySearchInput(ctx context.Context, ID, input string, limit int) ([]models.ConversationMessage, error)
 	ListConversationsByUserID(ctx context.Context, userID string, limit int) ([]models.Conversation, error)
 	CreateConversation(ctx context.Context, participants []auth.FriendsList) error
@@ -34,22 +33,36 @@ func NewService(logger *log.Logger, store Store) *Service {
 	}
 }
 
+func toMessagesList(conversationMessages []models.ConversationMessage) []*chat.ConversationMessage {
+	var resources []*chat.ConversationMessage
+	for _, m := range conversationMessages {
+		r := &chat.ConversationMessage{
+			SenderID:  m.SenderID,
+			Timestamp: m.TS.String(),
+			Content:   m.Content,
+		}
+		resources = append(resources, r)
+	}
+	return resources
+}
+
 func (s *Service) GetConversationHistory(ctx context.Context, p *chat.GetConversationHistoryPayload) (*chat.ChatHistoryResponse, error) {
-	u, err := auth.UserInContext(ctx)
+	_, err := auth.UserInContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error extracting user from context: %w", err)
 	}
-	fmt.Println(u)
 
-	ts := time.Unix(p.BeforeTimestamp, 0)
-	list, err := s.store.FindHistoryByID(ctx, p.ID, p.Limit, ts.Format("2006-01-02 15:04:05.999999"))
+	list, err := s.store.FindHistoryByID(ctx, p.ID, p.BeforeTimestamp, p.Limit)
 	if err != nil {
 		return nil, fmt.Errorf("error finding last conversations from db: %w", err)
 	}
 
+	resources := toMessagesList(list)
+
 	response := &chat.ChatHistoryResponse{
-		ID:    p.ID,
-		Count: len(list),
+		ID:       p.ID,
+		Count:    len(list),
+		Messages: resources,
 	}
 	return response, nil
 }

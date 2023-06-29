@@ -64,7 +64,7 @@ type ConversationMessageResponseBody struct {
 	// Sender ID
 	SenderID string `form:"senderID" json:"senderID" xml:"senderID"`
 	// Timestamp of the message
-	Timestamp float64 `form:"timestamp" json:"timestamp" xml:"timestamp"`
+	Timestamp string `form:"timestamp" json:"timestamp" xml:"timestamp"`
 	// Message Content
 	Content string `form:"content" json:"content" xml:"content"`
 }
@@ -153,7 +153,7 @@ func NewAddConversationResponseBody(res *chat.OperationStatusResponse) *AddConve
 
 // NewGetConversationHistoryPayload builds a chat service
 // getConversationHistory endpoint payload.
-func NewGetConversationHistoryPayload(id string, limit int, beforeTimestamp int64) *chat.GetConversationHistoryPayload {
+func NewGetConversationHistoryPayload(id string, limit int, beforeTimestamp string) *chat.GetConversationHistoryPayload {
 	v := &chat.GetConversationHistoryPayload{}
 	v.ID = id
 	v.Limit = limit

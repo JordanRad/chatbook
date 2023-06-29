@@ -39,7 +39,7 @@ func DecodeGetConversationHistoryRequest(mux goahttp.Muxer, decoder func(*http.R
 		var (
 			id              string
 			limit           int
-			beforeTimestamp int64
+			beforeTimestamp string
 			err             error
 
 			params = mux.Vars(r)
@@ -57,17 +57,11 @@ func DecodeGetConversationHistoryRequest(mux goahttp.Muxer, decoder func(*http.R
 				limit = int(v)
 			}
 		}
-		{
-			beforeTimestampRaw := r.URL.Query().Get("beforeTimestamp")
-			if beforeTimestampRaw == "" {
-				beforeTimestamp = 1257894000
-			} else {
-				v, err2 := strconv.ParseInt(beforeTimestampRaw, 10, 64)
-				if err2 != nil {
-					err = goa.MergeErrors(err, goa.InvalidFieldTypeError("beforeTimestamp", beforeTimestampRaw, "integer"))
-				}
-				beforeTimestamp = v
-			}
+		beforeTimestampRaw := r.URL.Query().Get("beforeTimestamp")
+		if beforeTimestampRaw != "" {
+			beforeTimestamp = beforeTimestampRaw
+		} else {
+			beforeTimestamp = "2023-06-06 00:00:00.323108"
 		}
 		if err != nil {
 			return nil, err

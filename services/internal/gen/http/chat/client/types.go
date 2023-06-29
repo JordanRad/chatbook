@@ -64,7 +64,7 @@ type ConversationMessageResponseBody struct {
 	// Sender ID
 	SenderID *string `form:"senderID,omitempty" json:"senderID,omitempty" xml:"senderID,omitempty"`
 	// Timestamp of the message
-	Timestamp *float64 `form:"timestamp,omitempty" json:"timestamp,omitempty" xml:"timestamp,omitempty"`
+	Timestamp *string `form:"timestamp,omitempty" json:"timestamp,omitempty" xml:"timestamp,omitempty"`
 	// Message Content
 	Content *string `form:"content,omitempty" json:"content,omitempty" xml:"content,omitempty"`
 }

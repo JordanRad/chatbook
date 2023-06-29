@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/JordanRad/chatbook/services/cmd/chat-service/chat"
 	"github.com/JordanRad/chatbook/services/cmd/chat-service/db/models"
@@ -22,13 +23,20 @@ func NewStore(db *sql.DB) *Store {
 	}
 }
 
-func (s *Store) FindHistoryByID(ctx context.Context, ID string, limit int, beforeTS string) ([]models.ConversationMessage, error) {
+func (s *Store) FindHistoryByID(ctx context.Context, ID, beforeTS string, limit int) ([]models.ConversationMessage, error) {
+	fmt.Println("FIND HISTORY", ID, beforeTS, limit)
+	layout := "2006-01-02 15:04:05.999999"
+	t, err := time.Parse(layout, beforeTS)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing ts: %w", err)
+	}
+
 	rows, err := s.DB.Query(`
 		SELECT sender_id, content, ts FROM messages
-		WHERE conversation_id = '$1
+		WHERE conversation_id = $1
 		AND ts < $2
 		ORDER BY ts DESC LIMIT $3;
-		`, ID, beforeTS, limit)
+		`, ID, t, limit)
 	if err != nil {
 		return nil, fmt.Errorf("error extracting chat history: %w", err)
 	}

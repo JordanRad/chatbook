@@ -37,13 +37,10 @@ func BuildGetConversationHistoryPayload(chatGetConversationHistoryID string, cha
 			}
 		}
 	}
-	var beforeTimestamp int64
+	var beforeTimestamp string
 	{
 		if chatGetConversationHistoryBeforeTimestamp != "" {
-			beforeTimestamp, err = strconv.ParseInt(chatGetConversationHistoryBeforeTimestamp, 10, 64)
-			if err != nil {
-				return nil, fmt.Errorf("invalid value for beforeTimestamp, must be INT64")
-			}
+			beforeTimestamp = chatGetConversationHistoryBeforeTimestamp
 		}
 	}
 	v := &chat.GetConversationHistoryPayload{}
@@ -122,7 +119,7 @@ func BuildAddConversationPayload(chatAddConversationBody string) (*chat.AddConve
 	{
 		err = json.Unmarshal([]byte(chatAddConversationBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"participants\": [\n         {\n            \"email\": \"Tempore consequatur nemo laboriosam.\",\n            \"firstName\": \"At aut facere molestiae cumque quia blanditiis.\",\n            \"id\": \"Quas libero inventore.\",\n            \"lastName\": \"Numquam amet quia vero.\"\n         },\n         {\n            \"email\": \"Tempore consequatur nemo laboriosam.\",\n            \"firstName\": \"At aut facere molestiae cumque quia blanditiis.\",\n            \"id\": \"Quas libero inventore.\",\n            \"lastName\": \"Numquam amet quia vero.\"\n         },\n         {\n            \"email\": \"Tempore consequatur nemo laboriosam.\",\n            \"firstName\": \"At aut facere molestiae cumque quia blanditiis.\",\n            \"id\": \"Quas libero inventore.\",\n            \"lastName\": \"Numquam amet quia vero.\"\n         },\n         {\n            \"email\": \"Tempore consequatur nemo laboriosam.\",\n            \"firstName\": \"At aut facere molestiae cumque quia blanditiis.\",\n            \"id\": \"Quas libero inventore.\",\n            \"lastName\": \"Numquam amet quia vero.\"\n         }\n      ]\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"participants\": [\n         {\n            \"email\": \"Et sunt earum.\",\n            \"firstName\": \"Enim vel sapiente.\",\n            \"id\": \"Quia vero illum eos quidem sapiente.\",\n            \"lastName\": \"Molestiae similique omnis voluptate pariatur non.\"\n         },\n         {\n            \"email\": \"Et sunt earum.\",\n            \"firstName\": \"Enim vel sapiente.\",\n            \"id\": \"Quia vero illum eos quidem sapiente.\",\n            \"lastName\": \"Molestiae similique omnis voluptate pariatur non.\"\n         }\n      ]\n   }'")
 		}
 		if body.Participants == nil {
 			err = goa.MergeErrors(err, goa.MissingFieldError("participants", "body"))

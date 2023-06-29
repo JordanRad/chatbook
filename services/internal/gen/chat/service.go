@@ -69,7 +69,7 @@ type ConversationMessage struct {
 	// Sender ID
 	SenderID string
 	// Timestamp of the message
-	Timestamp float64
+	Timestamp string
 	// Message Content
 	Content string
 }
@@ -102,7 +102,7 @@ type GetConversationHistoryPayload struct {
 	// Messages count
 	Limit int
 	// Before timestamp
-	BeforeTimestamp int64
+	BeforeTimestamp string
 }
 
 // GetConversationsListPayload is the payload type of the chat service
