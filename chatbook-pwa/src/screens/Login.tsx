@@ -23,7 +23,7 @@ const Login = () => {
         // Error handling
 
         // Eventually forward to chats if successful
-        localStorage.setItem("token",JSON.stringify(res.data))
+        sessionStorage.setItem("token",JSON.stringify(res.data))
 
         navigate("/main")
     };

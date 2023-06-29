@@ -39,6 +39,7 @@ services:
     ports:
       - "8092:8092"
       - "5002:5002"
+      - "6001:6001"
     volumes:
       - $PWD:/api
     depends_on:

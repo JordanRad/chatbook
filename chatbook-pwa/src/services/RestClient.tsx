@@ -28,7 +28,7 @@ const isProtectedRoute = (method: string, url: string): boolean => {
 const onRequest = async (config: InternalAxiosRequestConfig) => {
     if (config.method && config.url) {
         if (isProtectedRoute(config.method, config.url)) {
-            let user: any = JSON.parse(localStorage.getItem("token") || "")
+            let user: any = JSON.parse(sessionStorage.getItem("token") || "")
             if (config.headers) {
                 config.headers["Authorization"] = `Bearer ${user.token}`
                 config.headers["Access-Control-Allow-Origin"] = "*"

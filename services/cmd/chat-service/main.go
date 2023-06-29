@@ -19,6 +19,7 @@ import (
 	infosrv "github.com/JordanRad/chatbook/services/internal/gen/http/info/server"
 	infosvc "github.com/JordanRad/chatbook/services/internal/gen/info"
 	"github.com/JordanRad/chatbook/services/internal/middleware"
+	websocketsserver "github.com/JordanRad/chatbook/services/internal/websockets/websockets_server"
 
 	notificationsrv "github.com/JordanRad/chatbook/services/internal/gen/grpc/notification/server"
 	notificationsvc "github.com/JordanRad/chatbook/services/internal/gen/notification"
@@ -109,6 +110,16 @@ func main() {
 
 		log.Printf("Notifications gRPC server has just started on  %s ...\n", lis.Addr().String())
 		if err := grpcServer.Serve(lis); err != nil {
+			panic(err)
+		}
+	}()
+
+	go func() {
+		websocketsServer := websocketsserver.NewServer()
+
+		log.Printf("Websockets server started on  %d ...\n", 6001)
+		err := websocketsServer.Start()
+		if err != nil {
 			panic(err)
 		}
 	}()

@@ -31,7 +31,7 @@ func NewServer() *Server {
 
 // Start starts the WebSocket server and listens for incoming connections.
 func (s *Server) Start() error {
-	http.HandleFunc("/ws", s.handleWebSocket)
+	http.HandleFunc("/", s.handleWebSocket)
 	return http.ListenAndServe(":6001", nil)
 }
 
@@ -75,6 +75,8 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		}
 
 		fmt.Printf("Received message: %s\n", string(msg))
+
+		s.BroadcastMessage(msg)
 	}
 
 	err = conn.Close()
