@@ -13,13 +13,6 @@ import (
 	goa "goa.design/goa/v3/pkg"
 )
 
-// GetConversationsListRequestBody is the type of the "chat" service
-// "getConversationsList" endpoint HTTP request body.
-type GetConversationsListRequestBody struct {
-	// Conversation ID
-	ID *string `form:"ID,omitempty" json:"ID,omitempty" xml:"ID,omitempty"`
-}
-
 // AddConversationRequestBody is the type of the "chat" service
 // "addConversation" endpoint HTTP request body.
 type AddConversationRequestBody struct {
@@ -71,7 +64,7 @@ type ConversationMessageResponseBody struct {
 	// Sender ID
 	SenderID string `form:"senderID" json:"senderID" xml:"senderID"`
 	// Timestamp of the message
-	Timestamp float64 `form:"timestamp" json:"timestamp" xml:"timestamp"`
+	Timestamp string `form:"timestamp" json:"timestamp" xml:"timestamp"`
 	// Message Content
 	Content string `form:"content" json:"content" xml:"content"`
 }
@@ -80,12 +73,14 @@ type ConversationMessageResponseBody struct {
 type ConversationResponseBody struct {
 	// Conversation ID
 	ID string `form:"ID" json:"ID" xml:"ID"`
-	// Timestamp of the message
-	Participants float64 `form:"participants" json:"participants" xml:"participants"`
+	// Sender ID
+	LastMessageSenderID string `form:"lastMessageSenderID" json:"lastMessageSenderID" xml:"lastMessageSenderID"`
 	// Last message
-	LastMessage string `form:"lastMessage" json:"lastMessage" xml:"lastMessage"`
+	LastMessageContent string `form:"lastMessageContent" json:"lastMessageContent" xml:"lastMessageContent"`
 	// TS for delivered time
-	DeliveredAt int64 `form:"deliveredAt" json:"deliveredAt" xml:"deliveredAt"`
+	LastMessageDeliveredAt string `form:"lastMessageDeliveredAt" json:"lastMessageDeliveredAt" xml:"lastMessageDeliveredAt"`
+	// TS for delivered time
+	OtherParticipantID string `form:"otherParticipantID" json:"otherParticipantID" xml:"otherParticipantID"`
 }
 
 // FriendRequestBody is used to define fields on request body types.
@@ -158,7 +153,7 @@ func NewAddConversationResponseBody(res *chat.OperationStatusResponse) *AddConve
 
 // NewGetConversationHistoryPayload builds a chat service
 // getConversationHistory endpoint payload.
-func NewGetConversationHistoryPayload(id string, limit string, beforeTimestamp int64) *chat.GetConversationHistoryPayload {
+func NewGetConversationHistoryPayload(id string, limit int, beforeTimestamp string) *chat.GetConversationHistoryPayload {
 	v := &chat.GetConversationHistoryPayload{}
 	v.ID = id
 	v.Limit = limit
@@ -169,7 +164,7 @@ func NewGetConversationHistoryPayload(id string, limit string, beforeTimestamp i
 
 // NewSearchInConversationPayload builds a chat service searchInConversation
 // endpoint payload.
-func NewSearchInConversationPayload(id string, limit string, searchInput string) *chat.SearchInConversationPayload {
+func NewSearchInConversationPayload(id string, limit int, searchInput string) *chat.SearchInConversationPayload {
 	v := &chat.SearchInConversationPayload{}
 	v.ID = id
 	v.Limit = limit
@@ -180,10 +175,8 @@ func NewSearchInConversationPayload(id string, limit string, searchInput string)
 
 // NewGetConversationsListPayload builds a chat service getConversationsList
 // endpoint payload.
-func NewGetConversationsListPayload(body *GetConversationsListRequestBody, limit string) *chat.GetConversationsListPayload {
-	v := &chat.GetConversationsListPayload{
-		ID: *body.ID,
-	}
+func NewGetConversationsListPayload(limit int) *chat.GetConversationsListPayload {
+	v := &chat.GetConversationsListPayload{}
 	v.Limit = limit
 
 	return v
@@ -199,15 +192,6 @@ func NewAddConversationPayload(body *AddConversationRequestBody) *chat.AddConver
 	}
 
 	return v
-}
-
-// ValidateGetConversationsListRequestBody runs the validations defined on
-// GetConversationsListRequestBody
-func ValidateGetConversationsListRequestBody(body *GetConversationsListRequestBody) (err error) {
-	if body.ID == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("ID", "body"))
-	}
-	return
 }
 
 // ValidateAddConversationRequestBody runs the validations defined on

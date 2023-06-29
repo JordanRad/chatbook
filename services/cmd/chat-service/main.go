@@ -9,11 +9,18 @@ import (
 
 	"github.com/JordanRad/chatbook/services/cmd/chat-service/chat"
 	"github.com/JordanRad/chatbook/services/cmd/chat-service/db/dbchat"
+	"github.com/JordanRad/chatbook/services/cmd/chat-service/db/dbmessage"
 	"github.com/JordanRad/chatbook/services/cmd/chat-service/notifiation"
 	"github.com/JordanRad/chatbook/services/cmd/user-management-service/info"
 
+	"github.com/JordanRad/chatbook/services/internal/auth"
+	"github.com/JordanRad/chatbook/services/internal/auth/jwt"
+	"github.com/JordanRad/chatbook/services/internal/databases/postgresql"
+	migrations "github.com/JordanRad/chatbook/services/internal/databases/postgresql/migrations/chat"
 	infosrv "github.com/JordanRad/chatbook/services/internal/gen/http/info/server"
 	infosvc "github.com/JordanRad/chatbook/services/internal/gen/info"
+	"github.com/JordanRad/chatbook/services/internal/middleware"
+	websocketsserver "github.com/JordanRad/chatbook/services/internal/websockets/websockets_server"
 
 	notificationsrv "github.com/JordanRad/chatbook/services/internal/gen/grpc/notification/server"
 	notificationsvc "github.com/JordanRad/chatbook/services/internal/gen/notification"
@@ -33,6 +40,21 @@ func main() {
 	if err != nil {
 		log.Fatalf("Config file cannot be read: %v", err)
 	}
+	// Connect to database
+	db := postgresql.ConnectToDatabase(config.Postgres.User, config.Postgres.Password, config.Postgres.Host, config.Postgres.Port, config.Postgres.DBName)
+	migrationTool := migrations.Tool{
+		DB: db,
+	}
+
+	withMockData := false
+	if config.Postgres.Mode == "DEV" {
+		withMockData = true
+	}
+
+	err = migrationTool.ApplyMigrations(withMockData)
+	if err != nil {
+		log.Fatalf("Error applying table creating migrations: %v", err)
+	}
 
 	// Initialize loger
 	logger := log.New(os.Stdout, "", log.LstdFlags)
@@ -44,7 +66,7 @@ func main() {
 	//Note (JordanRad): Add store
 	// Initialize Chat Service
 	chatStore := &dbchat.Store{
-		DB: nil,
+		DB: db,
 	}
 
 	chatService := chat.NewService(logger, chatStore)
@@ -69,7 +91,10 @@ func main() {
 
 	// Initialize Chat Server
 	var chatServer *chatsrv.Server = chatsrv.New(chatEndpoints, mux, dec, enc, nil, nil)
-	// chatServer.Use(middleware.AuthenticateRequest(userStore, j))
+	userStore := auth.NewStore(db)
+	jwtService := &jwt.JWTService{}
+	chatServer.Use(middleware.AuthenticateRequest(userStore, jwtService))
+
 	chatsrv.Mount(mux, chatServer)
 
 	go func() {
@@ -86,6 +111,17 @@ func main() {
 
 		log.Printf("Notifications gRPC server has just started on  %s ...\n", lis.Addr().String())
 		if err := grpcServer.Serve(lis); err != nil {
+			panic(err)
+		}
+	}()
+
+	go func() {
+		store := dbmessage.NewStore(db)
+		websocketsServer := websocketsserver.NewServer(store)
+
+		log.Printf("Websockets server started on  %d ...\n", 6001)
+		err := websocketsServer.Start()
+		if err != nil {
 			panic(err)
 		}
 	}()

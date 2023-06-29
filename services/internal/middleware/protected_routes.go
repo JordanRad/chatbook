@@ -9,7 +9,15 @@ type ProtectedRoute struct {
 var protectedRoutes = []ProtectedRoute{
 	{
 		HTTPMethod: "GET",
-		URL:        "/users",
+		URL:        "/users/profile",
+	},
+	{
+		HTTPMethod: "GET",
+		URL:        "/history",
+	},
+	{
+		HTTPMethod: "GET",
+		URL:        "/conversations",
 	},
 	{
 		HTTPMethod: "PUT",

@@ -14,11 +14,11 @@ var _ = Service("chat", func() {
 		Result(ChatHistoryResponse)
 		Payload(func() {
 			Attribute("ID", String, "Conversation ID")
-			Attribute("limit", String, "Messages count", func() {
-				Default("200")
+			Attribute("limit", Int, "Messages count", func() {
+				Default(200)
 			})
-			Attribute("beforeTimestamp", Int64, "Before timestamp", func() {
-				Default(1257894000)
+			Attribute("beforeTimestamp", String, "Before timestamp", func() {
+				Default("2023-06-06 00:00:00.323108")
 			})
 
 			Required("ID")
@@ -35,8 +35,8 @@ var _ = Service("chat", func() {
 		Result(ChatHistoryResponse)
 		Payload(func() {
 			Attribute("ID", String, "Conversation ID")
-			Attribute("limit", String, "Messages count", func() {
-				Default("200")
+			Attribute("limit", Int, "Messages count", func() {
+				Default(200)
 			})
 			Attribute("searchInput", String, "Input", func() {
 				Default("200")
@@ -56,13 +56,9 @@ var _ = Service("chat", func() {
 	Method("getConversationsList", func() {
 		Result(ConversationsListResponse)
 		Payload(func() {
-			Attribute("ID", String, "Conversation ID")
-			Attribute("limit", String, "Messages count", func() {
-				Default("100")
+			Attribute("limit", Int, "Messages count", func() {
+				Default(100)
 			})
-
-			Required("ID")
-
 		})
 		HTTP(func() {
 			GET("/conversations")
@@ -97,7 +93,7 @@ var ChatHistoryResponse = Type("ChatHistoryResponse", func() {
 
 var ConversationMessage = Type("ConversationMessage", func() {
 	Attribute("senderID", String, "Sender ID")
-	Attribute("timestamp", Float64, "Timestamp of the message")
+	Attribute("timestamp", String, "Timestamp of the message")
 	Attribute("content", String, "Message Content")
 
 	Required("timestamp", "senderID", "content")
@@ -112,9 +108,10 @@ var ConversationsListResponse = Type("ConversationsListResponse", func() {
 
 var Conversation = Type("Conversation", func() {
 	Attribute("ID", String, "Conversation ID")
-	Attribute("participants", Float64, "Timestamp of the message")
-	Attribute("lastMessage", String, "Last message")
-	Attribute("deliveredAt", Int64, "TS for delivered time")
+	Attribute("lastMessageSenderID", String, "Sender ID")
+	Attribute("lastMessageContent", String, "Last message")
+	Attribute("lastMessageDeliveredAt", String, "TS for delivered time")
+	Attribute("otherParticipantID", String, "TS for delivered time")
 
-	Required("ID", "participants", "lastMessage", "deliveredAt")
+	Required("ID", "lastMessageSenderID", "lastMessageContent", "lastMessageDeliveredAt", "otherParticipantID")
 })

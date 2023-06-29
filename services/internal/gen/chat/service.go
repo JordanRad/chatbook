@@ -55,19 +55,21 @@ type ChatHistoryResponse struct {
 type Conversation struct {
 	// Conversation ID
 	ID string
-	// Timestamp of the message
-	Participants float64
+	// Sender ID
+	LastMessageSenderID string
 	// Last message
-	LastMessage string
+	LastMessageContent string
 	// TS for delivered time
-	DeliveredAt int64
+	LastMessageDeliveredAt string
+	// TS for delivered time
+	OtherParticipantID string
 }
 
 type ConversationMessage struct {
 	// Sender ID
 	SenderID string
 	// Timestamp of the message
-	Timestamp float64
+	Timestamp string
 	// Message Content
 	Content string
 }
@@ -98,18 +100,16 @@ type GetConversationHistoryPayload struct {
 	// Conversation ID
 	ID string
 	// Messages count
-	Limit string
+	Limit int
 	// Before timestamp
-	BeforeTimestamp int64
+	BeforeTimestamp string
 }
 
 // GetConversationsListPayload is the payload type of the chat service
 // getConversationsList method.
 type GetConversationsListPayload struct {
-	// Conversation ID
-	ID string
 	// Messages count
-	Limit string
+	Limit int
 }
 
 // OperationStatusResponse is the result type of the chat service
@@ -125,7 +125,7 @@ type SearchInConversationPayload struct {
 	// Conversation ID
 	ID string
 	// Messages count
-	Limit string
+	Limit int
 	// Input
 	SearchInput string
 }

@@ -13,13 +13,6 @@ import (
 	goa "goa.design/goa/v3/pkg"
 )
 
-// GetConversationsListRequestBody is the type of the "chat" service
-// "getConversationsList" endpoint HTTP request body.
-type GetConversationsListRequestBody struct {
-	// Conversation ID
-	ID string `form:"ID" json:"ID" xml:"ID"`
-}
-
 // AddConversationRequestBody is the type of the "chat" service
 // "addConversation" endpoint HTTP request body.
 type AddConversationRequestBody struct {
@@ -71,7 +64,7 @@ type ConversationMessageResponseBody struct {
 	// Sender ID
 	SenderID *string `form:"senderID,omitempty" json:"senderID,omitempty" xml:"senderID,omitempty"`
 	// Timestamp of the message
-	Timestamp *float64 `form:"timestamp,omitempty" json:"timestamp,omitempty" xml:"timestamp,omitempty"`
+	Timestamp *string `form:"timestamp,omitempty" json:"timestamp,omitempty" xml:"timestamp,omitempty"`
 	// Message Content
 	Content *string `form:"content,omitempty" json:"content,omitempty" xml:"content,omitempty"`
 }
@@ -80,12 +73,14 @@ type ConversationMessageResponseBody struct {
 type ConversationResponseBody struct {
 	// Conversation ID
 	ID *string `form:"ID,omitempty" json:"ID,omitempty" xml:"ID,omitempty"`
-	// Timestamp of the message
-	Participants *float64 `form:"participants,omitempty" json:"participants,omitempty" xml:"participants,omitempty"`
+	// Sender ID
+	LastMessageSenderID *string `form:"lastMessageSenderID,omitempty" json:"lastMessageSenderID,omitempty" xml:"lastMessageSenderID,omitempty"`
 	// Last message
-	LastMessage *string `form:"lastMessage,omitempty" json:"lastMessage,omitempty" xml:"lastMessage,omitempty"`
+	LastMessageContent *string `form:"lastMessageContent,omitempty" json:"lastMessageContent,omitempty" xml:"lastMessageContent,omitempty"`
 	// TS for delivered time
-	DeliveredAt *int64 `form:"deliveredAt,omitempty" json:"deliveredAt,omitempty" xml:"deliveredAt,omitempty"`
+	LastMessageDeliveredAt *string `form:"lastMessageDeliveredAt,omitempty" json:"lastMessageDeliveredAt,omitempty" xml:"lastMessageDeliveredAt,omitempty"`
+	// TS for delivered time
+	OtherParticipantID *string `form:"otherParticipantID,omitempty" json:"otherParticipantID,omitempty" xml:"otherParticipantID,omitempty"`
 }
 
 // FriendRequestBody is used to define fields on request body types.
@@ -98,15 +93,6 @@ type FriendRequestBody struct {
 	FirstName string `form:"firstName" json:"firstName" xml:"firstName"`
 	// Last name
 	LastName string `form:"lastName" json:"lastName" xml:"lastName"`
-}
-
-// NewGetConversationsListRequestBody builds the HTTP request body from the
-// payload of the "getConversationsList" endpoint of the "chat" service.
-func NewGetConversationsListRequestBody(p *chat.GetConversationsListPayload) *GetConversationsListRequestBody {
-	body := &GetConversationsListRequestBody{
-		ID: p.ID,
-	}
-	return body
 }
 
 // NewAddConversationRequestBody builds the HTTP request body from the payload
@@ -269,14 +255,17 @@ func ValidateConversationResponseBody(body *ConversationResponseBody) (err error
 	if body.ID == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("ID", "body"))
 	}
-	if body.Participants == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("participants", "body"))
+	if body.LastMessageSenderID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("lastMessageSenderID", "body"))
 	}
-	if body.LastMessage == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("lastMessage", "body"))
+	if body.LastMessageContent == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("lastMessageContent", "body"))
 	}
-	if body.DeliveredAt == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("deliveredAt", "body"))
+	if body.LastMessageDeliveredAt == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("lastMessageDeliveredAt", "body"))
+	}
+	if body.OtherParticipantID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("otherParticipantID", "body"))
 	}
 	return
 }

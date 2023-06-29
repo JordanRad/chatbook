@@ -8,14 +8,23 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type Store interface {
+	SaveConversationMessage(ID, senderID, content string) error
+}
+type ChatConnection struct {
+	ID   string
+	conn *websocket.Conn
+}
+
 // Server implements the WebSocketServer interface.
 type Server struct {
 	upgrader    *websocket.Upgrader
-	connections []*websocket.Conn
+	connections []*ChatConnection
+	store       Store
 }
 
 // NewServer creates a new WebSocket server.
-func NewServer() *Server {
+func NewServer(s Store) *Server {
 	upgrader := &websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			// Allow connections from any origin
@@ -25,20 +34,21 @@ func NewServer() *Server {
 
 	return &Server{
 		upgrader:    upgrader,
-		connections: make([]*websocket.Conn, 0),
+		connections: make([]*ChatConnection, 0),
+		store:       s,
 	}
 }
 
 // Start starts the WebSocket server and listens for incoming connections.
 func (s *Server) Start() error {
-	http.HandleFunc("/ws", s.handleWebSocket)
+	http.HandleFunc("/", s.handleWebSocket)
 	return http.ListenAndServe(":6001", nil)
 }
 
 // Close closes all active WebSocket connections.
 func (s *Server) Close() error {
 	for _, conn := range s.connections {
-		err := conn.Close()
+		err := conn.conn.Close()
 		if err != nil {
 			return err
 		}
@@ -48,9 +58,19 @@ func (s *Server) Close() error {
 }
 
 // BroadcastMessage sends a message to all connected clients.
-func (s *Server) BroadcastMessage(message []byte) {
+func (s *Server) BroadcastMessage(message []byte, senderID string) {
+	type OutgoingMessage struct {
+		Content  string `json:"content"`
+		SenderID string `json:"senderID"`
+	}
+
+	m := OutgoingMessage{
+		Content:  string(message),
+		SenderID: senderID,
+	}
+
 	for _, conn := range s.connections {
-		err := conn.WriteMessage(websocket.TextMessage, message)
+		err := conn.conn.WriteJSON(m)
 		if err != nil {
 			log.Printf("Error sending message: %v", err)
 		}
@@ -65,16 +85,29 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.connections = append(s.connections, conn)
+	conversationID := r.URL.Query().Get("conversationID")
+	senderID := r.URL.Query().Get("senderID")
+
+	chatConn := &ChatConnection{
+		conn: conn,
+		ID:   conversationID,
+	}
+
+	s.connections = append(s.connections, chatConn)
 
 	for {
-		_, msg, err := conn.ReadMessage()
+		_, msg, err := chatConn.conn.ReadMessage()
 		if err != nil {
 			log.Printf("Error reading WebSocket message: %v", err)
 			break
 		}
 
-		fmt.Printf("Received message: %s\n", string(msg))
+		s.BroadcastMessage(msg, senderID)
+
+		err = s.store.SaveConversationMessage(conversationID, senderID, string(msg))
+		if err != nil {
+			fmt.Printf("error saving message to db: %v", err.Error())
+		}
 	}
 
 	err = conn.Close()
