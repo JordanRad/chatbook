@@ -6,6 +6,7 @@ import { Chat } from '../components/chat/Chat';
 
 export type ConversationListItem = {
   id: string
+  myID: string
   participantName: string
   participantID: string
   lastMessage: string
@@ -32,13 +33,11 @@ const Main = () => {
   }
 
   const lastConversationsWithParticipants = conversations.map((i: any) => {
-    const otherParticipant = profile.friendsList.find((j: any) => {
-      console.log("Other: ", j.id, i.otherParticipantID)
-      return j.id === i.otherParticipantID
-    })
+    const otherParticipant = profile.friendsList.find((j: any) => j.id === i.otherParticipantID)
 
     const convLI: ConversationListItem = {
       id: i.ID,
+      myID: profile.id,
       lastMessage: i.lastMessageContent,
       ts: i.lastMessageDeliveredAt,
       participantName: `${otherParticipant.firstName} ${otherParticipant.lastName}`,

@@ -31,7 +31,8 @@ class UserService {
         return await this.client.get('http://localhost:8092/api/chat/v1/conversations')
     }
     async getChatHistory(conversationID :string) {
-        return await this.client.get(`http://localhost:8092/api/chat/v1/conversations/${conversationID}/history`)
+        const timestamp = new Date().toISOString().replace("."," ").split(" ")[0].replace("T"," ")
+        return await this.client.get(`http://localhost:8092/api/chat/v1/conversations/${conversationID}/history?beforeTimestamp=${timestamp}`)
     }
 
 }

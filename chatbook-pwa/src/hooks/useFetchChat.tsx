@@ -5,10 +5,10 @@ const useFetchChat = (conversationID:string) => {
     const [chat, setChat] = useState<any[]>([]);
     const [error, setError] = useState(null);
 
-    const updateWithMessage = (message:any)=>{
+    const updateWithMessage = (message:string,senderID:string)=>{
         const m = {
             timestamp: Date.now(),
-            senderID: "vjfskvjsf",
+            senderID: senderID,
             content: message
         }
         setChat((prevChat)=>[m,...prevChat])

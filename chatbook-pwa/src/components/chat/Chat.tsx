@@ -4,22 +4,26 @@ import useFetchChat from "../../hooks/useFetchChat"
 import { useEffect, useRef, useState } from "react"
 
 export const Chat = (props: { conversationWithParticipant: ConversationListItem }) => {
-    const { chat,updateWithMessage } = useFetchChat(props.conversationWithParticipant.id)
+    const { chat, updateWithMessage } = useFetchChat(props.conversationWithParticipant.id)
     const socketRef = useRef<WebSocket | null>(null);
     const [currentMessage, setCurrentMessage] = useState("")
     useEffect(() => {
         // Establish the WebSocket connection
-        socketRef.current = new WebSocket('ws://localhost:6001/');
+        console.log("Conv ID",props.conversationWithParticipant.id)
+        socketRef.current = new WebSocket(`ws://localhost:6001/?conversationID=${props.conversationWithParticipant.id}&senderID=${props.conversationWithParticipant.myID}`);
 
         // WebSocket event handlers
         socketRef.current.onopen = () => {
             console.log('WebSocket connection established');
+
+
         };
 
         socketRef.current.onmessage = (event) => {
             console.log('Received message:', event.data);
-            updateWithMessage(event.data)
-            
+            const message = JSON.parse(event.data)
+            updateWithMessage(message.content, message.senderID)
+
         };
 
         socketRef.current.onclose = () => {
@@ -32,7 +36,6 @@ export const Chat = (props: { conversationWithParticipant: ConversationListItem 
         };
     }, []);
 
-    console.log(props.conversationWithParticipant)
 
     const sendMessage = () => {
         if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
@@ -42,11 +45,11 @@ export const Chat = (props: { conversationWithParticipant: ConversationListItem 
     };
     const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-          sendMessage();
+            sendMessage();
         }
-      };
+    };
 
-      console.log(chat.length)
+    console.log(chat.length)
     const Messages = () => {
         const messagesList = chat.map((i: any) => {
 
@@ -69,7 +72,7 @@ export const Chat = (props: { conversationWithParticipant: ConversationListItem 
             <Typography>{props.conversationWithParticipant.participantName}</Typography>
             <Messages />
             <Box display={"flex"} flexDirection={"row"} alignContent={"start"} mt={2}>
-                <TextField onChange={(e)=>setCurrentMessage(e.target.value)} onKeyUp={handleKeyUp} placeholder='Type a new message...' fullWidth></TextField>
+                <TextField onChange={(e) => setCurrentMessage(e.target.value)} onKeyUp={handleKeyUp} placeholder='Type a new message...' fullWidth></TextField>
             </Box>
         </Stack>
     )

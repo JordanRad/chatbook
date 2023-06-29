@@ -9,6 +9,7 @@ import (
 
 	"github.com/JordanRad/chatbook/services/cmd/chat-service/chat"
 	"github.com/JordanRad/chatbook/services/cmd/chat-service/db/dbchat"
+	"github.com/JordanRad/chatbook/services/cmd/chat-service/db/dbmessage"
 	"github.com/JordanRad/chatbook/services/cmd/chat-service/notifiation"
 	"github.com/JordanRad/chatbook/services/cmd/user-management-service/info"
 
@@ -115,7 +116,8 @@ func main() {
 	}()
 
 	go func() {
-		websocketsServer := websocketsserver.NewServer()
+		store := dbmessage.NewStore(db)
+		websocketsServer := websocketsserver.NewServer(store)
 
 		log.Printf("Websockets server started on  %d ...\n", 6001)
 		err := websocketsServer.Start()
