@@ -38,30 +38,30 @@ func DecodeGetConversationHistoryRequest(mux goahttp.Muxer, decoder func(*http.R
 	return func(r *http.Request) (any, error) {
 		var (
 			id              string
-			limit           string
-			beforeTimestamp int64
+			limit           int
+			beforeTimestamp string
 			err             error
 
 			params = mux.Vars(r)
 		)
 		id = params["ID"]
-		limitRaw := r.URL.Query().Get("limit")
-		if limitRaw != "" {
-			limit = limitRaw
-		} else {
-			limit = "200"
-		}
 		{
-			beforeTimestampRaw := r.URL.Query().Get("beforeTimestamp")
-			if beforeTimestampRaw == "" {
-				beforeTimestamp = 1257894000
+			limitRaw := r.URL.Query().Get("limit")
+			if limitRaw == "" {
+				limit = 200
 			} else {
-				v, err2 := strconv.ParseInt(beforeTimestampRaw, 10, 64)
+				v, err2 := strconv.ParseInt(limitRaw, 10, strconv.IntSize)
 				if err2 != nil {
-					err = goa.MergeErrors(err, goa.InvalidFieldTypeError("beforeTimestamp", beforeTimestampRaw, "integer"))
+					err = goa.MergeErrors(err, goa.InvalidFieldTypeError("limit", limitRaw, "integer"))
 				}
-				beforeTimestamp = v
+				limit = int(v)
 			}
+		}
+		beforeTimestampRaw := r.URL.Query().Get("beforeTimestamp")
+		if beforeTimestampRaw != "" {
+			beforeTimestamp = beforeTimestampRaw
+		} else {
+			beforeTimestamp = "2023-06-06 00:00:00.323108"
 		}
 		if err != nil {
 			return nil, err
@@ -90,18 +90,24 @@ func DecodeSearchInConversationRequest(mux goahttp.Muxer, decoder func(*http.Req
 	return func(r *http.Request) (any, error) {
 		var (
 			id          string
-			limit       string
+			limit       int
 			searchInput string
 			err         error
 
 			params = mux.Vars(r)
 		)
 		id = params["ID"]
-		limitRaw := r.URL.Query().Get("limit")
-		if limitRaw != "" {
-			limit = limitRaw
-		} else {
-			limit = "200"
+		{
+			limitRaw := r.URL.Query().Get("limit")
+			if limitRaw == "" {
+				limit = 200
+			} else {
+				v, err2 := strconv.ParseInt(limitRaw, 10, strconv.IntSize)
+				if err2 != nil {
+					err = goa.MergeErrors(err, goa.InvalidFieldTypeError("limit", limitRaw, "integer"))
+				}
+				limit = int(v)
+			}
 		}
 		searchInputRaw := r.URL.Query().Get("searchInput")
 		if searchInputRaw != "" {
@@ -138,31 +144,25 @@ func EncodeGetConversationsListResponse(encoder func(context.Context, http.Respo
 func DecodeGetConversationsListRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (any, error) {
 	return func(r *http.Request) (any, error) {
 		var (
-			body GetConversationsListRequestBody
-			err  error
+			limit int
+			err   error
 		)
-		err = decoder(r).Decode(&body)
-		if err != nil {
-			if err == io.EOF {
-				return nil, goa.MissingPayloadError()
+		{
+			limitRaw := r.URL.Query().Get("limit")
+			if limitRaw == "" {
+				limit = 100
+			} else {
+				v, err2 := strconv.ParseInt(limitRaw, 10, strconv.IntSize)
+				if err2 != nil {
+					err = goa.MergeErrors(err, goa.InvalidFieldTypeError("limit", limitRaw, "integer"))
+				}
+				limit = int(v)
 			}
-			return nil, goa.DecodePayloadError(err.Error())
 		}
-		err = ValidateGetConversationsListRequestBody(&body)
 		if err != nil {
 			return nil, err
 		}
-
-		var (
-			limit string
-		)
-		limitRaw := r.URL.Query().Get("limit")
-		if limitRaw != "" {
-			limit = limitRaw
-		} else {
-			limit = "100"
-		}
-		payload := NewGetConversationsListPayload(&body, limit)
+		payload := NewGetConversationsListPayload(limit)
 
 		return payload, nil
 	}
@@ -222,10 +222,11 @@ func marshalChatConversationMessageToConversationMessageResponseBody(v *chat.Con
 // *ConversationResponseBody from a value of type *chat.Conversation.
 func marshalChatConversationToConversationResponseBody(v *chat.Conversation) *ConversationResponseBody {
 	res := &ConversationResponseBody{
-		ID:           v.ID,
-		Participants: v.Participants,
-		LastMessage:  v.LastMessage,
-		DeliveredAt:  v.DeliveredAt,
+		ID:                     v.ID,
+		LastMessageSenderID:    v.LastMessageSenderID,
+		LastMessageContent:     v.LastMessageContent,
+		LastMessageDeliveredAt: v.LastMessageDeliveredAt,
+		OtherParticipantID:     v.OtherParticipantID,
 	}
 
 	return res

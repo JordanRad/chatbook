@@ -15,7 +15,7 @@ import (
 	"github.com/JordanRad/chatbook/services/internal/auth/encryption"
 	"github.com/JordanRad/chatbook/services/internal/auth/jwt"
 	"github.com/JordanRad/chatbook/services/internal/databases/postgresql"
-	"github.com/JordanRad/chatbook/services/internal/databases/postgresql/user-management/migrations"
+	migrations "github.com/JordanRad/chatbook/services/internal/databases/postgresql/migrations/usermanagement"
 
 	authgen "github.com/JordanRad/chatbook/services/internal/gen/auth"
 	authsvc "github.com/JordanRad/chatbook/services/internal/gen/auth"
@@ -61,10 +61,6 @@ func main() {
 	// Initialize loger
 	logger := log.New(os.Stdout, "", log.LstdFlags)
 
-	// Initialize Info Service
-	infoService := info.NewService()
-	var infoEndpoints *infosvc.Endpoints = infosvc.NewEndpoints(infoService)
-
 	// Initialize User Profile Service
 	userStore := &auth.Store{
 		DB: db,
@@ -88,6 +84,10 @@ func main() {
 	authService := userauth.NewService(userStore, encryptionTool, jwtService, logger)
 	var authEndpoints *authsvc.Endpoints = authgen.NewEndpoints(authService)
 
+	// Initialize Info Service
+	infoService := info.NewService()
+	var infoEndpoints *infosvc.Endpoints = infosvc.NewEndpoints(infoService)
+
 	// Provide the transport specific request decoder and response encoder.
 	var (
 		dec = goahttp.RequestDecoder
@@ -103,6 +103,7 @@ func main() {
 
 	// Initialize Info Server
 	var infoServer *infosrv.Server = infosrv.New(infoEndpoints, mux, dec, enc, nil, nil)
+	infoServer.Use(middleware.AuthenticateRequest(userStore, jwtService))
 	infosrv.Mount(mux, infoServer)
 
 	// Initialize User Profile Server

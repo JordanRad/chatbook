@@ -9,6 +9,7 @@ import (
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 //counterfeiter:generate . UserStore
 type UserStore interface {
+	GetAuthUserByEmail(ctx context.Context, email string) (*User, error)
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	Register(ctx context.Context, user *User) (*User, error)
 	UpdateProfileNames(ctx context.Context, userID, firstName, lastName string) (User, error)
@@ -32,6 +33,31 @@ type ErrUserNotFound struct{}
 
 func (e *ErrUserNotFound) Error() string {
 	return "Such user has not been found"
+}
+
+// GetUserByEmail method returns a user from the database, based on a given email.
+func (s *Store) GetAuthUserByEmail(ctx context.Context, email string) (*User, error) {
+	result := new(User)
+
+	row := s.DB.QueryRow(`
+		SELECT u.id, u.email, u.first_name, u.last_name 
+		FROM users u 
+		WHERE u.email = $1
+	`, email)
+	err := row.Scan(
+		&result.ID,
+		&result.Email,
+		&result.FirstName,
+		&result.LastName,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, &ErrUserNotFound{}
+		}
+		return nil, fmt.Errorf("error retrieving an auth user: %w", err)
+	}
+
+	return result, nil
 }
 
 // GetUserByEmail method returns a user from the database, based on a given email.
