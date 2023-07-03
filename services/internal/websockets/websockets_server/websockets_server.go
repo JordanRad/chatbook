@@ -11,16 +11,23 @@ import (
 type Store interface {
 	SaveConversationMessage(ID, senderID, content string) error
 }
+
 type ChatConnection struct {
 	ID   string
 	conn *websocket.Conn
 }
 
+type RealtimeStatusConnection struct {
+	UserID string
+	conn   *websocket.Conn
+}
+
 // Server implements the WebSocketServer interface.
 type Server struct {
-	upgrader    *websocket.Upgrader
-	connections []*ChatConnection
-	store       Store
+	upgrader                  *websocket.Upgrader
+	chatConnections           []*ChatConnection
+	realtimeStatusConnections []*RealtimeStatusConnection
+	store                     Store
 }
 
 // NewServer creates a new WebSocket server.
@@ -33,21 +40,23 @@ func NewServer(s Store) *Server {
 	}
 
 	return &Server{
-		upgrader:    upgrader,
-		connections: make([]*ChatConnection, 0),
-		store:       s,
+		upgrader:                  upgrader,
+		chatConnections:           make([]*ChatConnection, 0),
+		realtimeStatusConnections: make([]*RealtimeStatusConnection, 0),
+		store:                     s,
 	}
 }
 
 // Start starts the WebSocket server and listens for incoming connections.
 func (s *Server) Start() error {
 	http.HandleFunc("/", s.handleWebSocket)
+	http.HandleFunc("/friends/realtime-status", s.handleRealtimeStatusPing)
 	return http.ListenAndServe(":6001", nil)
 }
 
 // Close closes all active WebSocket connections.
 func (s *Server) Close() error {
-	for _, conn := range s.connections {
+	for _, conn := range s.chatConnections {
 		err := conn.conn.Close()
 		if err != nil {
 			return err
@@ -69,7 +78,7 @@ func (s *Server) BroadcastMessage(message []byte, senderID string) {
 		SenderID: senderID,
 	}
 
-	for _, conn := range s.connections {
+	for _, conn := range s.chatConnections {
 		err := conn.conn.WriteJSON(m)
 		if err != nil {
 			log.Printf("Error sending message: %v", err)
@@ -93,7 +102,7 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		ID:   conversationID,
 	}
 
-	s.connections = append(s.connections, chatConn)
+	s.chatConnections = append(s.chatConnections, chatConn)
 
 	for {
 		_, msg, err := chatConn.conn.ReadMessage()
@@ -109,6 +118,67 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			fmt.Printf("error saving message to db: %v", err.Error())
 		}
 	}
+
+	err = conn.Close()
+	if err != nil {
+		log.Printf("Error closing connection: %v", err)
+	}
+}
+
+// BroadcastMessage sends a message to all connected clients.
+func (s *Server) publishRealtimeStatusForUserWithID(userID string) {
+	type OutgoingMessage struct {
+		ActiveFriendsIDs []string `json:"activeFriendsIDs"`
+	}
+
+	m := OutgoingMessage{
+		ActiveFriendsIDs: make([]string, len(s.realtimeStatusConnections)-1),
+	}
+
+	for _, conn := range s.realtimeStatusConnections {
+		for _, inner := range s.realtimeStatusConnections {
+			if conn.UserID == inner.UserID || conn.UserID == userID {
+				continue
+			}
+			m.ActiveFriendsIDs = append(m.ActiveFriendsIDs, conn.UserID)
+		}
+
+		err := conn.conn.WriteJSON(m)
+		if err != nil {
+			log.Printf("Error sending message: %v", err)
+		}
+	}
+}
+
+// handleRealtimeStatusPing handles incoming WebSocket connections.
+func (s *Server) handleRealtimeStatusPing(w http.ResponseWriter, r *http.Request) {
+	conn, err := s.upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Printf("Failed to upgrade connection to WebSocket: %v", err)
+		return
+	}
+
+	userID := r.URL.Query().Get("id")
+
+	realtimeConn := &RealtimeStatusConnection{
+		conn:   conn,
+		UserID: userID,
+	}
+
+	s.realtimeStatusConnections = append(s.realtimeStatusConnections, realtimeConn)
+
+	fmt.Println("PING OUTER: ", userID)
+	s.publishRealtimeStatusForUserWithID(userID)
+	// for {
+	// 	_, msg, err := realtimeConn.conn.ReadMessage()
+	// 	if err != nil {
+	// 		log.Printf("Error reading WebSocket message: %v", err)
+	// 		break
+	// 	}
+
+	// 	fmt.Println("PING: ", msg, userID)
+	// 	s.publishRealtimeStatusForUserWithID(string(msg))
+	// }
 
 	err = conn.Close()
 	if err != nil {
