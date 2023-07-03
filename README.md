@@ -10,8 +10,7 @@ Chatbook is a hobby project of mine. It aims to create a highly available chat s
 
 - [X] **Real-Time Chat Features** - support real-time messaging with features like sending and receiving text messages and emojis. Implement message history, allowing users to scroll back and view previous messages.
 
-- [ ] **Notifications** - implement notifications for new messages, friend requests, or other relevant events.
-Allow users to customize notification preferences.
+- [X] **Real-Time Friends Status Monitoring** - show real time status of each user's friendslist
 
 - [ ] **Search and Filtering** - enable users to search for specific messages within a given chat.
 
@@ -22,6 +21,8 @@ Allow users to customize notification preferences.
 - [ ] Send friend requests
 - [ ] Start a chat with friends
 - [ ] Search for chat with friends
+- [ ] Implement notifications for new messages
+
 
 
 ## Non-Functional Requirements:

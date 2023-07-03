@@ -14,3 +14,11 @@
   padding: 10px;
   margin-bottom: 10px;
 }
+
+.circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: gray;
+  margin-right: 12px;
+}
