@@ -21,7 +21,6 @@ const Main = () => {
   const [activeFriendsIDs, setActiveFriendsIDs] = useState<any>([])
 
   const onListItemClickHandler = (conversationID: string) => {
-    console.log(conversations.find((i: any) => i.ID === conversationID))
     const conversation = conversations.find((i: any) => i.ID === conversationID)
     if (conversation === null) {
       console.error("Cannot set null conversation value")

@@ -49,7 +49,7 @@ func NewServer(s Store) *Server {
 
 // Start starts the WebSocket server and listens for incoming connections.
 func (s *Server) Start() error {
-	http.HandleFunc("/", s.handleWebSocket)
+	http.HandleFunc("/", s.handleMessaging)
 	http.HandleFunc("/friends/realtime-status", s.handleRealtimeStatusPing)
 	return http.ListenAndServe(":6001", nil)
 }
@@ -66,8 +66,8 @@ func (s *Server) Close() error {
 	return nil
 }
 
-// BroadcastMessage sends a message to all connected clients.
-func (s *Server) BroadcastMessage(message []byte, senderID string) {
+// sendMessageFromSenderID sends a message to all connected clients.
+func (s *Server) sendMessageFromSenderID(message []byte, senderID string) {
 	type OutgoingMessage struct {
 		Content  string `json:"content"`
 		SenderID string `json:"senderID"`
@@ -86,8 +86,8 @@ func (s *Server) BroadcastMessage(message []byte, senderID string) {
 	}
 }
 
-// handleWebSocket handles incoming WebSocket connections.
-func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
+// handleMessaging handles incoming WebSocket connections.
+func (s *Server) handleMessaging(w http.ResponseWriter, r *http.Request) {
 	conn, err := s.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("Failed to upgrade connection to WebSocket: %v", err)
@@ -111,7 +111,7 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		s.BroadcastMessage(msg, senderID)
+		s.sendMessageFromSenderID(msg, senderID)
 
 		err = s.store.SaveConversationMessage(conversationID, senderID, string(msg))
 		if err != nil {
@@ -125,7 +125,7 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// BroadcastMessage sends a message to all connected clients.
+// publishRealtimeStatusForUserWithID sends a message to all connected clients.
 func (s *Server) publishRealtimeStatusForUserWithID(userID string) {
 	type OutgoingMessage struct {
 		ActiveFriendsIDs []string `json:"activeFriendsIDs"`
@@ -167,18 +167,7 @@ func (s *Server) handleRealtimeStatusPing(w http.ResponseWriter, r *http.Request
 
 	s.realtimeStatusConnections = append(s.realtimeStatusConnections, realtimeConn)
 
-	fmt.Println("PING OUTER: ", userID)
 	s.publishRealtimeStatusForUserWithID(userID)
-	// for {
-	// 	_, msg, err := realtimeConn.conn.ReadMessage()
-	// 	if err != nil {
-	// 		log.Printf("Error reading WebSocket message: %v", err)
-	// 		break
-	// 	}
-
-	// 	fmt.Println("PING: ", msg, userID)
-	// 	s.publishRealtimeStatusForUserWithID(string(msg))
-	// }
 
 	err = conn.Close()
 	if err != nil {

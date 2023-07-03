@@ -9,14 +9,11 @@ export const Chat = (props: { conversationWithParticipant: ConversationListItem 
     const [currentMessage, setCurrentMessage] = useState("")
     useEffect(() => {
         // Establish the WebSocket connection
-        console.log("Conv ID",props.conversationWithParticipant.id)
         socketRef.current = new WebSocket(`ws://localhost:6001/?conversationID=${props.conversationWithParticipant.id}&senderID=${props.conversationWithParticipant.myID}`);
 
         // WebSocket event handlers
         socketRef.current.onopen = () => {
             console.log('WebSocket connection established');
-
-
         };
 
         socketRef.current.onmessage = (event) => {
@@ -49,7 +46,6 @@ export const Chat = (props: { conversationWithParticipant: ConversationListItem 
         }
     };
 
-    console.log(chat.length)
     const Messages = () => {
         const messagesList = chat.map((i: any) => {
 
